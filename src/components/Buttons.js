@@ -5,10 +5,10 @@ import { BorderRadius, Colors } from '../styles';
 import { Button } from 'react-bulma-components';
 import styled from '@emotion/styled';
 
-const Buttons = ({ children }) => {
+const Buttons = ({ children, props }) => {
   return (
     <div>
-      <StyledButton>{children}</StyledButton>
+      <StyledButton {...props}>{children}</StyledButton>
     </div>
   );
 };
