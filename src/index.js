@@ -1,4 +1,5 @@
 import 'bulma/css/bulma.min.css';
+import './font.css';
 
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
