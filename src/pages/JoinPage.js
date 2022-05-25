@@ -9,8 +9,10 @@ import IconInput from '../components/IconInput';
 import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 
 const JoinPage = () => {
+  const navigate = useNavigate();
   const initialValues = {
     email: '',
     nickname: '',
@@ -44,11 +46,14 @@ const JoinPage = () => {
     onSubmit: async (values, formikHelper) => {
       try {
         console.log(values);
+        formikHelper.resetForm();
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
         Swal.fire({
           icon: 'success',
           text: '회원가입 성공!!',
+        }).then(() => {
+          navigate('/');
         });
       } catch (error) {
         console.log(error);
