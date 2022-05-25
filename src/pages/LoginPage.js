@@ -1,13 +1,50 @@
+import * as Yup from 'yup';
+
 import { Columns, Container, Hero } from 'react-bulma-components';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/Buttons';
+import { Colors } from '../styles';
 import IconInput from '../components/IconInput';
+import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
-
-// import { FontSize } from '../styles';
+import { useFormik } from 'formik';
 
 const LoginPage = () => {
+  const initialValues = {
+    email: '',
+    password: '',
+  };
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .strict(true)
+      .email('이메일 형식으로 작성해주세요.')
+      .required('이메일을 입력해주세요.'),
+    password: Yup.string()
+      .min(4, '최소 4글자 이상 입력하세요.')
+      .max(16, '최대 16글자 이하여야 합니다.')
+      .required('비밀번호를 입력해주세요.'),
+  });
+
+  const { errors, handleBlur, handleSubmit, handleChange, touched, values } = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async (values, formikHelper) => {
+      try {
+        console.log(values);
+        formikHelper.setStatus({ success: true });
+        formikHelper.setSubmitting(false);
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          icon: 'error',
+          text: '로그인에 실패했습니다.',
+        });
+      }
+    },
+  });
+
   return (
     <>
       <Hero size={'fullheight'}>
@@ -20,7 +57,7 @@ const LoginPage = () => {
                 justifyContent: 'center',
               }}
             >
-              <StyledForm>
+              <StyledForm onSubmit={handleSubmit}>
                 <div className="control">
                   <h2 className="container has-text-centered title is-2">로그인</h2>
                 </div>
@@ -29,32 +66,55 @@ const LoginPage = () => {
                   <label className="label">이메일</label>
                   <IconInput
                     type="text"
-                    name="id"
+                    name="email"
                     id="id"
                     autocomplete="off"
-                    required
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.email}
                     placeholder="이메일을 입력해주세요."
                     leftIconComponent={<AnimatedIcon.Email />}
-                    rightIconComponent={<AnimatedIcon.CheckMark />}
+                    rightIconComponent={
+                      touched.email &&
+                      (!errors.email ? (
+                        <AnimatedIcon.CheckMark size={'large'} />
+                      ) : (
+                        <AnimatedIcon.WarningAlert size={'large'} />
+                      ))
+                    }
                   />
+                  <p style={{ color: errors.email ? Colors.warningFirst : Colors.successFirst }}>
+                    &nbsp;{touched.email && (errors.email || '이메일 입력이 확인되었어요.')}
+                  </p>
                   <p className="is-size-7">&nbsp;</p>
                 </div>
                 <div className="control">
                   <label className="label">비밀번호</label>
                   <IconInput
                     type="password"
-                    name="pw"
-                    id="pw"
+                    name="password"
                     autocomplete="off"
-                    required
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.password}
                     placeholder="비밀번호를 입력해주세요."
                     leftIconComponent={<AnimatedIcon.Password />}
-                    rightIconComponent={<AnimatedIcon.CheckMark />}
+                    rightIconComponent={
+                      touched.password &&
+                      (!errors.password ? (
+                        <AnimatedIcon.CheckMark size={'large'} />
+                      ) : (
+                        <AnimatedIcon.WarningAlert size={'large'} />
+                      ))
+                    }
                   />
-                  <p className="is-size-3">&nbsp;</p>
+                  <p style={{ color: errors.password ? Colors.warningFirst : Colors.successFirst }}>
+                    &nbsp;{touched.password && (errors.password || '비밀번호 입력이 확인되었어요.')}
+                  </p>
+                  <p className="is-size-6">&nbsp;</p>
                 </div>
                 <div className="control">
-                  <Buttons type="submit">로그인</Buttons>
+                  <Buttons type={'submit'}>로그인</Buttons>
                   <p className="is-size-7">&nbsp;</p>
                   <div className="columns">
                     <div className="column is-7">
@@ -81,17 +141,5 @@ const StyledHeroBody = styled(Hero.Body)``;
 const StyledForm = styled.form`
   width: 100%;
 `;
-
-/**
- * width: 100%;
-  background-color: #fffff9;
-  border-radius: ${BorderRadius.card};
-  border: 2px solid ${Colors.subFirst};
-  box-shadow: ${Shadows.card};
-
-  @media ${Media.desktop} {
-    max-width: 1200px;
-  }
- */
 
 export default LoginPage;
