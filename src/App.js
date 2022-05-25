@@ -9,9 +9,12 @@ import {
 } from './pages';
 import { Route, Routes } from 'react-router-dom';
 
+import HeaderBar from './components/HeaderBar';
+
 const App = () => {
   return (
     <div className="App">
+      <HeaderBar />
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />}></Route>
