@@ -28,7 +28,7 @@ const JoinPage = () => {
     nickname: Yup.string()
       .strict(true)
       .required('닉네임을 입력해주세요')
-      .matches(/^[a-zA-Z0-9_]{2,10}$/, '2~10 글자의 문자를 입력해주세요'),
+      .matches(/^[a-zA-Z0-9가-힣_]{2,10}$/, '2~10 글자의 문자를 입력해주세요'),
     password: Yup.string()
       .required('비밀번호를 입력하세요')
       .matches(
@@ -85,7 +85,7 @@ const JoinPage = () => {
     }
     Swal.fire({
       icon: 'success',
-      text: '이메일 인증을 준비중입니다. : ' + nickname,
+      text: '사용가능한 닉네임입니다!: ' + nickname,
     });
   };
 
