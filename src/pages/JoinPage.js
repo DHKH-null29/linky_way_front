@@ -13,6 +13,9 @@ import { useFormik } from 'formik';
 const JoinPage = () => {
   const initialValues = {
     email: '',
+    nickname: '',
+    password: '',
+    checkPassword: '',
   };
 
   const validationSchema = Yup.object().shape({
@@ -20,6 +23,19 @@ const JoinPage = () => {
       .strict(true)
       .email('이메일 형식으로 작성해주세요.')
       .required('이메일을 입력해주세요.'),
+    nickname: Yup.string()
+      .strict(true)
+      .required('닉네임을 입력해주세요')
+      .matches(/^[a-zA-Z0-9_]{2,10}$/, '2~10 글자의 문자를 입력해주세요'),
+    password: Yup.string()
+      .required('비밀번호를 입력하세요')
+      .matches(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{4,16}$/,
+        '비밀번호는 4~16자의 대소영문자,숫자,특수문자를 포함해야 합니다',
+      ),
+    checkPassword: Yup.string()
+      .oneOf([Yup.ref('password'), null], '비밀번호가 일치하지 않습니다.')
+      .required('확인 비밀번호를 입력해주세요.'),
   });
 
   const { errors, handleBlur, handleSubmit, handleChange, touched, values } = useFormik({
@@ -30,6 +46,10 @@ const JoinPage = () => {
         console.log(values);
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
+        Swal.fire({
+          icon: 'success',
+          text: '회원가입 성공!!',
+        });
       } catch (error) {
         console.log(error);
         Swal.fire({
@@ -54,6 +74,27 @@ const JoinPage = () => {
     }
   };
 
+  const handleCheckDuplicatedNameButton = nickname => {
+    if (nickname === '') {
+      return;
+    }
+    Swal.fire({
+      icon: 'success',
+      text: '이메일 인증을 준비중입니다. : ' + nickname,
+    });
+  };
+
+  const resolveRightIconComponent = val => {
+    return (
+      touched[val] &&
+      (!errors[val] ? (
+        <AnimatedIcon.CheckMark size={'large'} />
+      ) : (
+        <AnimatedIcon.WarningAlert size={'large'} />
+      ))
+    );
+  };
+
   return (
     <>
       <Hero size={'fullheight'}>
@@ -68,7 +109,7 @@ const JoinPage = () => {
             >
               <StyledForm onSubmit={handleSubmit}>
                 <p className="container has-text-centered title is-2">회원가입</p>
-                <p className="is-size-3">&nbsp;</p>
+                <DevideLine space="small" color="none" />
                 <label className="label">이메일</label>
                 <IconInput
                   name="email"
@@ -78,22 +119,18 @@ const JoinPage = () => {
                   value={values.email}
                   autocomplete="off"
                   placeholder="이메일을 입력하세요"
+                  required
                   leftIconComponent={<AnimatedIcon.Email />}
-                  rightIconComponent={
-                    touched.email &&
-                    (!errors.email ? (
-                      <AnimatedIcon.CheckMark size={'large'} />
-                    ) : (
-                      <AnimatedIcon.WarningAlert size={'large'} />
-                    ))
-                  }
+                  rightIconComponent={resolveRightIconComponent('email')}
                 />
-                <p style={{ color: errors.email ? Colors.warningFirst : Colors.successFirst }}>
-                  &nbsp;{touched.email && (errors.email || '잘했어요오오오!')}
+                <p
+                  className="m-2"
+                  style={{ color: errors.email ? Colors.warningFirst : Colors.successFirst }}
+                >
+                  &nbsp;{touched.email && (errors.email || '이메일 입력이 확인되었어요')}
                 </p>
-                <DevideLine space="micro" color="none" />
                 <Buttons type="button" onClick={handleEmailAuthenticationButtonClick}>
-                  이메일 인증
+                  이메일 인증번호 전송
                 </Buttons>
                 <DevideLine space="medium" color="none" />
                 <Columns>
@@ -102,44 +139,77 @@ const JoinPage = () => {
                   </Columns.Column>
                   <Columns.Column className="is-8">
                     <IconInput
-                      size={'medium'}
                       type="text"
-                      name="id"
-                      id="id"
+                      name="nickname"
                       autocomplete="off"
+                      required
                       placeholder="닉네임을 입력하세요"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.nickname}
                       leftIconComponent={<AnimatedIcon.CommonInput />}
-                      rightIconComponent={<AnimatedIcon.CheckMark />}
+                      rightIconComponent={resolveRightIconComponent('nickname')}
                     />
                   </Columns.Column>
                   <Columns.Column>
-                    <Buttons type="button">중복확인</Buttons>
+                    <Buttons
+                      type="button"
+                      onClick={() => handleCheckDuplicatedNameButton(values.nickname)}
+                    >
+                      중복확인
+                    </Buttons>
                   </Columns.Column>
+                  <p style={{ color: errors.nickname ? Colors.warningFirst : Colors.successFirst }}>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {touched.nickname && (errors.nickname || '닉네임 입력이 확인되었어요')}
+                  </p>
                 </Columns>
-                <DevideLine space="small" color="none" />
+                <DevideLine space="micro" color="none" />
                 <label className="label">비밀번호</label>
                 <IconInput
+                  id="password"
+                  name="password"
                   type="password"
-                  name="pw"
-                  id="pw"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
                   autocomplete="off"
-                  placeholder="비밀번호를 입력하세요."
+                  placeholder="비밀번호를 입력하세요"
+                  required
                   leftIconComponent={<AnimatedIcon.Password />}
-                  rightIconComponent={<AnimatedIcon.CheckMark />}
+                  rightIconComponent={resolveRightIconComponent('password')}
                 />
-                <DevideLine space="medium" color="none" />
+                <p
+                  className="m-2"
+                  style={{ color: errors.password ? Colors.warningFirst : Colors.successFirst }}
+                >
+                  {touched.password && (errors.password || '비밀번호 입력이 확인되었어요')}
+                </p>
+                <DevideLine space="micro" color="none" />
                 <label className="label">비밀번호 확인</label>
                 <IconInput
+                  name="checkPassword"
                   type="password"
-                  name="pw"
-                  id="pw"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.checkPassword}
                   autocomplete="off"
-                  placeholder="비밀번호 확인"
+                  placeholder="비밀번호를 확인해줏세요"
+                  required
                   leftIconComponent={<AnimatedIcon.Password />}
-                  rightIconComponent={<AnimatedIcon.CheckMark />}
+                  rightIconComponent={resolveRightIconComponent('checkPassword')}
                 />
-                <DevideLine color="none" />
+                <p
+                  className="m-2"
+                  style={{
+                    color: errors.checkPassword ? Colors.warningFirst : Colors.successFirst,
+                  }}
+                >
+                  {touched.checkPassword &&
+                    (errors.checkPassword || '비밀번호 입력이 확인되었어요')}
+                </p>
 
+                <DevideLine color="none" />
                 <Buttons type={'submit'}>회원가입</Buttons>
                 <DevideLine space="medium" color="none" />
               </StyledForm>
