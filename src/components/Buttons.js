@@ -1,16 +1,25 @@
-import 'bulma/css/bulma.min.css';
-
-import { BorderRadius, Colors, Shadows } from '../styles';
+import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
 
 import { Button } from 'react-bulma-components';
 import styled from '@emotion/styled';
 
-const Buttons = ({ children, props }) => {
+const Buttons = ({ children, colortype, ...props }) => {
   return (
     <div>
-      <StyledButton {...props}>{children}</StyledButton>
+      <StyledButton colortype={colortype} {...props}>
+        {children}
+      </StyledButton>
     </div>
   );
+};
+
+const buttonColors = {
+  main: [Colors.mainFirst, Colors.mainSecond],
+  sub: [Colors.subFirst, Colors.subSecond],
+};
+
+Buttons.defaultProps = {
+  colortype: 'main',
 };
 
 export default Buttons;
@@ -19,8 +28,12 @@ const StyledButton = styled(Button)`
 font-family: 'ImcreSoojin';
 width: 100%;
 box-shadow: ${Shadows.button};
-background-color: ${({ colorType }) => (!colorType ? Colors.mainFirst : Colors.mainSecond)};
+background-color: ${({ colortype }) => buttonColors[colortype][0]};
 border-radius: ${BorderRadius.button};
+font-size: ${FontSize.medium};
+@media ${Media.mobile} {
+  font-size: ${FontSize.normal}
+}
 :hover {
-  background-color: ${({ colorType }) => (!colorType ? Colors.mainSecond : Colors.subSecond)};
+  background-color: ${({ colortype }) => buttonColors[colortype][1]};
 `;
