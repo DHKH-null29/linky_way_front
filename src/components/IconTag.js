@@ -1,7 +1,7 @@
 import { Icon } from 'react-bulma-components';
-import TagIcon from '../components/icons/TagIcon';
+import TagIcon from './icons/TagIcon';
 
-const Tagtag = ({ children }) => {
+const IconTag = ({ children }) => {
   return (
     <span className="tag is-warning is-medium is-rounded">
       <Icon>
@@ -13,4 +13,4 @@ const Tagtag = ({ children }) => {
   );
 };
 
-export default Tagtag;
+export default IconTag;
