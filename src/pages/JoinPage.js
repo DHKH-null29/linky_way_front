@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
+import { onCheckNicknameDuplication, onJoin } from '../api/memberApi';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/Buttons';
@@ -10,9 +11,12 @@ import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const JoinPage = () => {
   const navigate = useNavigate();
+  const [validNickname, setValidNickname] = useState(false);
+  const [validNicknameHistory, setValidNicknameHistory] = useState(undefined);
   const initialValues = {
     email: '',
     nickname: '',
@@ -44,22 +48,31 @@ const JoinPage = () => {
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
+      if (!validNickname) {
+        Swal.fire({
+          icon: 'error',
+          title: '닉네임 중복 확인을 해주세요.',
+        });
+        return;
+      }
       try {
-        console.log(values);
         formikHelper.resetForm();
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
-        Swal.fire({
-          icon: 'success',
-          text: '회원가입 성공!!',
-        }).then(() => {
-          navigate('/');
-        });
+        const result = await onJoin(values);
+
+        if (result.code <= 201) {
+          Swal.fire({
+            icon: 'success',
+            text: '회원가입 성공!!',
+          }).then(() => {
+            navigate('/');
+          });
+        }
       } catch (error) {
-        console.log(error);
         Swal.fire({
           icon: 'error',
-          text: '회원가입에 실패했습니다.',
+          text: `회원가입 실패: ${error.details}`,
         });
       }
     },
@@ -79,14 +92,31 @@ const JoinPage = () => {
     }
   };
 
-  const handleCheckDuplicatedNameButton = nickname => {
-    if (nickname === '') {
+  const handleCheckDuplicatedNameButton = async nickname => {
+    if (errors.nickname) {
       return;
     }
-    Swal.fire({
-      icon: 'success',
-      text: '사용가능한 닉네임입니다!: ' + nickname,
-    });
+
+    const result = await onCheckNicknameDuplication(nickname);
+
+    if (result.data && validNicknameHistory !== nickname) {
+      const usable = result.data.usable;
+      if (usable) {
+        setValidNickname(true);
+        setValidNicknameHistory(nickname);
+      }
+      Swal.fire({
+        icon: usable ? 'success' : 'warning',
+        text: usable ? `'${nickname}' 사용 가능!` : '이미 존재하는 닉네임 입니다.',
+      });
+    }
+  };
+
+  const handleNicknameInputChange = event => {
+    validNicknameHistory && event.target.value === validNicknameHistory
+      ? setValidNickname(true)
+      : setValidNickname(false);
+    handleChange(event);
   };
 
   const resolveRightIconComponent = val => {
@@ -149,7 +179,7 @@ const JoinPage = () => {
                       autocomplete="off"
                       required
                       placeholder="닉네임을 입력하세요"
-                      onChange={handleChange}
+                      onChange={handleNicknameInputChange}
                       onBlur={handleBlur}
                       value={values.nickname}
                       leftIconComponent={<AnimatedIcon.CommonInput />}
@@ -166,7 +196,9 @@ const JoinPage = () => {
                   </Columns.Column>
                   <p style={{ color: errors.nickname ? Colors.warningFirst : Colors.successFirst }}>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    {touched.nickname && (errors.nickname || '닉네임 입력이 확인되었어요')}
+                    {touched.nickname &&
+                      (errors.nickname ||
+                        (validNickname ? '닉네임 검증 완료!' : '닉네임 입력이 확인되었어요'))}
                   </p>
                 </Columns>
                 <DevideLine space="micro" color="none" />
@@ -188,9 +220,8 @@ const JoinPage = () => {
                   className="m-2"
                   style={{ color: errors.password ? Colors.warningFirst : Colors.successFirst }}
                 >
-                  {touched.password && (errors.password || '비밀번호 입력이 확인되었어요')}
+                  &nbsp;{touched.password && (errors.password || '비밀번호 입력이 확인되었어요')}
                 </p>
-                <DevideLine space="micro" color="none" />
                 <label className="label">비밀번호 확인</label>
                 <IconInput
                   name="checkPassword"
@@ -210,6 +241,7 @@ const JoinPage = () => {
                     color: errors.checkPassword ? Colors.warningFirst : Colors.successFirst,
                   }}
                 >
+                  &nbsp;
                   {touched.checkPassword &&
                     (errors.checkPassword || '비밀번호 입력이 확인되었어요')}
                 </p>
