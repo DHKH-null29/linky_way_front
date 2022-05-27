@@ -14,4 +14,7 @@ export const Colors = Object.freeze({
   successFirst: '#32CD32',
 
   warningFirst: '#E33B3B',
+
+  tagicon: '#B3B3B3',
+  tagstroke: '#686868',
 });
