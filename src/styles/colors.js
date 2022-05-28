@@ -19,4 +19,6 @@ export const Colors = Object.freeze({
   tagstroke: '#686868',
 
   card: '#FFCE66',
+
+  layout: '#FFF5D9',
 });
