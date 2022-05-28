@@ -6,11 +6,18 @@ import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/Buttons';
 import { Colors } from '../styles';
 import IconInput from '../components/IconInput';
+import { LoginState } from '../store/LoginState';
 import Swal from 'sweetalert2';
+import { onLogin } from '../api/memberApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 
 const LoginPage = () => {
+  const [login, setLogin] = useRecoilState(LoginState);
+  const navigate = useNavigate();
+
   const initialValues = {
     email: '',
     password: '',
@@ -31,15 +38,21 @@ const LoginPage = () => {
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
+      if (login) {
+        return;
+      }
       try {
-        console.log(values);
+        const result = await onLogin(values);
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
+        localStorage.setItem('act', result.data.accessToken);
+        setLogin(true);
+        navigate('/');
       } catch (error) {
         console.log(error);
         Swal.fire({
           icon: 'error',
-          text: '로그인에 실패했습니다.',
+          text: `${error.details}`,
         });
       }
     },
@@ -47,7 +60,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <Hero size={'fullheight'}>
+      <Hero size={'medium'}>
         <StyledHeroBody>
           <Container>
             <Columns.Column
@@ -67,7 +80,6 @@ const LoginPage = () => {
                   <IconInput
                     type="text"
                     name="email"
-                    id="id"
                     autocomplete="off"
                     onChange={handleChange}
                     onBlur={handleBlur}
