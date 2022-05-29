@@ -2,6 +2,7 @@ import ArrowDown from './ArrowDown';
 import CheckMark from './CheckMark';
 import CommonInput from './CommonInput';
 import Email from './Email';
+import Folder from './Folder';
 import Password from './Password';
 import RightArrow from './RightArrow';
 import Search from './SearchIcon';
@@ -16,6 +17,7 @@ const AnimatedIcon = {
   RightArrow,
   Search,
   ArrowDown,
+  Folder,
 };
 
 export default AnimatedIcon;

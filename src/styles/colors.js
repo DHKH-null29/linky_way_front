@@ -7,6 +7,7 @@ export const Colors = Object.freeze({
 
   backgroundPage: '#FFFFFF',
   backgroundForm: '#F9FAFB',
+  backgroundEvent: '#f0f3f5',
 
   formIconFirst: '#C2C1BA',
   formIconSecond: '#A1A09C',
@@ -14,6 +15,8 @@ export const Colors = Object.freeze({
   successFirst: '#32CD32',
 
   warningFirst: '#E33B3B',
+
+  linkFirst: '#209CEE',
 
   tagicon: '#B3B3B3',
   tagstroke: '#686868',

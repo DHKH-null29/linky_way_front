@@ -8,15 +8,20 @@ import Buttons from './Buttons';
 import { Colors } from '../styles/colors';
 import { FontSize } from '../styles/font';
 import HeaderSwitcher from './HeaderSwitcher';
+import { LoginState } from '../store/LoginState';
 import { Media } from '../styles/media';
 import { Shadows } from '../styles/shadow';
+import Swal from 'sweetalert2';
 import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useRecoilState } from 'recoil';
 
 const HeaderBar = () => {
   const [visible, setVisible] = useState(false);
   const [visibleState, setVisibleState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
+  const [loginState, setLoginState] = useRecoilState(LoginState);
+
   const navigate = useNavigate();
 
   const handleBurgerClick = () => {
@@ -29,6 +34,17 @@ const HeaderBar = () => {
 
   const handlePageButtonClick = path => {
     navigate(path);
+  };
+
+  const handleLogoutClick = () => {
+    Swal.fire({
+      icon: 'success',
+      text: '로그아웃 성공!',
+      showConfirmButton: false,
+      timer: 1000,
+    });
+    setLoginState(false);
+    localStorage.clear();
   };
 
   useEffect(() => {
@@ -59,17 +75,31 @@ const HeaderBar = () => {
           <HeaderSwitcher />
         </CenterSwitchContainer>
         <HeaderMenu>
-          <Navbar.Container align="right">
-            <StyledLink
-              className="is-hidden-tablet-only is-hidden-mobile navbar-item"
-              to={'/login'}
-            >
-              로그인
-            </StyledLink>
-            <StyledLink className="is-hidden-tablet-only is-hidden-mobile navbar-item" to={'/join'}>
-              회원가입
-            </StyledLink>
-          </Navbar.Container>
+          {!loginState ? (
+            <Navbar.Container align="right">
+              <StyledLink
+                className="is-hidden-tablet-only is-hidden-mobile navbar-item"
+                to={'/login'}
+              >
+                로그인
+              </StyledLink>
+              <StyledLink
+                className="is-hidden-tablet-only is-hidden-mobile navbar-item"
+                to={'/join'}
+              >
+                회원가입
+              </StyledLink>
+            </Navbar.Container>
+          ) : (
+            <Navbar.Container align="right">
+              <StyledA
+                className="is-hidden-tablet-only is-hidden-mobile navbar-item"
+                onClick={handleLogoutClick}
+              >
+                로그아웃
+              </StyledA>
+            </Navbar.Container>
+          )}
         </HeaderMenu>
       </Container>
 
@@ -87,9 +117,20 @@ const HeaderBar = () => {
                 <p className="subtitle">당신의 LinkyWay를 걸어봐요</p>
                 <p style={{ opacity: 0.7 }}>여기에 뭘 써야 할지 모르겠지만 시작해바요</p>
                 <DevideLine space="medium" color="none" />
-                <Buttons onClick={() => handlePageButtonClick('/login')}>로그인</Buttons>
-                <DevideLine space="micro" color="none" />
-                <Buttons onClick={() => handlePageButtonClick('/join')}>회원가입</Buttons>
+                {!loginState ? (
+                  <>
+                    <Buttons onClick={() => handlePageButtonClick('/login')}>로그인</Buttons>
+                    <DevideLine space="micro" color="none" />
+                    <Buttons onClick={() => handlePageButtonClick('/join')}>회원가입</Buttons>
+                  </>
+                ) : (
+                  <>
+                    <Buttons colortype={'sub'} onClick={handleLogoutClick}>
+                      로그아웃
+                    </Buttons>
+                    <DevideLine space="micro" color="none" />
+                  </>
+                )}
               </Section>
             </Container>
           </Container>
@@ -135,6 +176,13 @@ const HeaderMenu = styled(Navbar.Menu)`
 `;
 
 const StyledLink = styled(Link)`
+  font-size: ${FontSize.medium};
+  text-decoration: 1px solid underline;
+  text-underline-offset: ${FontSize.normal};
+  opacity: 0.7;
+`;
+
+const StyledA = styled.a`
   font-size: ${FontSize.medium};
   text-decoration: 1px solid underline;
   text-underline-offset: ${FontSize.normal};

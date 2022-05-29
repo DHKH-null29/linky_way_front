@@ -7,22 +7,28 @@ import {
   MyPage,
   SocialPage,
 } from './pages';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import HeaderBar from './components/HeaderBar';
+import { LoginState } from './store/LoginState';
+import { useRecoilValue } from 'recoil';
 
 const App = () => {
+  const loginState = useRecoilValue(LoginState);
   return (
     <div className="App">
       <HeaderBar />
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/login" element={<LoginPage />}></Route>
-        <Route path="/join" element={<JoinPage />}></Route>
-        <Route path="/card" element={<CardPage />}></Route>
-        <Route path="/social" element={<SocialPage />}></Route>
-        <Route path="/mypage" element={<MyPage />}></Route>
-        <Route path="/findpassword" element={<FindPasswordPage />}></Route>
+        <Route path="/login" element={!loginState ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/join" element={!loginState ? <JoinPage /> : <Navigate to="/" />} />
+        <Route path="/card" element={loginState ? <CardPage /> : <Navigate to="/login" />} />
+        <Route path="/social" element={<SocialPage />} />
+        <Route path="/mypage" element={loginState ? <MyPage /> : <Navigate to="/login" />} />
+        <Route
+          path="/findpassword"
+          element={!loginState ? <FindPasswordPage /> : <Navigate to="/" />}
+        />
       </Routes>
     </div>
   );
