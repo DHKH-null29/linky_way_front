@@ -1,3 +1,4 @@
+import ArrowDown from './ArrowDown';
 import CheckMark from './CheckMark';
 import CommonInput from './CommonInput';
 import Email from './Email';
@@ -14,6 +15,7 @@ const AnimatedIcon = {
   CommonInput,
   RightArrow,
   Search,
+  ArrowDown,
 };
 
 export default AnimatedIcon;
