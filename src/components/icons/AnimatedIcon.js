@@ -1,9 +1,11 @@
+import ArrowDown from './ArrowDown';
 import CheckMark from './CheckMark';
 import CommonInput from './CommonInput';
 import Email from './Email';
 import Folder from './Folder';
 import Password from './Password';
 import RightArrow from './RightArrow';
+import Search from './SearchIcon';
 import WarningAlert from './WarningAlert';
 
 const AnimatedIcon = {
@@ -13,6 +15,8 @@ const AnimatedIcon = {
   WarningAlert,
   CommonInput,
   RightArrow,
+  Search,
+  ArrowDown,
   Folder,
 };
 
