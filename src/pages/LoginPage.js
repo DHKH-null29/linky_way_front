@@ -6,8 +6,8 @@ import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/Buttons';
 import { Colors } from '../styles';
 import IconInput from '../components/IconInput';
-import { LoginState } from '../store/LoginState';
 import Swal from 'sweetalert2';
+import { loginState } from '../state/loginState';
 import { onLogin } from '../api/memberApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 const LoginPage = () => {
-  const [login, setLogin] = useRecoilState(LoginState);
+  const [login, setLogin] = useRecoilState(loginState);
   const navigate = useNavigate();
 
   const initialValues = {

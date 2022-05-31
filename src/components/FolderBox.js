@@ -1,23 +1,57 @@
-import AnimatedIcon from './icons/AnimatedIcon';
-import { Colors } from '../styles';
-import { Columns } from 'react-bulma-components';
-import FolderArrow from './icons/FolderArrow';
-import { memo } from 'react';
-import styled from '@emotion/styled';
+import { Colors, FontSize, Media } from '../styles';
+import { memo, useCallback } from 'react';
 
-const FolderBox = ({ children, hasParent, highlight, onClickHightlight, ...props }) => {
+import AnimatedIcon from './icons/AnimatedIcon';
+import FolderArrow from './icons/FolderArrow';
+import { Icon } from 'react-bulma-components';
+import { currentCardState } from '../state/cardState';
+import { folderHighlightState } from '../state/folderState';
+import { onSelectCardsByFolder } from '../api/cardApi';
+import styled from '@emotion/styled';
+import useAsync from '../hooks/useAsync';
+import { useSetRecoilState } from 'recoil';
+
+const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
+  const setCurrentCards = useSetRecoilState(currentCardState);
+  const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const handleGetCards = async () => {
+    const result = await onSelectCardsByFolder(folderId);
+    return result;
+  };
+  const [state, fetch] = useAsync(handleGetCards, [], true);
+
+  const handleClick = useCallback(async () => {
+    if (!highlight) {
+      const newArray = [];
+      newArray[idx] = true;
+      setFolderHighlight(newArray);
+      if (!state.data) {
+        await fetch().then(response => {
+          setCurrentCards(response.data);
+        });
+      }
+      if (state.data) {
+        setCurrentCards(state.data.data);
+      }
+    }
+  }, [highlight]);
+
   return (
-    <Wrapper className="is-mobile" onClick={onClickHightlight} {...props}>
-      {hasParent && (
-        <FolderColumn className="is-2">
-          <FolderArrow />
-        </FolderColumn>
-      )}
-      <FolderColumn className="is-2">
-        <AnimatedIcon.Folder />
-      </FolderColumn>
-      <FolderNameColumn highlight={highlight ? 1 : 0}>{children}</FolderNameColumn>
-    </Wrapper>
+    <>
+      <Wrapper onClick={handleClick}>
+        {hasParent && (
+          <Icon className="is-large">
+            <span>
+              <FolderArrow />
+            </span>
+          </Icon>
+        )}
+        <Icon className="is-large">
+          <AnimatedIcon.Folder size={30} />
+        </Icon>
+        <FolderName highlight={highlight ? 1 : 0}>{children}</FolderName>
+      </Wrapper>
+    </>
   );
 };
 
@@ -25,20 +59,35 @@ FolderBox.defaultProps = {
   hasParent: false,
 };
 
-const Wrapper = styled(Columns)`
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  @media ${Media.desktop} {
+    margin-left: 0.15rem;
+    width: 90%;
+  }
+  @media ${Media.tablet} {
+    margin-left: -0.35rem;
+    width: 100%;
+  }
+  @media ${Media.mobile} {
+    width: 100%;
+  }
   :hover {
     background-color: ${Colors.backgroundEvent};
   }
 `;
 
-const FolderColumn = styled(Columns.Column)`
-  padding: 0.25rem;
-  margin-right: -0.75rem;
-  margin-left: 0.5rem;
-`;
-
-const FolderNameColumn = styled(FolderColumn)`
+const FolderName = styled.span`
   color: ${({ highlight }) => (highlight ? Colors.linkFirst : 'black')};
+  display: inline-block;
+  font-size: ${FontSize.large};
+  @media ${Media.tablet} {
+    font-size: ${FontSize.small};
+  }
+  @media ${Media.mobile} {
+    font-size: ${FontSize.small};
+  }
 `;
 
 export default memo(FolderBox);

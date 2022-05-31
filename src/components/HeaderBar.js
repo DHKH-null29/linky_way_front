@@ -8,11 +8,11 @@ import Buttons from './Buttons';
 import { Colors } from '../styles/colors';
 import { FontSize } from '../styles/font';
 import HeaderSwitcher from './HeaderSwitcher';
-import { LoginState } from '../store/LoginState';
 import { Media } from '../styles/media';
 import { Shadows } from '../styles/shadow';
 import Swal from 'sweetalert2';
 import { keyframes } from '@emotion/react';
+import { loginState } from '../state/loginState';
 import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
 
@@ -20,7 +20,7 @@ const HeaderBar = () => {
   const [visible, setVisible] = useState(false);
   const [visibleState, setVisibleState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
-  const [loginState, setLoginState] = useRecoilState(LoginState);
+  const [login, setLogin] = useRecoilState(loginState);
 
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ const HeaderBar = () => {
       showConfirmButton: false,
       timer: 1000,
     });
-    setLoginState(false);
+    setLogin(false);
     localStorage.clear();
   };
 
@@ -75,7 +75,7 @@ const HeaderBar = () => {
           <HeaderSwitcher />
         </CenterSwitchContainer>
         <HeaderMenu>
-          {!loginState ? (
+          {!login ? (
             <Navbar.Container align="right">
               <StyledLink
                 className="is-hidden-tablet-only is-hidden-mobile navbar-item"
@@ -117,7 +117,7 @@ const HeaderBar = () => {
                 <p className="subtitle">당신의 LinkyWay를 걸어봐요</p>
                 <p style={{ opacity: 0.7 }}>여기에 뭘 써야 할지 모르겠지만 시작해바요</p>
                 <DevideLine space="medium" color="none" />
-                {!loginState ? (
+                {!login ? (
                   <>
                     <Buttons onClick={() => handlePageButtonClick('/login')}>로그인</Buttons>
                     <DevideLine space="micro" color="none" />
