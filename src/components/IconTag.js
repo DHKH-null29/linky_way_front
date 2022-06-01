@@ -1,16 +1,20 @@
 import { Icon } from 'react-bulma-components';
 import TagIcon from './icons/TagIcon';
+import styled from '@emotion/styled';
 
 const IconTag = ({ children }) => {
   return (
-    <span className="tag is-warning is-medium is-rounded">
+    <StyledTag className="tag is-warning is-medium is-rounded">
       <Icon>
         <TagIcon />
       </Icon>
       {children}
       <button className="delete is-small"></button>
-    </span>
+    </StyledTag>
   );
 };
 
+const StyledTag = styled.span`
+  margin: 5px 3px 3px 5px;
+`;
 export default IconTag;
