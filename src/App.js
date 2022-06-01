@@ -5,6 +5,7 @@ import {
   LoginPage,
   MainPage,
   MyPage,
+  NotFoundPage,
   SocialPage,
 } from './pages';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -29,6 +30,7 @@ const App = () => {
           path="/findpassword"
           element={!logined ? <FindPasswordPage /> : <Navigate to="/" />}
         />
+        <Route path={'*'} element={<NotFoundPage />} />
       </Routes>
     </div>
   );
