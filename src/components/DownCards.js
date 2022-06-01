@@ -4,12 +4,44 @@ import { Card, Content } from 'react-bulma-components';
 import { FontWeight } from '../styles/font';
 import IconTag from './IconTag';
 import { LinkPreview } from '@dhaiwat10/react-link-preview';
+import Swal from 'sweetalert2';
+import { currentCardState } from '../state/cardState';
 import { memo } from 'react';
+import { onDeleteCard } from '../api/cardApi';
 import styled from '@emotion/styled';
+import { useRecoilState } from 'recoil';
 
-const DownCards = ({ title, content, link, tagList }) => {
+const DownCards = ({ title, content, id, index, link, tagList, writable = true }) => {
+  const [cards, setCards] = useRecoilState(currentCardState);
+
+  const handleDeleteClick = async () => {
+    Swal.fire({
+      icon: 'question',
+      text: '정말 북마크를 삭제하실거예요?',
+      showCancelButton: true,
+      confirmButtonColor: `${Colors.successFirst}`,
+      cancelButtonColor: `${Colors.warningFirst}`,
+      confirmButtonText: '네',
+      cancelButtonText: '아뇽',
+    }).then(async () => {
+      onDeleteCard(id)
+        .then(() => {
+          const newCards = [...cards];
+          newCards.splice(index, 1);
+          setCards(newCards);
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            text: error.details,
+          });
+        });
+    });
+  };
+
   return (
     <StyleCard style={{ rounded: 'true' }}>
+      {writable && <DeleteButton className="delete" onClick={handleDeleteClick}></DeleteButton>}
       <Card.Content className="pt-1 pb-1"></Card.Content>
       <LinkPreview
         url={link || 'https://www.naver.com'}
@@ -175,6 +207,16 @@ const TagList = styled.p`
   text-align: center;
   display: flex;
   align-items: center;
+`;
+
+const DeleteButton = styled.button`
+  background-color: ${Colors.warningFirst};
+  position: absolute;
+  top: 0;
+  left: 0;
+  @media ${Media.desktop} {
+    transform: scale(1.4);
+  }
 `;
 
 export default memo(DownCards);
