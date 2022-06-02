@@ -61,10 +61,10 @@ const DownCards = ({ title, content, id, index, link, writable = true }) => {
     } else {
       setCurrentData(linkPreview[link]);
     }
-  }, []);
+  }, [link]);
 
   return (
-    <StyleCard style={{ rounded: 'true' }}>
+    <StyleCard ok={currentData && currentData.ok ? 1 : 0}>
       {writable && <DeleteButton className="delete" onClick={handleDeleteClick}></DeleteButton>}
       <Card.Content className="pt-1 pb-1"></Card.Content>
       {state.loading && <div>...loading</div>}
@@ -125,7 +125,7 @@ const StyleCard = styled(Card)`
   font-family: 'ImcreSoojin';
   width: 100%;
   border-radius: ${BorderRadius.card};
-  background-color: ${Colors.card};
+  background-color: ${({ ok }) => (ok ? Colors.layout : Colors.warningSecond)};
   box-shadow: ${Shadows.card};
   :hover {
     box-shadow: ${Shadows.section};
