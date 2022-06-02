@@ -15,6 +15,7 @@ export const Colors = Object.freeze({
   successFirst: '#32CD32',
 
   warningFirst: '#E33B3B',
+  warningSecond: '#f2aeae',
 
   linkFirst: '#209CEE',
 

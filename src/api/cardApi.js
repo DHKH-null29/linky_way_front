@@ -9,3 +9,7 @@ export const onSelectCardsByFolder = async folderId => {
 export const onSelectCardsByDefaultMember = async () => {
   return requestForAuth.get(cardApi + '/member');
 };
+
+export const onDeleteCard = async cardId => {
+  return requestForAuth.delete(cardApi + `/${cardId}`);
+};
