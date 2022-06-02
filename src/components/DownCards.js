@@ -26,20 +26,22 @@ const DownCards = ({ title, content, id, index, link, writable = true }) => {
       cancelButtonColor: `${Colors.warningFirst}`,
       confirmButtonText: '네',
       cancelButtonText: '아니요',
-    }).then(async () => {
-      onDeleteCard(id)
-        .then(() => {
-          const newCards = [...currentCards];
-          newCards.splice(index, 1);
-          setCurrentCards(newCards);
-          setCardChange(true);
-        })
-        .catch(error => {
-          Swal.fire({
-            icon: 'error',
-            text: error.details,
+    }).then(async result => {
+      if (result.isConfirmed) {
+        onDeleteCard(id)
+          .then(() => {
+            const newCards = [...currentCards];
+            newCards.splice(index, 1);
+            setCurrentCards(newCards);
+            setCardChange(true);
+          })
+          .catch(error => {
+            Swal.fire({
+              icon: 'error',
+              text: error.details,
+            });
           });
-        });
+      }
     });
   };
   const getCardPreview = async () => {
