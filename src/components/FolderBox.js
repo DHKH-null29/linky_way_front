@@ -1,19 +1,30 @@
 import { Colors, FontSize, Media } from '../styles';
-import { memo, useCallback } from 'react';
+import { cardChangeState, currentCardState } from '../state/cardState';
+import { memo, useCallback, useEffect } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import AnimatedIcon from './icons/AnimatedIcon';
 import FolderArrow from './icons/FolderArrow';
 import { Icon } from 'react-bulma-components';
-import { currentCardState } from '../state/cardState';
 import { folderHighlightState } from '../state/folderState';
 import { onSelectCardsByFolder } from '../api/cardApi';
 import styled from '@emotion/styled';
 import useAsync from '../hooks/useAsync';
-import { useSetRecoilState } from 'recoil';
 
 const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   const setCurrentCards = useSetRecoilState(currentCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const [cardChange, setCardChange] = useRecoilState(cardChangeState);
+
+  useEffect(() => {
+    if (highlight && cardChange) {
+      (async () => {
+        const result = await fetch();
+        setCurrentCards(result.data);
+        setCardChange(false);
+      })();
+    }
+  }, [cardChange]);
   const handleGetCards = async () => {
     const result = await onSelectCardsByFolder(folderId);
     return result;
