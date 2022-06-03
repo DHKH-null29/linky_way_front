@@ -1,5 +1,5 @@
 import { Colors, FontSize, Media } from '../styles';
-import { cardChangeState, currentCardState } from '../state/cardState';
+import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
 import { memo, useCallback, useEffect } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -14,6 +14,7 @@ import useAsync from '../hooks/useAsync';
 const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   const setCurrentCards = useSetRecoilState(currentCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const setCardClassfier = useSetRecoilState(currentCardClassifier);
   const [cardChange, setCardChange] = useRecoilState(cardChangeState);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
       if (state.data) {
         setCurrentCards(state.data.data);
       }
+      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: hasParent });
     }
   }, [highlight]);
 
@@ -67,7 +69,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
 };
 
 FolderBox.defaultProps = {
-  hasParent: false,
+  hasParent: undefined,
 };
 
 const Wrapper = styled.div`

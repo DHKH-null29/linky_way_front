@@ -30,7 +30,7 @@ const FolderBar = () => {
             idx={0}
             highlight={folderHighlight[0]}
           >
-            루트폴더
+            미분류
           </FolderBox>
           {folders.childFolderList.map((value, index) => {
             const currentIndex = index + 1;
@@ -53,7 +53,7 @@ const FolderBar = () => {
                     return (
                       <FolderBox
                         key={child.folderId}
-                        hasParent={true}
+                        hasParent={{ id: value.folderId, name: value.name }}
                         folderId={child.folderId}
                         idx={currentIndex + prevChildIndex}
                         highlight={folderHighlight[currentIndex + prevChildIndex]}
