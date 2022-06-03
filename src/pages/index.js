@@ -5,3 +5,4 @@ export { default as LoginPage } from './LoginPage';
 export { default as MainPage } from './MainPage';
 export { default as MyPage } from './MyPage';
 export { default as SocialPage } from './SocialPage';
+export { default as NotFoundPage } from './NotFoundPage';
