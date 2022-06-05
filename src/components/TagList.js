@@ -40,7 +40,11 @@ const TagList = () => {
         </Columns.Column>
         <Columns.Column className="is-8" size>
           {tags.map(value => {
-            return <IconTag key={value.tagId}> {value.tagName} </IconTag>;
+            return (
+              <IconTag writable={true} key={value.tagId}>
+                {value.tagName}
+              </IconTag>
+            );
           })}
         </Columns.Column>
         <Columns.Column className="is-1">
