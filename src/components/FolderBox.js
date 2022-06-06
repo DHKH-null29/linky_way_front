@@ -1,6 +1,5 @@
-
 import { Colors, FontSize, Media, Shadows } from '../styles';
-import { cardChangeState, currentCardState } from '../state/cardState';
+import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
 import { folderHighlightState, folderListState } from '../state/folderState';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { onDeleteFolder, onUpdateFolderName } from '../api/folderApi';

@@ -19,13 +19,16 @@ const setFolderList = response => {
   return list;
 };
 
-const setFolder = (list, currentFolder) => {
+const setFolder = (list, currentFolder, parent) => {
   if (!list) {
     return;
   }
+  if (parent) {
+    currentFolder.parentName = parent.name;
+  }
   list.push(currentFolder);
   if (currentFolder.level <= 3 && currentFolder.childFolderList) {
-    currentFolder.childFolderList.map(folder => setFolder(list, folder));
+    currentFolder.childFolderList.map(folder => setFolder(list, folder, currentFolder));
   }
 };
 

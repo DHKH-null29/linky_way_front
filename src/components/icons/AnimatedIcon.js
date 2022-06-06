@@ -4,7 +4,6 @@ import CommonInput from './CommonInput';
 import Email from './Email';
 import Folder from './Folder';
 import Password from './Password';
-import Plus from './Plus';
 import RightArrow from './RightArrow';
 import Search from './SearchIcon';
 import SkipBack from './SkipBack';
