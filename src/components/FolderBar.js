@@ -32,9 +32,14 @@ const FolderBar = () => {
           >
             루트폴더
           </FolderBox>
-          {folders.childFolderList.map((value, index) => {
+          {folders.childFolderList.map((value, index, array) => {
             const currentIndex = index + 1;
-            let prevChildIndex = 0;
+            const prevChildIndex =
+              index > 0
+                ? array[index - 1].childFolderList
+                  ? array[index - 1].childFolderList.length
+                  : 0
+                : 0;
             return (
               <div key={index}>
                 <FolderBox
@@ -48,15 +53,15 @@ const FolderBar = () => {
                 </FolderBox>
 
                 {value.childFolderList &&
-                  value.childFolderList.map((child, index) => {
-                    prevChildIndex = index + 1;
+                  value.childFolderList.map((child, childIndex) => {
+                    const currentChildIndex = currentIndex + prevChildIndex + childIndex + 1;
                     return (
                       <FolderBox
                         key={child.folderId}
                         hasParent={true}
                         folderId={child.folderId}
-                        idx={currentIndex + prevChildIndex}
-                        highlight={folderHighlight[currentIndex + prevChildIndex]}
+                        idx={currentChildIndex}
+                        highlight={folderHighlight[currentChildIndex]}
                       >
                         {child.name}
                       </FolderBox>
