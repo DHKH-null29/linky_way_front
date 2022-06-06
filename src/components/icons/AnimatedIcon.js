@@ -7,6 +7,8 @@ import Password from './Password';
 import Plus from './Plus';
 import RightArrow from './RightArrow';
 import Search from './SearchIcon';
+import SkipBack from './SkipBack';
+import SkipForward from './SkipForward';
 import WarningAlert from './WarningAlert';
 
 const AnimatedIcon = {
@@ -19,7 +21,8 @@ const AnimatedIcon = {
   Search,
   ArrowDown,
   Folder,
-  Plus,
+  SkipBack,
+  SkipForward,
 };
 
 export default AnimatedIcon;

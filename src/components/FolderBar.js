@@ -1,72 +1,76 @@
-import { BorderRadius, Colors, Media } from '../styles';
-import { folderHighlightState, folderSelector } from '../state/folderState';
-import { useRecoilValue, useRecoilValueLoadable } from 'recoil';
+import { BorderRadius, Colors, FontSize, Media } from '../styles';
+import { folderHighlightState, folderListSelector, folderListState } from '../state/folderState';
+import { useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil';
 
 import { Box } from 'react-bulma-components';
+import FolderAddForm from './FolderAddForm';
 import FolderBox from './FolderBox';
+import { FontWeight } from '../styles/font';
+import Modals from './modals/Modals';
+import Plus from './icons/Plus';
 import styled from '@emotion/styled';
-import { useMemo } from 'react';
 
 const FolderBar = () => {
-  const folderList = useRecoilValueLoadable(folderSelector);
+  const folderSelector = useRecoilValueLoadable(folderListSelector);
+  const [folders, setFolders] = useRecoilState(folderListState);
   const folderHighlight = useRecoilValue(folderHighlightState);
-  const folders = useMemo(() => {
-    if (folderList.state === 'hasValue') {
-      return folderList.contents.data;
+  const [folderModalActive, setFolderModalActive] = useState(false);
+
+  useEffect(() => {
+    if (folderSelector.state === 'hasValue') {
+      if (!folders || folders.length === 0) {
+        setFolders(folderSelector.contents);
+      }
     }
-  }, [folderList]);
+  }, [folderSelector]);
 
   return (
     <StyledFolderBar>
       <br />
-      {folderList.state !== 'hasValue' ? (
+      {folderSelector.state !== 'hasValue' ? (
         <div>...loading</div>
       ) : (
         <>
-          <FolderBox
-            key={folders.folderId}
-            hasParent={false}
-            folderId={folders.folderId}
-            idx={0}
-            highlight={folderHighlight[0]}
-          >
-            미분류
-          </FolderBox>
-          {folders.childFolderList.map((value, index) => {
-            const currentIndex = index + 1;
-            let prevChildIndex = 0;
+          {folders.map((value, index) => {
             return (
-              <div key={index}>
-                <FolderBox
-                  key={value.folderId}
-                  hasParent={false}
-                  folderId={value.folderId}
-                  idx={currentIndex + prevChildIndex}
-                  highlight={folderHighlight[currentIndex + prevChildIndex]}
-                >
-                  {value.name}
-                </FolderBox>
-
-                {value.childFolderList &&
-                  value.childFolderList.map((child, index) => {
-                    prevChildIndex = index + 1;
-                    return (
-                      <FolderBox
-                        key={child.folderId}
-                        hasParent={{ id: value.folderId, name: value.name }}
-                        folderId={child.folderId}
-                        idx={currentIndex + prevChildIndex}
-                        highlight={folderHighlight[currentIndex + prevChildIndex]}
-                      >
-                        {child.name}
-                      </FolderBox>
-                    );
-                  })}
-              </div>
+              <FolderBox
+                key={value.folderId}
+                hasParent={value.level <= 2 ? false : true}
+                folderId={value.folderId}
+                idx={index}
+                highlight={folderHighlight[index]}
+              >
+                {value.name}
+              </FolderBox>
             );
           })}
         </>
       )}
+      <br />
+      <FolderAddSection>
+        &nbsp;
+        <FolderAddText
+          onClick={() => {
+            setFolderModalActive(true);
+          }}
+        >
+          &nbsp;&nbsp;추가하기
+          <Plus size={17} />
+        </FolderAddText>
+      </FolderAddSection>
+      <Modals
+        active={folderModalActive}
+        onClose={() => {
+          setFolderModalActive(false);
+        }}
+      >
+        <FolderAddForm
+          onClose={() => {
+            setFolderModalActive(false);
+          }}
+        />
+      </Modals>
     </StyledFolderBar>
   );
 };
@@ -84,6 +88,27 @@ const StyledFolderBar = styled(Box)`
     min-height: 600px;
     position: sticky;
     top: 55px;
+  }
+`;
+
+const FolderAddSection = styled.div`
+  :hover {
+    background-color: ${Colors.backgroundEvent};
+  }
+`;
+const FolderAddText = styled.span`
+  cursor: pointer;
+  color: ${({ highlight }) => (highlight ? Colors.linkFirst : 'black')};
+  display: inline-block;
+  font-size: ${FontSize.medium};
+  @media ${Media.tablet} {
+    font-size: ${FontSize.small};
+  }
+  @media ${Media.mobile} {
+    font-size: ${FontSize.small};
+  }
+  :hover {
+    font-weight: ${FontWeight.bold};
   }
 `;
 

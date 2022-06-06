@@ -109,7 +109,9 @@ const CardPage = () => {
   );
 };
 
-const FolderBarWrapper = styled(Columns.Column)``;
+const FolderBarWrapper = styled(Columns.Column)`
+  z-index: 1;
+`;
 
 const Classifier = styled.div`
   font-size: ${FontSize.huge};
