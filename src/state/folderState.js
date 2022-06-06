@@ -7,10 +7,35 @@ export const folderHighlightState = atom({
   default: [],
 });
 
-export const folderSelector = selector({
+export const folderListState = atom({
+  key: 'folderList',
+  default: [],
+});
+
+const setFolderList = response => {
+  const list = [];
+  list.push(response);
+  response.childFolderList.forEach(folder => setFolder(list, folder));
+  return list;
+};
+
+const setFolder = (list, currentFolder) => {
+  if (!list) {
+    return;
+  }
+  list.push(currentFolder);
+  if (currentFolder.level <= 3 && currentFolder.childFolderList) {
+    currentFolder.childFolderList.map(folder => setFolder(list, folder));
+  }
+};
+
+export const folderListSelector = selector({
   key: 'folder_selector',
   get: async () => {
     const result = await onSelectFolderList();
-    return result;
+    return setFolderList(result.data);
+  },
+  set: ({ set }, newList) => {
+    set(folderListState, newList);
   },
 });

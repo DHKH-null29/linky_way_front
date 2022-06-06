@@ -49,6 +49,8 @@ const CardPage = () => {
   );
 };
 
-const FolderBarWrapper = styled(Columns.Column)``;
+const FolderBarWrapper = styled(Columns.Column)`
+  z-index: 1;
+`;
 
 export default CardPage;
