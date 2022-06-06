@@ -1,72 +1,44 @@
 import { BorderRadius, Colors, Media } from '../styles';
-import { folderHighlightState, folderSelector } from '../state/folderState';
-import { useRecoilValue, useRecoilValueLoadable } from 'recoil';
+import { folderHighlightState, folderListSelector, folderListState } from '../state/folderState';
+import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil';
 
 import { Box } from 'react-bulma-components';
 import FolderBox from './FolderBox';
 import styled from '@emotion/styled';
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 
 const FolderBar = () => {
-  const folderList = useRecoilValueLoadable(folderSelector);
+  const folderSelector = useRecoilValueLoadable(folderListSelector);
+  const [folders, setFolders] = useRecoilState(folderListState);
   const folderHighlight = useRecoilValue(folderHighlightState);
-  const folders = useMemo(() => {
-    if (folderList.state === 'hasValue') {
-      return folderList.contents.data;
+
+  useEffect(() => {
+    if (folderSelector.state === 'hasValue') {
+      if (!folders || folders.length === 0) {
+        setFolders(folderSelector.contents);
+      }
     }
-  }, [folderList]);
+  }, [folderSelector]);
 
   return (
     <StyledFolderBar>
       <br />
-      {folderList.state !== 'hasValue' ? (
+      {folderSelector.state !== 'hasValue' ? (
         <div>...loading</div>
       ) : (
         <>
-          <FolderBox
-            key={folders.folderId}
-            hasParent={false}
-            folderId={folders.folderId}
-            idx={0}
-            highlight={folderHighlight[0]}
-          >
-            루트폴더
-          </FolderBox>
-          {folders.childFolderList.map((value, index, array) => {
-            const currentIndex = index + 1;
-            const prevChildIndex =
-              index > 0
-                ? array[index - 1].childFolderList
-                  ? array[index - 1].childFolderList.length
-                  : 0
-                : 0;
+          {folders.map((value, index) => {
             return (
               <div key={index}>
                 <FolderBox
                   key={value.folderId}
-                  hasParent={false}
+                  hasParent={value.level <= 2 ? false : true}
                   folderId={value.folderId}
-                  idx={currentIndex + prevChildIndex}
-                  highlight={folderHighlight[currentIndex + prevChildIndex]}
+                  idx={index}
+                  highlight={folderHighlight[index]}
                 >
                   {value.name}
                 </FolderBox>
-
-                {value.childFolderList &&
-                  value.childFolderList.map((child, childIndex) => {
-                    const currentChildIndex = currentIndex + prevChildIndex + childIndex + 1;
-                    return (
-                      <FolderBox
-                        key={child.folderId}
-                        hasParent={true}
-                        folderId={child.folderId}
-                        idx={currentChildIndex}
-                        highlight={folderHighlight[currentChildIndex]}
-                      >
-                        {child.name}
-                      </FolderBox>
-                    );
-                  })}
               </div>
             );
           })}
