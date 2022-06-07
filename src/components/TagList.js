@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 
 import { Columns } from 'react-bulma-components';
 import IconTag from '../components/IconTag';
-import onGetTagList from '../api/tagApi';
+import { onGetTagList } from '../api/tagApi';
 
 // import onDeleteTagList from '../api/tagApi'
 
 // import { useRecoilState, useSetRecoilState } from 'recoil';
 
 // import { Colors } from '../styles';
-
 
 // import Swal from 'sweetalert2';
 
