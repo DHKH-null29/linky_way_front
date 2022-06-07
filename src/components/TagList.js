@@ -1,19 +1,28 @@
 // import AnimatedIcon from './icons/AnimatedIcon';
 
-import { useEffect, useState } from 'react';
-
 import { Columns } from 'react-bulma-components';
 import IconTag from '../components/IconTag';
+import { cardBytagIdSelector } from '../state/cardState';
+import { currentTagState } from '../state/tagState';
 import { onGetTagList } from '../api/tagApi';
+import { useEffect } from 'react';
+import { useSetRecoilState } from 'recoil';
 
 const TagList = () => {
-  const [tags, setTags] = useState([]);
+  const setTagList = useSetRecoilState(cardBytagIdSelector);
+  const [tags, setTags] = useSetRecoilState(currentTagState);
+
+  const handleTagClick = tagId => {
+    alert(tagId);
+    console.log('조회한다!');
+  };
 
   useEffect(() => {
     if (tags || tags.length === 0) {
       onGetTagList()
         .then(response => {
           setTags(response.data);
+          setTagList(response.data);
         })
         .catch(error => {
           setTags(JSON.stringify(error));
@@ -43,7 +52,15 @@ const TagList = () => {
         <Columns.Column className="is-8" size>
           {tags.map((value, index) => {
             return (
-              <IconTag writable={true} key={value.tagId} tagId={value.tagId} index={index}>
+              <IconTag
+                writable={true}
+                key={value.tagId}
+                onClick={() => {
+                  handleTagClick(value.tagId);
+                }}
+                tagId={value.tagId}
+                index={index}
+              >
                 {value.tagName}
               </IconTag>
             );
