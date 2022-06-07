@@ -6,6 +6,6 @@ export const onGetTagList = async () => {
   return requestForAuth.get(tagApi + '/table');
 };
 
-export const onDeleteTagList = async tagId => {
+export const onDeleteTag = async tagId => {
   return requestForAuth.delete(tagApi + `/${tagId}`);
 };
