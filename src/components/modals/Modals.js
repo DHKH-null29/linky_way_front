@@ -19,8 +19,4 @@ const Modals = ({ children, title, active, onClose, ...props }) => {
   );
 };
 
-Modals.defaultProps = {
-  isForm: true,
-};
-
 export default Modals;
