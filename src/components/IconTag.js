@@ -4,10 +4,23 @@ import Swal from 'sweetalert2';
 import TagIcon from './icons/TagIcon';
 import { currentTagState } from '../state/tagState';
 import { onDeleteTag } from '../api/tagApi';
+import { onSelectCardsByeTagId } from '../api/cardApi';
 import { useRecoilState } from 'recoil';
 
 const IconTag = ({ size, tagId, index, children, writable }) => {
-  const [currentTags, setCurrentTags] = useRecoilState(currentTagState);
+  const [tags, setTags] = useRecoilState(currentTagState);
+
+  const handleTagClick = tagId => {
+    onSelectCardsByeTagId(tagId)
+      .then(response => {
+        console.log(response);
+        console.log(tags);
+      })
+      .catch(error => {
+        console.log(error);
+        alert(error.details);
+      });
+  };
 
   const handleTagDeleteButtonClick = async () => {
     Swal.fire({
@@ -22,9 +35,9 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
       if (result.isConfirmed) {
         onDeleteTag(tagId)
           .then(() => {
-            const newTags = [...currentTags];
+            const newTags = [...tags];
             newTags.splice(index, 1);
-            setCurrentTags(newTags);
+            setTags(newTags);
           })
           .catch(error => {
             Swal.fire({
@@ -38,14 +51,22 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
   const SpanClassName = 'tag is-warning is-rounded is-' + size;
   const IconClassName = 'is' + size;
   return (
-    <span className={SpanClassName}>
+    <span
+      className={SpanClassName}
+      onClick={() => {
+        handleTagClick(tagId);
+      }}
+    >
       <Icon className={IconClassName}>
         <TagIcon />
         &nbsp;
       </Icon>
       {children}
       {writable && (
-        <button className="delete is-small" onClick={handleTagDeleteButtonClick}></button>
+        <button
+          className="delete is-small"
+          onClick={() => handleTagDeleteButtonClick(tagId)}
+        ></button>
       )}
     </span>
   );
