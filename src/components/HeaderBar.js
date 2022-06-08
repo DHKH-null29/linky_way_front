@@ -1,6 +1,7 @@
 import { Container, Navbar, Section } from 'react-bulma-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import AnimatedIcon from './icons/AnimatedIcon';
 import { BorderRadius } from '../styles';
@@ -11,16 +12,17 @@ import HeaderSwitcher from './HeaderSwitcher';
 import { Media } from '../styles/media';
 import { Shadows } from '../styles/shadow';
 import Swal from 'sweetalert2';
+import { headerClickState } from '../state/headerState';
 import { keyframes } from '@emotion/react';
 import { loginState } from '../state/loginState';
 import styled from '@emotion/styled';
-import { useRecoilState } from 'recoil';
 
 const HeaderBar = () => {
   const [visible, setVisible] = useState(false);
   const [visibleState, setVisibleState] = useState(false);
   const [animationState, setAnimationState] = useState(false);
   const [login, setLogin] = useRecoilState(loginState);
+  const setHeaderSwitch = useSetRecoilState(headerClickState);
 
   const navigate = useNavigate();
 
@@ -36,6 +38,10 @@ const HeaderBar = () => {
     navigate(path);
   };
 
+  const handleLinkClick = () => {
+    setHeaderSwitch(undefined);
+  };
+
   const handleLogoutClick = () => {
     Swal.fire({
       icon: 'success',
@@ -45,6 +51,8 @@ const HeaderBar = () => {
     });
     setLogin(false);
     localStorage.clear();
+    sessionStorage.clear();
+    navigate('/', { replace: true });
   };
 
   useEffect(() => {
@@ -61,7 +69,13 @@ const HeaderBar = () => {
     <StyledNavBar size="large">
       <Container>
         <StyledLogo>
-          <Link className="navbar-item" hoverable={false} style={{ zIndex: '2' }} to={'/'}>
+          <Link
+            className="navbar-item"
+            hoverable={false}
+            style={{ zIndex: '2' }}
+            to={'/'}
+            onClick={handleLinkClick}
+          >
             로고
           </Link>
           <Navbar.Burger
@@ -80,12 +94,14 @@ const HeaderBar = () => {
               <StyledLink
                 className="is-hidden-tablet-only is-hidden-mobile navbar-item"
                 to={'/login'}
+                onClick={handleLinkClick}
               >
                 로그인
               </StyledLink>
               <StyledLink
                 className="is-hidden-tablet-only is-hidden-mobile navbar-item"
                 to={'/join'}
+                onClick={handleLinkClick}
               >
                 회원가입
               </StyledLink>
