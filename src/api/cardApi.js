@@ -17,3 +17,7 @@ export const onDeleteCard = async cardId => {
 export const onSelectCardsByeTagId = async tagId => {
   return requestForAuth.get(cardApi + `/tags/${tagId}`);
 };
+
+export const onAddCard = async cardRequest => {
+  return requestForAuth.post(cardApi, cardRequest);
+};
