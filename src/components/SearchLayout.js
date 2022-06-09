@@ -67,8 +67,8 @@ const SearchLayout = () => {
               </div>
             </div>
             <p className="is-size-6">&nbsp;</p>
-            <TagList />
           </StyledForm>
+          <TagList />
         </Columns.Column>
       </StyledHeroBody>
     </StyleLayout>

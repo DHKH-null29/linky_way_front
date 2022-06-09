@@ -13,3 +13,7 @@ export const onSelectCardsByDefaultMember = async () => {
 export const onDeleteCard = async cardId => {
   return requestForAuth.delete(cardApi + `/${cardId}`);
 };
+
+export const onSelectCardsByeTagId = async tagId => {
+  return requestForAuth.get(cardApi + `/tags/${tagId}`);
+};
