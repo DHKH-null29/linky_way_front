@@ -6,6 +6,7 @@ import Buttons from './Buttons';
 import { keyframes } from '@emotion/react';
 import { loginState } from '../state/loginState';
 import styled from '@emotion/styled';
+import useClickAway from '../hooks/useClickAway';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -17,38 +18,65 @@ const HamburgerSideBar = ({ onCancle, onLogout, visible }) => {
     navigate(path);
   };
 
+  const ref = useClickAway(() => {
+    onCancle && onCancle();
+  });
+
   return (
-    <HamburgerContent disappear={visible}>
-      <Container className="has-text-center p-3">
-        <HamburgerHeader>
-          <HamburgerBackButton size={'large'} onClick={onCancle} />
-        </HamburgerHeader>
-        <Container>
-          <Section>
-            <p className="title">로고</p>
-            <DevideLine />
-            <DevideLine space="micro" color="none" />
-            <p className="subtitle">당신의 LinkyWay를 걸어봐요</p>
-            <p style={{ opacity: 0.7 }}>여기에 뭘 써야 할지 모르겠지만 시작해바요</p>
-            <DevideLine space="medium" color="none" />
-            {!login ? (
-              <>
-                <Buttons onClick={() => handlePageButtonClick('/login')}>로그인</Buttons>
-                <DevideLine space="micro" color="none" />
-                <Buttons onClick={() => handlePageButtonClick('/join')}>회원가입</Buttons>
-              </>
-            ) : (
-              <>
-                <Buttons colortype={'sub'} onClick={onLogout}>
-                  로그아웃
-                </Buttons>
-                <DevideLine space="micro" color="none" />
-              </>
-            )}
-          </Section>
+    <>
+      {visible && <HamburgerBackground />}
+      <HamburgerContent ref={ref} disappear={visible}>
+        <Container className="has-text-center p-3">
+          <HamburgerHeader>
+            <HamburgerBackButton size={'large'} onClick={onCancle} />
+          </HamburgerHeader>
+          <Container>
+            <Section>
+              <p className="title">로고</p>
+              <DevideLine />
+              <DevideLine space="micro" color="none" />
+              <p className="subtitle">당신의 LinkyWay를 걸어봐요</p>
+              <p style={{ opacity: 0.7 }}>여기에 뭘 써야 할지 모르겠지만 시작해바요</p>
+              <DevideLine space="medium" color="none" />
+              {!login ? (
+                <>
+                  <Buttons
+                    onClick={() => {
+                      handlePageButtonClick('/login');
+                      onCancle();
+                    }}
+                  >
+                    로그인
+                  </Buttons>
+                  <DevideLine space="micro" color="none" />
+                  <Buttons
+                    onClick={() => {
+                      handlePageButtonClick('/join');
+                      onCancle();
+                    }}
+                  >
+                    회원가입
+                  </Buttons>
+                </>
+              ) : (
+                <>
+                  <Buttons
+                    colortype={'sub'}
+                    onClick={() => {
+                      onLogout();
+                      onCancle();
+                    }}
+                  >
+                    로그아웃
+                  </Buttons>
+                  <DevideLine space="micro" color="none" />
+                </>
+              )}
+            </Section>
+          </Container>
         </Container>
-      </Container>
-    </HamburgerContent>
+      </HamburgerContent>{' '}
+    </>
   );
 };
 
@@ -70,6 +98,18 @@ const slideRight = keyframes`
   }
 `;
 
+const HamburgerBackground = styled.div`
+  position: fixed;
+  background-color: black;
+  width: 100%;
+  height: 110vh;
+  top: 0;
+  opacity: 0.3;
+  @media ${Media.desktop} {
+    display: none;
+  }
+`;
+
 const HamburgerContent = styled.div`
   z-index: 3;
   position: absolute;
@@ -88,12 +128,13 @@ const HamburgerContent = styled.div`
     width: 60%;
   }
   @media ${Media.mobile} {
-    width: 100%;
+    width: 80%;
   }
   background-color: ${Colors.backgroundForm};
   animation-duration: 0.25s;
   animation-timing-function: ease-out;
   animation-name: ${props => (props.disappear ? slideLeft : slideRight)};
+  min-height: 100vh;
 `;
 
 const HamburgerHeader = styled.div`
