@@ -5,24 +5,11 @@ import Swal from 'sweetalert2';
 import TagIcon from './icons/TagIcon';
 import { currentTagState } from '../state/tagState';
 import { onDeleteTag } from '../api/tagApi';
-import { onSelectCardsByeTagId } from '../api/cardApi';
 import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
 
-const IconTag = ({ size, tagId, index, children, writable }) => {
+const IconTag = ({ size, tagId, index, children, writable, onClick }) => {
   const [tags, setTags] = useRecoilState(currentTagState);
-
-  const handleTagClick = () => {
-    onSelectCardsByeTagId(tagId)
-      .then(response => {
-        console.log(response);
-        console.log(tags);
-      })
-      .catch(error => {
-        console.log(error);
-        alert(error.details);
-      });
-  };
 
   const handleTagDeleteButtonClick = async event => {
     event.stopPropagation();
@@ -54,15 +41,13 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
   const SpanClassName = 'tag is-warning is-rounded is-' + size;
   const IconClassName = 'is' + size;
   return (
-    <StyledTag className={SpanClassName} onClick={handleTagClick}>
+    <StyledTag className={SpanClassName} onClick={onClick}>
       <Icon className={IconClassName}>
         <TagIcon />
         &nbsp;
       </Icon>
       {children}
-      {writable && (
-        <button className="delete is-small" onClick={handleTagDeleteButtonClick}></button>
-      )}
+      {writable && <button className="delete is-small" onClick={handleTagDeleteButtonClick} />}
     </StyledTag>
   );
 };
