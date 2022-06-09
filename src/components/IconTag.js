@@ -1,10 +1,12 @@
-import { Colors } from '../styles';
+import { Colors, Shadows } from '../styles';
+
 import { Icon } from 'react-bulma-components';
 import Swal from 'sweetalert2';
 import TagIcon from './icons/TagIcon';
 import { currentTagState } from '../state/tagState';
 import { onDeleteTag } from '../api/tagApi';
 import { onSelectCardsByeTagId } from '../api/cardApi';
+import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
 
 const IconTag = ({ size, tagId, index, children, writable }) => {
@@ -51,7 +53,7 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
   const SpanClassName = 'tag is-warning is-rounded is-' + size;
   const IconClassName = 'is' + size;
   return (
-    <span
+    <StyledTag
       className={SpanClassName}
       onClick={() => {
         handleTagClick(tagId);
@@ -68,7 +70,7 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
           onClick={() => handleTagDeleteButtonClick(tagId)}
         ></button>
       )}
-    </span>
+    </StyledTag>
   );
 };
 
@@ -76,5 +78,12 @@ IconTag.defaultProps = {
   size: 'large',
   writable: false,
 };
+
+const StyledTag = styled.span`
+  box-shadow: ${Shadows.tag};
+  :hover {
+    box-shadow: ${Shadows.card};
+  }
+`;
 
 export default IconTag;
