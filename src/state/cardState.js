@@ -1,7 +1,5 @@
-
 import { atom } from 'recoil';
-import { persistAtom } from './persist';
-
+import { persistAtom } from './sessionPersist';
 
 export const currentCardState = atom({
   key: 'currentCards',
