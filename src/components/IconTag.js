@@ -12,7 +12,7 @@ import { useRecoilState } from 'recoil';
 const IconTag = ({ size, tagId, index, children, writable }) => {
   const [tags, setTags] = useRecoilState(currentTagState);
 
-  const handleTagClick = tagId => {
+  const handleTagClick = () => {
     onSelectCardsByeTagId(tagId)
       .then(response => {
         console.log(response);
@@ -24,7 +24,8 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
       });
   };
 
-  const handleTagDeleteButtonClick = async () => {
+  const handleTagDeleteButtonClick = async event => {
+    event.stopPropagation();
     Swal.fire({
       icon: 'question',
       text: '정말 태그를 삭제하실 건가요?',
@@ -53,22 +54,14 @@ const IconTag = ({ size, tagId, index, children, writable }) => {
   const SpanClassName = 'tag is-warning is-rounded is-' + size;
   const IconClassName = 'is' + size;
   return (
-    <StyledTag
-      className={SpanClassName}
-      onClick={() => {
-        handleTagClick(tagId);
-      }}
-    >
+    <StyledTag className={SpanClassName} onClick={handleTagClick}>
       <Icon className={IconClassName}>
         <TagIcon />
         &nbsp;
       </Icon>
       {children}
       {writable && (
-        <button
-          className="delete is-small"
-          onClick={() => handleTagDeleteButtonClick(tagId)}
-        ></button>
+        <button className="delete is-small" onClick={handleTagDeleteButtonClick}></button>
       )}
     </StyledTag>
   );
@@ -83,6 +76,7 @@ const StyledTag = styled.span`
   box-shadow: ${Shadows.tag};
   :hover {
     box-shadow: ${Shadows.card};
+    cursor: pointer;
   }
 `;
 
