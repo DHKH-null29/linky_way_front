@@ -49,6 +49,9 @@ createAuthInstance.interceptors.response.use(
     return response.data;
   },
   error => {
+    if (error.response.status === 401) {
+      window.location.reload();
+    }
     return Promise.reject(error.response.data);
   },
 );

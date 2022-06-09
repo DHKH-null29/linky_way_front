@@ -11,10 +11,12 @@ import {
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import HeaderBar from './components/HeaderBar';
+import { checkAuth } from './utils/authUtils';
 import { loginState } from './state/loginState';
 import { useRecoilValue } from 'recoil';
 
 const App = () => {
+  checkAuth();
   const logined = useRecoilValue(loginState);
   return (
     <div className="App">

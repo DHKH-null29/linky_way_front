@@ -3,13 +3,14 @@ import { FontSize, Media } from '../styles';
 import { Button } from 'react-bulma-components';
 import CrowdIcon from './icons/CrowdIcon';
 import UserIcon from './icons/UserIcon';
+import { headerClickState } from '../state/headerState';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 
 const HeaderSwitcher = ({ colors }) => {
   const navigate = useNavigate();
-  const [clicked, setClicked] = useState(undefined);
+  const [clicked, setClicked] = useRecoilState(headerClickState);
 
   const handleSwitchClick = path => {
     navigate(path);
