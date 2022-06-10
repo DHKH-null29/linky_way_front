@@ -6,24 +6,27 @@ import {
   currentCardState,
   currentDefaultCardState,
 } from '../state/cardState';
+import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+import CardAddForm from '../components/CardAddForm';
 import DownCards from '../components/DownCards';
 import FolderBar from '../components/FolderBar';
+import Modals from '../components/modals/Modals';
 import SearchLayout from '../components/SearchLayout';
 import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
 import { onSelectCardsByDefaultMember } from '../api/cardApi';
 import styled from '@emotion/styled';
 import useAsync from '../hooks/useAsync';
-import { useEffect } from 'react';
 
 const CardPage = () => {
   const login = useRecoilValue(loginState);
-  const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
-  const cardClassifier = useRecoilValue(currentCardClassifier);
-  const [defaultCards, setDefaultCards] = useRecoilState(currentDefaultCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const [cardClassifier, setCardClassifer] = useRecoilState(currentCardClassifier);
+  const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
+  const [defaultCards, setDefaultCards] = useRecoilState(currentDefaultCardState);
+  const [cardAddModalActive, setCardAddModalActive] = useState(false);
 
   const navigate = useNavigate();
   if (!login) {
@@ -37,24 +40,24 @@ const CardPage = () => {
   const [state, fetch] = useAsync(onLoadCards, [], true);
 
   useEffect(() => {
-    if (!defaultCards || defaultCards.length === 0) {
+    if (!defaultCards || !defaultCards.updated) {
       console.log('fetch default cards');
       (async () => {
         const result = await fetch();
-        setDefaultCards(result.data);
+        setDefaultCards({ data: result.data, updated: true });
       })();
     }
   }, [defaultCards, state]);
 
   useEffect(() => {
     setFolderHighlight([]);
-    setCurrentCards(defaultCards);
+    setCurrentCards(defaultCards.data);
   }, [defaultCards]);
 
   return (
     <div>
       <SearchLayout />
-      <br></br>
+      <br />
       <Hero className="medium">
         <Hero.Body className="columns">
           <FolderBarWrapper className="is-3-desktop is-3-tablet">
@@ -66,23 +69,31 @@ const CardPage = () => {
                 className="mr-5"
                 to={'/card'}
                 onClick={() => {
-                  setCurrentCards(defaultCards);
+                  setCurrentCards(defaultCards.data);
                   setFolderHighlight([]);
+                  setCardClassifer({ classifier: false });
                 }}
               >
                 전체보기
               </StyledLink>
-              <StyledLink to={'/card'} onClick={() => {}}>
+              <StyledLink
+                to={'/card'}
+                onClick={() => {
+                  setCardAddModalActive(true);
+                }}
+              >
                 카드추가+
               </StyledLink>
             </Columns>
             <Columns className="pt-4 pb-1 m-0">
               <Classifier className="pl-2">
                 &nbsp;[분류] ::&nbsp; <span>전체</span>
-                {' >  ' +
-                  (cardClassifier.classifier ? cardClassifier.classifier + ' > ' : '') +
-                  (cardClassifier.parent ? cardClassifier.parent.name + ' > ' : '') +
-                  cardClassifier.name}
+                {cardClassifier.classifier &&
+                  ' >  ' +
+                    cardClassifier.classifier +
+                    '> ' +
+                    (cardClassifier.parent ? cardClassifier.parent.name + ' > ' : '') +
+                    cardClassifier.name}
                 <hr />
               </Classifier>
             </Columns>
@@ -103,6 +114,20 @@ const CardPage = () => {
             </Columns>
           </Columns.Column>
           <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
+          <Modals
+            title={'카드 등록'}
+            active={cardAddModalActive}
+            onClose={() => {
+              setCardAddModalActive(false);
+            }}
+          >
+            <CardAddForm
+              active={cardAddModalActive}
+              onClose={() => {
+                setCardAddModalActive(false);
+              }}
+            />
+          </Modals>
         </Hero.Body>
       </Hero>
     </div>

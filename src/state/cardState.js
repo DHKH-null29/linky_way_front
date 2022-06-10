@@ -8,7 +8,7 @@ export const currentCardState = atom({
 
 export const currentDefaultCardState = atom({
   key: 'currentDefaultCards',
-  default: [],
+  default: { data: [], updated: false },
   effects_UNSTABLE: [persistAtom],
 });
 
