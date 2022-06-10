@@ -1,18 +1,15 @@
 // import AnimatedIcon from './icons/AnimatedIcon';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
-
 import { Columns } from 'react-bulma-components';
 import IconTag from '../components/IconTag';
-import { currentCardState } from '../state/cardState';
 import { currentTagState } from '../state/tagState';
 import { onGetTagList } from '../api/tagApi';
 import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 
 // import { cardBytagIdSelector } from '../state/cardState';
 
 const TagList = () => {
-  const setTagList = useSetRecoilState(currentCardState);
   const [tags, setTags] = useRecoilState(currentTagState);
 
   useEffect(() => {
@@ -21,7 +18,7 @@ const TagList = () => {
         .then(response => {
           setTags(response.data);
           console.log(response);
-          setTagList(response.data);
+          setTags(response.data);
         })
         .catch(error => {
           setTags(JSON.stringify(error));

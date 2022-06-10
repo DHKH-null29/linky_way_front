@@ -17,5 +17,4 @@ const Plus = ({ size, color, ...props }) => {
     </svg>
   );
 };
-
 export default Plus;

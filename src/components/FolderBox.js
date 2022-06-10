@@ -1,5 +1,5 @@
 import { Colors, FontSize, Media, Shadows } from '../styles';
-import { cardChangeState, currentCardState } from '../state/cardState';
+import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
 import { folderHighlightState, folderListState } from '../state/folderState';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { onDeleteFolder, onUpdateFolderName } from '../api/folderApi';
@@ -19,6 +19,7 @@ import useAsync from '../hooks/useAsync';
 const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   const setCurrentCards = useSetRecoilState(currentCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const setCardClassfier = useSetRecoilState(currentCardClassifier);
   const [folderList, setFolderList] = useRecoilState(folderListState);
   const [mouseOver, setMouseOver] = useState(false);
   const [modifiable, setModifiable] = useState(false);
@@ -60,6 +61,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
       if (state.data) {
         setCurrentCards(state.data.data);
       }
+      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: hasParent });
     }
   }, [highlight]);
 
@@ -149,7 +151,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
 };
 
 FolderBox.defaultProps = {
-  hasParent: false,
+  hasParent: undefined,
 };
 
 const Wrapper = styled.div`

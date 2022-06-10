@@ -1,10 +1,15 @@
-import { atom, selector } from 'recoil';
-
-import { onSelectCardsByeTagId } from '../api/cardApi';
+import { atom } from 'recoil';
+import { persistAtom } from './sessionPersist';
 
 export const currentCardState = atom({
   key: 'currentCards',
   default: [],
+});
+
+export const currentDefaultCardState = atom({
+  key: 'currentDefaultCards',
+  default: { data: [], updated: false },
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const cardChangeState = atom({
@@ -12,10 +17,7 @@ export const cardChangeState = atom({
   default: false,
 });
 
-export const cardBytagIdSelector = selector({
-  key: 'cardBytagIdSelector',
-  get: async () => {
-    const result = await onSelectCardsByeTagId();
-    return result;
-  },
+export const currentCardClassifier = atom({
+  key: 'cardClassifier',
+  default: { id: -1, classifier: undefined, name: '', parent: undefined },
 });

@@ -16,6 +16,8 @@ const Buttons = ({ children, colortype, ...props }) => {
 const buttonColors = {
   main: [Colors.mainFirst, Colors.mainSecond],
   sub: [Colors.subFirst, Colors.subSecond],
+  success: [Colors.successFirst, Colors.successSecond, Colors.successFont],
+  warn: [Colors.warningFirst, Colors.warningSecond, Colors.wanringFont],
 };
 
 Buttons.defaultProps = {
@@ -31,6 +33,7 @@ box-shadow: ${Shadows.button};
 background-color: ${({ colortype }) => buttonColors[colortype][0]};
 border-radius: ${BorderRadius.button};
 font-size: ${FontSize.medium};
+color: ${({ colortype }) => buttonColors[colortype][2]};
 @media ${Media.mobile} {
   font-size: ${FontSize.normal}
 }

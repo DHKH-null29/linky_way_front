@@ -24,7 +24,6 @@ const FolderBar = () => {
       }
     }
   }, [folderSelector]);
-
   return (
     <StyledFolderBar>
       <br />
@@ -36,7 +35,9 @@ const FolderBar = () => {
             return (
               <FolderBox
                 key={value.folderId}
-                hasParent={value.level <= 2 ? false : true}
+                hasParent={
+                  value.level <= 2 ? false : { parentId: value.parentId, name: value.parentName }
+                }
                 folderId={value.folderId}
                 idx={index}
                 highlight={folderHighlight[index]}
