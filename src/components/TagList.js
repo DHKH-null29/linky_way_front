@@ -7,8 +7,6 @@ import { onGetTagList } from '../api/tagApi';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
-// import { cardBytagIdSelector } from '../state/cardState';
-
 const TagList = () => {
   const [tags, setTags] = useRecoilState(currentTagState);
 
@@ -16,8 +14,6 @@ const TagList = () => {
     if (!tags || tags.length === 0) {
       onGetTagList()
         .then(response => {
-          setTags(response.data);
-          console.log(response);
           setTags(response.data);
         })
         .catch(error => {
@@ -27,38 +23,29 @@ const TagList = () => {
     }
   }, [tags]);
 
-  // const handleTagListClick = () => {
-  //   onGetTagList()
-  //     .then(response => {
-  //       setTags(response.data);
-  //       console.log(response);
-  //     })
-  //     .catch(error => {
-  //       setTags(JSON.stringify(error));
-  //       alert('인증이 필요합니다.');
-  //     });
-  // };
+  const tag = (value, index, size) => {
+    return (
+      <IconTag size={size} writable={true} key={value.tagId} tagId={value.tagId} index={index}>
+        {value.tagName}
+      </IconTag>
+    );
+  };
 
   return (
-    <div>
-      <Columns className="is-mobile">
-        <Columns.Column className="is-1">
-          {/* <AnimatedIcon.SkipBack onClick={handleTagListClick} size={30} /> */}
-        </Columns.Column>
-        <Columns.Column className="is-8" size>
-          {tags.map((value, index) => {
-            return (
-              <IconTag writable={true} key={value.tagId} tagId={value.tagId} index={index}>
-                {value.tagName}
-              </IconTag>
-            );
-          })}
-        </Columns.Column>
-        <Columns.Column className="is-1">
-          {/* <AnimatedIcon.SkipForward onClick={handleTagListClick} size={30} /> */}
-        </Columns.Column>
-      </Columns>
-    </div>
+    <Columns className="is-mobile">
+      <Columns.Column>
+        {tags.map((value, index) => {
+          return (
+            <span key={index}>
+              <span className="is-hidden-mobile">{tag(value, index, 'large')}</span>
+              <span className="is-hidden-tablet is-hidden-desktop">
+                {tag(value, index, 'small')}
+              </span>
+            </span>
+          );
+        })}
+      </Columns.Column>
+    </Columns>
   );
 };
 
