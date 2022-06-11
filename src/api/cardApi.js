@@ -7,7 +7,7 @@ export const onSelectCardsByFolder = async folderId => {
 };
 
 export const onSelectCardsByDefaultMember = async () => {
-  return requestForAuth.get(cardApi + '/member');
+  return requestForAuth.get(cardApi + '/all');
 };
 
 export const onDeleteCard = async cardId => {
@@ -20,4 +20,8 @@ export const onSelectCardsByeTagId = async tagId => {
 
 export const onAddCard = async cardRequest => {
   return requestForAuth.post(cardApi, cardRequest);
+};
+
+export const onSelectCardsByKeyword = async keyword => {
+  return requestForAuth.get(cardApi + '/personal/keyword', { params: { keyword } });
 };
