@@ -12,30 +12,22 @@ export const folderListState = atom({
   default: [],
 });
 
-const setFolderList = response => {
-  const list = [];
-  list.push(response);
-  response.childFolderList.forEach(folder => setFolder(list, folder));
-  return list;
+const setFolderList = folderList => {
+  return folderList.map(folder => flatChildFolderList(folder)).flat(3);
 };
 
-const setFolder = (list, currentFolder, parent) => {
-  if (!list) {
-    return;
+const flatChildFolderList = currentFolder => {
+  if (!currentFolder.childFolderList) {
+    return currentFolder;
   }
-  if (parent) {
-    currentFolder.parentName = parent.name;
-  }
-  list.push(currentFolder);
-  if (currentFolder.level <= 3 && currentFolder.childFolderList) {
-    currentFolder.childFolderList.map(folder => setFolder(list, folder, currentFolder));
-  }
+  return [currentFolder, currentFolder.childFolderList.map(child => flatChildFolderList(child))];
 };
 
 export const folderListSelector = selector({
   key: 'folder_selector',
   get: async () => {
     const result = await onSelectFolderList();
+    console.log(result);
     return setFolderList(result.data);
   },
   set: ({ set }, newList) => {
