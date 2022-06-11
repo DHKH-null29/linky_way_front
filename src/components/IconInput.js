@@ -35,7 +35,7 @@ const StyledInput = styled.input`
   border-radius: 8px;
   font-size: ${({ size }) => FontSize[size]};
   @media ${Media.mobile} {
-    font-size: ${FontSize.normal};
+    font-size: ${FontSize.small};
   }
   :focus {
     border-color: ${Colors.mainSecond};

@@ -35,7 +35,7 @@ border-radius: ${BorderRadius.button};
 font-size: ${FontSize.medium};
 color: ${({ colortype }) => buttonColors[colortype][2]};
 @media ${Media.mobile} {
-  font-size: ${FontSize.normal}
+  font-size: ${FontSize.small}
 }
 :hover {
   background-color: ${({ colortype }) => buttonColors[colortype][1]};

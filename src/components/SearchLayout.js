@@ -1,90 +1,139 @@
 import * as Yup from 'yup';
 
 import { Columns, Hero } from 'react-bulma-components';
+import { FontSize, Media } from '../styles';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
+import Buttons from './Buttons';
 import { Colors } from '../styles/colors';
-import Dropdown from './Dropdown';
 import IconInput from './IconInput';
 import Swal from 'sweetalert2';
 import TagList from './TagList';
+import { currentCardState } from '../state/cardState';
+import { onSelectCardsByKeyword } from '../api/cardApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
+import { useSetRecoilState } from 'recoil';
 
 const SearchLayout = () => {
+  const setCurrentCards = useSetRecoilState(currentCardState);
+
   const initialValues = {
-    search: '',
+    keyword: '',
   };
 
   const validationSchema = Yup.object().shape({
-    search: Yup.string()
+    keyword: Yup.string()
       .min(2, '최소 2글자 이상 입력하세요.')
       .max(16, '최대 16글자 이하여야 합니다.')
-      .required('검색할 태그를 입력하세요.'),
+      .required('검색할 키워드를 입력하세요.'),
   });
 
-  const { errors, handleBlur, handleChange, touched, values } = useFormik({
+  const { errors, handleBlur, handleChange, handleSubmit, touched, values } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
       try {
-        console.log(values);
+        const result = await onSelectCardsByKeyword(values.keyword);
+        setCurrentCards(result.data);
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
       } catch (error) {
-        console.log(error);
         Swal.fire({
           icon: 'error',
-          text: '검색을 실패했습니다.',
+          text: error.details,
         });
       }
     },
   });
   return (
-    <StyleLayout className="hero">
-      <StyledHeroBody>
-        <Columns.Column className="is-three-quarters-desktop is-offset-one-fifth-desktop is-three-quarters-tablet is-offset-one-fifth-tablet is-fullwidth-mobile">
-          <StyledForm>
-            <div className="columns">
-              <div className="column is-2">
-                <StyledDropdown />
-              </div>
-              <div className="column is-6">
+    <StyledHero className="is-small">
+      <StyledHeroBody className="column">
+        <Columns.Column className="has-text-centered">
+          <StyledForm className="section container" onSubmit={handleSubmit}>
+            <Columns className="is-tablet">
+              <Columns.Column className="is-10">
                 <IconInput
                   type="text"
-                  name="search"
+                  name="keyword"
                   autocomplete="off"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.search}
-                  placeholder="검색할 태그를 입력해주세요."
+                  value={values.keyword}
+                  placeholder="검색할 키워드를 입력해주세요."
                   leftIconComponent={<AnimatedIcon.Search />}
                   rightIconComponent={' '}
                 />
-                <p style={{ color: errors.search ? Colors.warningFirst : Colors.successFirst }}>
-                  &nbsp;{touched.search && errors.search}
-                </p>
-              </div>
-            </div>
-            <p className="is-size-6">&nbsp;</p>
+              </Columns.Column>
+              <Columns.Column className="is-2">
+                <Buttons> &nbsp;검색&nbsp;</Buttons>
+              </Columns.Column>
+            </Columns>
+            <p
+              className="pt-2"
+              style={{ color: errors.keyword ? Colors.warningFirst : Colors.successFirst }}
+            >
+              &nbsp;{touched.keyword && errors.keyword}
+            </p>
           </StyledForm>
-          <TagList />
+          <TagContainer>
+            <div>
+              <TagList />
+            </div>
+          </TagContainer>
+          <br />
         </Columns.Column>
       </StyledHeroBody>
-    </StyleLayout>
+    </StyledHero>
   );
 };
 
-const StyleLayout = styled.section`
+const StyledHero = styled(Hero)`
   background-color: ${Colors.layout};
 `;
 const StyledHeroBody = styled(Hero.Body)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   width: 100%;
 `;
 
-const StyledDropdown = styled(Dropdown)`
-  margin: 10px 0px 0px 10px;
+const StyledForm = styled.form`
+  padding-bottom: ${FontSize.micro};
+  @media ${Media.desktop} {
+    width: 50%;
+  }
+  @media ${Media.tablet} {
+    width: 80%;
+    padding: ${FontSize.micro};
+  }
+  @media ${Media.mobile} {
+    width: 100%;
+    padding: 0px;
+  }
 `;
-const StyledForm = styled.form``;
+
+const TagContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+
+  > div {
+    @media ${Media.desktop} {
+      width: 55%;
+    }
+    @media ${Media.tablet} {
+      width: 80%;
+      padding: ${FontSize.micro};
+    }
+    @media ${Media.mobile} {
+      width: 100%;
+      padding: 0px;
+    }
+  }
+`;
 
 export default SearchLayout;
