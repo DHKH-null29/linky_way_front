@@ -7,7 +7,7 @@ import Buttons from '../components/Buttons';
 import { Colors } from '../styles';
 import IconInput from '../components/IconInput';
 import Swal from 'sweetalert2';
-import { TOKEN_INFO } from '../contants/tokens';
+import { TOKEN_INFO } from '../constants/tokens';
 import { loginState } from '../state/loginState';
 import { onLogin } from '../api/memberApi';
 import styled from '@emotion/styled';
