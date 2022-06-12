@@ -44,7 +44,7 @@ function useAsync(callback, deps = [], skip = false) {
   };
 
   useEffect(() => {
-    if (skip) return;
+    if (skip && deps === []) return;
     fetchData();
   }, deps);
 
