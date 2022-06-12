@@ -2,24 +2,40 @@ import * as Yup from 'yup';
 
 import { Columns, Hero } from 'react-bulma-components';
 import { FontSize, Media } from '../styles';
+import {
+  currentCardBySearchState,
+  currentCardClassifier,
+  currentCardState,
+  globalCardChangeState,
+} from '../state/cardState';
+import { useEffect, useState } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from './Buttons';
+import { CARD } from '../constants/business';
 import { Colors } from '../styles/colors';
 import IconInput from './IconInput';
 import Swal from 'sweetalert2';
 import TagList from './TagList';
-import { currentCardState } from '../state/cardState';
 import { onSelectCardsByKeyword } from '../api/cardApi';
 import styled from '@emotion/styled';
+import useAsync from '../hooks/useAsync';
 import { useFormik } from 'formik';
-import { useSetRecoilState } from 'recoil';
 
 const SearchLayout = () => {
+  const [cardClassifier, setCardClassfier] = useRecoilState(currentCardClassifier);
+  const [submittedKeyword, setSubmittedKeyword] = useState();
+  const setCurrnetCardsByKeyword = useSetRecoilState(currentCardBySearchState);
   const setCurrentCards = useSetRecoilState(currentCardState);
-
+  const [globalCardChange, setGlobalCardChange] = useRecoilState(globalCardChangeState);
+  const [keyword, setKeyword] = useState('');
+  const prevKeyword =
+    cardClassifier.classifier && cardClassifier.classifier === CARD.CLASSIFIER.SEARCH
+      ? cardClassifier.name
+      : '';
   const initialValues = {
-    keyword: '',
+    keyword: prevKeyword,
   };
 
   const validationSchema = Yup.object().shape({
@@ -29,13 +45,43 @@ const SearchLayout = () => {
       .required('검색할 키워드를 입력하세요.'),
   });
 
+  const onLoadCardsByKeyword = async () => {
+    return await onSelectCardsByKeyword(keyword);
+  };
+
+  const [state, fetch] = useAsync(onLoadCardsByKeyword, [submittedKeyword], true);
+
+  const fetchCards = () => {
+    if (keyword !== prevKeyword) {
+      console.log('refetch Cards By Keyword');
+      return fetch().then(response => response.data);
+    }
+    return state.data.data;
+  };
+  useEffect(() => {
+    if (globalCardChange) {
+      setGlobalCardChange(false);
+      fetch().then(result => {
+        setCurrnetCardsByKeyword(result.data);
+        setCurrentCards(result.data);
+      });
+    }
+  }, [globalCardChange]);
+
   const { errors, handleBlur, handleChange, handleSubmit, touched, values } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
       try {
-        const result = await onSelectCardsByKeyword(values.keyword);
-        setCurrentCards(result.data);
+        setSubmittedKeyword(keyword);
+        const result = await fetchCards();
+        setCurrnetCardsByKeyword(result);
+        setCurrentCards(result);
+        setCardClassfier({
+          ...cardClassifier,
+          classifier: CARD.CLASSIFIER.SEARCH,
+          name: values.keyword,
+        });
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
       } catch (error) {
@@ -46,6 +92,11 @@ const SearchLayout = () => {
       }
     },
   });
+
+  useEffect(() => {
+    setKeyword(values.keyword);
+  }, [values.keyword]);
+
   return (
     <StyledHero className="is-small">
       <StyledHeroBody className="column">

@@ -65,10 +65,10 @@ export const currentCardByFolderSelector = selectorFamily({
 
 export const currentCardBySearchState = atom({
   key: 'currentCardsBySearch',
-  default: {},
+  default: [],
 });
 
-export const cardChangeState = atom({
+export const globalCardChangeState = atom({
   key: 'cardChange',
   default: false,
 });

@@ -1,6 +1,10 @@
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
 import { Card, Content } from 'react-bulma-components';
-import { currentCardByFolderSelector, currentDefaultCardState } from '../state/cardState';
+import {
+  currentCardByFolderSelector,
+  currentDefaultCardState,
+  globalCardChangeState,
+} from '../state/cardState';
 import { memo, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -18,6 +22,7 @@ const DownCards = ({ title, content, id, link, writable = true }) => {
     currentCardByFolderSelector({ requestType: 'delete' }),
   );
   const [defaultCards, setDefaultCards] = useRecoilState(currentDefaultCardState);
+  const setGlobalCardChange = useSetRecoilState(globalCardChangeState);
   const [currentData, setCurrentData] = useState();
   const handleDeleteClick = async () => {
     Swal.fire({
@@ -37,9 +42,9 @@ const DownCards = ({ title, content, id, link, writable = true }) => {
               ...defaultCards,
               data: defaultCards.data.filter(card => card.cardId !== id),
             });
+            setGlobalCardChange(true);
           })
           .catch(error => {
-            console.log(error);
             Swal.fire({
               icon: 'error',
               text: error.details,
