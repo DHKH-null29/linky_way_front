@@ -27,18 +27,15 @@ const CardPage = () => {
   const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
   const [defaultCards, setDefaultCards] = useRecoilState(currentDefaultCardState);
   const [cardAddModalActive, setCardAddModalActive] = useState(false);
-
   const navigate = useNavigate();
   if (!login) {
     navigate('/login');
   }
 
   const onLoadCards = async () => {
-    const result = await onSelectCardsByDefaultMember();
-    return result;
+    return await onSelectCardsByDefaultMember();
   };
   const [state, fetch] = useAsync(onLoadCards, [], true);
-
   useEffect(() => {
     if (!defaultCards || !defaultCards.updated) {
       console.log('fetch default cards');
@@ -47,12 +44,14 @@ const CardPage = () => {
         setDefaultCards({ data: result.data, updated: true });
       })();
     }
-  }, [defaultCards, state]);
+  }, [defaultCards.updated, state]);
 
   useEffect(() => {
-    setFolderHighlight([]);
-    setCurrentCards(defaultCards.data);
-  }, [defaultCards]);
+    if (!cardClassifier.classifier) {
+      setCurrentCards(defaultCards.data);
+      setFolderHighlight([]);
+    }
+  }, [cardClassifier.classifier, defaultCards.data]);
 
   return (
     <div>
@@ -98,19 +97,23 @@ const CardPage = () => {
               </Classifier>
             </Columns>
             <Columns className="is-mobile">
-              {currentCards.map((value, index) => {
-                return (
-                  <Columns.Column key={index} className="is-3-desktop  is-6-tablet is-half-mobile">
-                    <DownCards
-                      id={value.cardId}
-                      title={value.title}
-                      content={value.content}
-                      link={value.link}
-                      tagList={value.tags}
-                    />
-                  </Columns.Column>
-                );
-              })}
+              {currentCards &&
+                currentCards.map((value, index) => {
+                  return (
+                    <Columns.Column
+                      key={index}
+                      className="is-3-desktop  is-6-tablet is-half-mobile"
+                    >
+                      <DownCards
+                        id={value.cardId}
+                        title={value.title}
+                        content={value.content}
+                        link={value.link}
+                        tagList={value.tags}
+                      />
+                    </Columns.Column>
+                  );
+                })}
             </Columns>
           </Columns.Column>
           <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>

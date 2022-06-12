@@ -2,7 +2,13 @@ import * as Yup from 'yup';
 
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
 import { Columns, Section } from 'react-bulma-components';
+import {
+  currentCardByFolderSelector,
+  currentCardState,
+  currentDefaultCardState,
+} from '../state/cardState';
 import { useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Buttons from './Buttons';
 import IconInput from './IconInput';
@@ -10,11 +16,11 @@ import IconTag from './IconTag';
 import ModalFooter from './modals/ModalFooter';
 import { currentTagState } from '../state/tagState';
 import { folderListState } from '../state/folderState';
+import { makeCardFromRequest } from '../utils/cardUtils';
 import { onAddCard } from '../api/cardApi';
 import styled from '@emotion/styled';
 import useDebounce from '../hooks/useDebounce';
 import { useFormik } from 'formik';
-import { useRecoilValue } from 'recoil';
 
 const CardAddForm = ({ onClose, active }) => {
   const folders = useRecoilValue(folderListState);
@@ -22,6 +28,12 @@ const CardAddForm = ({ onClose, active }) => {
   const tagList = useRecoilValue(currentTagState);
   const [searchedTags, setSearchedTags] = useState(new Set());
   const [selectedTags, setSelectedTags] = useState(new Set());
+  const [selectedFolder, setSelectedFolder] = useState();
+  const setCardsByFolder = useSetRecoilState(
+    currentCardByFolderSelector({ requestType: 'insert', folderId: selectedFolder }),
+  );
+  const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
+  const [defaultCards, setDefaultCards] = useRecoilState(currentDefaultCardState);
 
   const initialValues = {
     link: '',
@@ -49,12 +61,24 @@ const CardAddForm = ({ onClose, active }) => {
       if (!values.folderId) {
         values.folderId = folders[0].folderId;
       }
+      // setSelectedFolder(values.folderId);
+      console.log(selectedFolder);
+      console.log(values.folderId);
       values.tagIdList = Array.from(selectedTags).map(tag => tag.tagId);
       const result = await onAddCard(values);
 
       if (result.code === 201) {
+        const newCard = makeCardFromRequest(result.data.cardId, { body: values });
+        setCardsByFolder(newCard);
+        const newCardList = [...currentCards];
+        newCardList.splice(0, 0, newCard);
+        setCurrentCards(newCardList);
+        const newDefaultCardsData = [...defaultCards.data];
+        newDefaultCardsData.splice(0, 0, newCard);
+        setDefaultCards({ ...defaultCards, data: newDefaultCardsData });
         onClose();
       }
+
       formikHelper.resetForm();
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
@@ -121,6 +145,11 @@ const CardAddForm = ({ onClose, active }) => {
       setSelectedTags(new Set());
     }
   }, [active]);
+
+  useEffect(() => {
+    setSelectedFolder(values.folderId);
+    console.log('폴더바뀜');
+  }, [values.folderId]);
 
   return (
     <form onSubmit={handleSubmit}>

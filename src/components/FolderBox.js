@@ -1,5 +1,9 @@
 import { Colors, FontSize, Media, Shadows } from '../styles';
-import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
+import {
+  currentCardByFolderSelector,
+  currentCardClassifier,
+  currentCardState,
+} from '../state/cardState';
 import { folderHighlightState, folderListState } from '../state/folderState';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { onDeleteFolder, onUpdateFolderName } from '../api/folderApi';
@@ -14,31 +18,22 @@ import { Icon } from 'react-bulma-components';
 import Swal from 'sweetalert2';
 import { onSelectCardsByFolder } from '../api/cardApi';
 import styled from '@emotion/styled';
-import useAsync from '../hooks/useAsync';
 
 const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   const setCurrentCards = useSetRecoilState(currentCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
+  const [cardsByFolder, setCardsByFolder] = useRecoilState(
+    currentCardByFolderSelector({ requestType: 'insert', folderId: folderId }),
+  );
   const [folderList, setFolderList] = useRecoilState(folderListState);
   const [mouseOver, setMouseOver] = useState(false);
   const [modifiable, setModifiable] = useState(false);
-  const [cardChange, setCardChange] = useRecoilState(cardChangeState);
   const folderInputRef = useRef();
-  useEffect(() => {
-    if (highlight && cardChange) {
-      (async () => {
-        const result = await fetch();
-        setCurrentCards(result.data);
-        setCardChange(false);
-      })();
-    }
-  }, [cardChange]);
+
   const handleGetCards = async () => {
-    const result = await onSelectCardsByFolder(folderId);
-    return result;
+    return await onSelectCardsByFolder(folderId);
   };
-  const [state, fetch] = useAsync(handleGetCards, [], true);
 
   const handleMouseOver = () => {
     setMouseOver(true);
@@ -48,19 +43,26 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
     setMouseOver(false);
   };
 
+  useEffect(() => {
+    if (highlight) {
+      setCurrentCards(cardsByFolder[folderId]);
+      console.log('폴더 반영');
+    }
+  }, [cardsByFolder[folderId]]);
+
   const handleNameClick = useCallback(async () => {
     if (!highlight) {
       const newArray = [];
       newArray[idx] = true;
+      console.log(cardsByFolder);
+      setCurrentCards(
+        cardsByFolder[folderId] ||
+          (await handleGetCards().then(response => {
+            setCardsByFolder(response.data);
+            return response.data;
+          })),
+      );
       setFolderHighlight(newArray);
-      if (!state.data) {
-        await fetch().then(response => {
-          setCurrentCards(response.data);
-        });
-      }
-      if (state.data) {
-        setCurrentCards(state.data.data);
-      }
       setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: hasParent });
     }
   }, [highlight]);
