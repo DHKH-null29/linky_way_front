@@ -24,10 +24,9 @@ const flatChildFolderList = currentFolder => {
 };
 
 export const folderListSelector = selector({
-  key: 'folder_selector',
+  key: 'folderSelector',
   get: async () => {
     const result = await onSelectFolderList();
-    console.log(result);
     return setFolderList(result.data);
   },
   set: ({ set }, newList) => {
