@@ -12,6 +12,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import AnimatedIcon from './icons/AnimatedIcon';
 import Close from './icons/Close';
 import Edit from './icons/Edit';
+import { FOLDER } from '../constants/business';
 import FolderArrow from './icons/FolderArrow';
 import { FontWeight } from '../styles/font';
 import { Icon } from 'react-bulma-components';
@@ -19,7 +20,7 @@ import Swal from 'sweetalert2';
 import { onSelectCardsByFolder } from '../api/cardApi';
 import styled from '@emotion/styled';
 
-const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
+const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   const setCurrentCards = useSetRecoilState(currentCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
@@ -32,7 +33,8 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   const folderInputRef = useRef();
 
   const handleGetCards = async () => {
-    return await onSelectCardsByFolder(folderId);
+    const findDeep = level < FOLDER.DEPTH_LIMIT ? true : false;
+    return await onSelectCardsByFolder(folderId, findDeep);
   };
 
   const handleMouseOver = () => {
@@ -46,7 +48,6 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   useEffect(() => {
     if (highlight) {
       setCurrentCards(cardsByFolder[folderId]);
-      console.log('폴더 반영');
     }
   }, [cardsByFolder[folderId]]);
 
@@ -54,7 +55,6 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
     if (!highlight) {
       const newArray = [];
       newArray[idx] = true;
-      console.log(cardsByFolder);
       setCurrentCards(
         cardsByFolder[folderId] ||
           (await handleGetCards().then(response => {
@@ -63,7 +63,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
           })),
       );
       setFolderHighlight(newArray);
-      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: hasParent });
+      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: parent });
     }
   }, [highlight]);
 
@@ -104,7 +104,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   return (
     <Wrapper onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
       &nbsp;
-      {hasParent && (
+      {parent && (
         <Icon className="is-large">
           <span>
             <FolderArrow />
@@ -153,7 +153,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
 };
 
 FolderBox.defaultProps = {
-  hasParent: undefined,
+  parent: undefined,
 };
 
 const Wrapper = styled.div`

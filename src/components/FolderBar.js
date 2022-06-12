@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil';
 
 import { Box } from 'react-bulma-components';
+import { FOLDER } from '../constants/business';
 import FolderAddForm from './FolderAddForm';
 import FolderBox from './FolderBox';
 import { FontWeight } from '../styles/font';
@@ -35,14 +36,17 @@ const FolderBar = () => {
             return (
               <FolderBox
                 key={value.folderId}
-                hasParent={
-                  value.level <= 2 ? false : { parentId: value.parentId, name: value.parentName }
+                parent={
+                  value.level < FOLDER.DEPTH_LIMIT
+                    ? false
+                    : { parentId: value.parentId, name: value.parentName }
                 }
                 folderId={value.folderId}
                 idx={index}
                 highlight={folderHighlight[index]}
+                level={value.level}
               >
-                {value.name}
+                {value.level === 0 ? '미분류' : value.name || '이름없음'}
               </FolderBox>
             );
           })}

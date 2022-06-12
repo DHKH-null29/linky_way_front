@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import { Colors, FontSize, Media } from '../styles';
 import { Columns, Section } from 'react-bulma-components';
 
+import { FOLDER } from '../constants/business';
 import IconInput from './IconInput';
 import ModalFooter from './modals/ModalFooter';
 import Swal from 'sweetalert2';
@@ -63,7 +64,7 @@ const FolderAddForm = ({ onClose }) => {
               >
                 {folders &&
                   folders
-                    .filter(folder => folder.level <= 2)
+                    .filter(folder => folder.level < FOLDER.DEPTH_LIMIT)
                     .map((f, i) => {
                       return (
                         <option key={i} value={f.folderId}>
