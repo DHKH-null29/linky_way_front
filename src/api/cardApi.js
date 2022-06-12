@@ -6,8 +6,15 @@ export const onSelectCardsByDefaultMember = () => {
   return requestForAuth.get(cardApi + '/all');
 };
 
-export const onSelectCardsByFolder = (folderId, findDeep = false) => {
-  return requestForAuth.get(cardApi + `/folder/${folderId}`, { params: { findDeep } });
+export const onSelectCardsByFolder = async (folderId, findDeep = false) => {
+  return requestForAuth
+    .get(cardApi + `/folder/${folderId}`, { params: { findDeep } })
+    .then(response => {
+      return response;
+    })
+    .catch(() => {
+      return { data: [] };
+    });
 };
 
 export const onDeleteCard = cardId => {
