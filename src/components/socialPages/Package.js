@@ -3,18 +3,20 @@ import { BorderRadius, Colors, Shadows } from '../../styles';
 import { Card } from 'react-bulma-components';
 import styled from '@emotion/styled';
 
-const Package = () => {
+const Package = ({ memeberId, nickname, numberOfCard }) => {
   return (
     <StyleCard style={{ width: 350, margin: 'auto' }}>
       <Card.Content>
         <div className="media-content">
-          <p className="title is-4">태그이름</p>
+          <p className="title is-4">닉네임{nickname}</p>
+          <p className="title is-6">태그이름{memeberId}</p>
         </div>
-        <p className="is-size-1">&nbsp;</p>
-        <div className="content">태그이름과 관련된 내용입니다.</div>
       </Card.Content>
       <Card.Content>
-        <StyleLike>👍 9999</StyleLike>
+        <StyleLike>
+          <div className="his-1">🔖 15{numberOfCard}</div>
+          <div>👍 9999</div>
+        </StyleLike>
       </Card.Content>
     </StyleCard>
   );
@@ -23,7 +25,7 @@ const Package = () => {
 const StyleCard = styled(Card)`
   font-family: 'ImcreSoojin';
   width: 100%;
-  min-height: 300px;
+  max-height: 250px;
   padding: 20px;
   margin: 5px;
   border-radius: ${BorderRadius.card};
