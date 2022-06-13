@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import { Colors, FontSize, Media } from '../styles';
 import { Columns, Section } from 'react-bulma-components';
 
+import { FOLDER } from '../constants/business';
 import IconInput from './IconInput';
 import ModalFooter from './modals/ModalFooter';
 import Swal from 'sweetalert2';
@@ -61,13 +62,14 @@ const FolderAddForm = ({ onClose }) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               >
+                <option value="">없음</option>
                 {folders &&
                   folders
-                    .filter(folder => folder.level <= 2)
+                    .filter(folder => folder.level === FOLDER.DEPTH_LIMIT - 1)
                     .map((f, i) => {
                       return (
                         <option key={i} value={f.folderId}>
-                          {f.name}
+                          {f.name || '이름없음'}
                         </option>
                       );
                     })}

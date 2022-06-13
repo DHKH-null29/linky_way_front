@@ -8,6 +8,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import AnimatedIcon from './icons/AnimatedIcon';
 import Close from './icons/Close';
 import Edit from './icons/Edit';
+import { FOLDER } from '../constants/business';
 import FolderArrow from './icons/FolderArrow';
 import { FontWeight } from '../styles/font';
 import { Icon } from 'react-bulma-components';
@@ -16,7 +17,7 @@ import { onSelectCardsByFolder } from '../api/cardApi';
 import styled from '@emotion/styled';
 import useAsync from '../hooks/useAsync';
 
-const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
+const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   const setCurrentCards = useSetRecoilState(currentCardState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
@@ -35,8 +36,8 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
     }
   }, [cardChange]);
   const handleGetCards = async () => {
-    const result = await onSelectCardsByFolder(folderId);
-    return result;
+    const findDeep = level < FOLDER.DEPTH_LIMIT ? true : false;
+    return await onSelectCardsByFolder(folderId, findDeep);
   };
   const [state, fetch] = useAsync(handleGetCards, [], true);
 
@@ -61,7 +62,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
       if (state.data) {
         setCurrentCards(state.data.data);
       }
-      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: hasParent });
+      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: parent });
     }
   }, [highlight]);
 
@@ -102,7 +103,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
   return (
     <Wrapper onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
       &nbsp;
-      {hasParent && (
+      {parent && (
         <Icon className="is-large">
           <span>
             <FolderArrow />
@@ -151,7 +152,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
 };
 
 FolderBox.defaultProps = {
-  hasParent: undefined,
+  parent: undefined,
 };
 
 const Wrapper = styled.div`

@@ -1,5 +1,6 @@
 import { atom, selector } from 'recoil';
 
+import { FOLDER } from '../constants/business';
 import { onSelectFolderList } from '../api/folderApi';
 
 export const folderHighlightState = atom({
@@ -13,7 +14,7 @@ export const folderListState = atom({
 });
 
 const setFolderList = folderList => {
-  return folderList.map(folder => flatChildFolderList(folder)).flat(3);
+  return folderList.map(folder => flatChildFolderList(folder)).flat(FOLDER.DEPTH_LIMIT + 1);
 };
 
 const flatChildFolderList = currentFolder => {
