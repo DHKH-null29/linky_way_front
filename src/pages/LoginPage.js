@@ -7,6 +7,7 @@ import Buttons from '../components/Buttons';
 import { Colors } from '../styles';
 import IconInput from '../components/IconInput';
 import Swal from 'sweetalert2';
+import { TOKEN_INFO } from '../constants/tokens';
 import { loginState } from '../state/loginState';
 import { onLogin } from '../api/memberApi';
 import styled from '@emotion/styled';
@@ -45,9 +46,9 @@ const LoginPage = () => {
         const result = await onLogin(values);
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
-        localStorage.setItem('act', result.data.accessToken);
+        localStorage.setItem(TOKEN_INFO.ACCESS_TOKEN_NAME, result.data.accessToken);
         setLogin(true);
-        navigate('/');
+        navigate('/', { replace: true });
       } catch (error) {
         console.log(error);
         Swal.fire({
