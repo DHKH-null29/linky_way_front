@@ -2,26 +2,33 @@ import { requestForAuth } from './config';
 
 const cardApi = 'api/cards';
 
-export const onSelectCardsByFolder = async folderId => {
-  return requestForAuth.get(cardApi + `/folder/${folderId}`);
-};
-
-export const onSelectCardsByDefaultMember = async () => {
+export const onSelectCardsByDefaultMember = () => {
   return requestForAuth.get(cardApi + '/all');
 };
 
-export const onDeleteCard = async cardId => {
+export const onSelectCardsByFolder = async (folderId, findDeep = false) => {
+  return requestForAuth
+    .get(cardApi + `/folder/${folderId}`, { params: { findDeep } })
+    .then(response => {
+      return response;
+    })
+    .catch(() => {
+      return { data: [] };
+    });
+};
+
+export const onDeleteCard = cardId => {
   return requestForAuth.delete(cardApi + `/${cardId}`);
 };
 
-export const onSelectCardsByeTagId = async tagId => {
+export const onSelectCardsByeTagId = tagId => {
   return requestForAuth.get(cardApi + `/tags/${tagId}`);
 };
 
-export const onAddCard = async cardRequest => {
+export const onAddCard = cardRequest => {
   return requestForAuth.post(cardApi, cardRequest);
 };
 
-export const onSelectCardsByKeyword = async keyword => {
+export const onSelectCardsByKeyword = keyword => {
   return requestForAuth.get(cardApi + '/personal/keyword', { params: { keyword } });
 };
