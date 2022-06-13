@@ -39,7 +39,7 @@ const FolderBar = () => {
                 parent={
                   value.level < FOLDER.DEPTH_LIMIT
                     ? false
-                    : { parentId: value.parentId, name: value.parentName }
+                    : { id: value.parentId, name: value.parentName }
                 }
                 folderId={value.folderId}
                 idx={index}

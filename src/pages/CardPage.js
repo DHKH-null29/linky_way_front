@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+import { CARD } from '../constants/business';
 import CardAddForm from '../components/CardAddForm';
 import DownCards from '../components/DownCards';
 import FolderBar from '../components/FolderBar';
@@ -37,7 +38,7 @@ const CardPage = () => {
     const result = await onSelectCardsByDefaultMember();
     return result;
   };
-  const [state, fetch] = useAsync(onLoadCards, [], true);
+  const [, fetch] = useAsync(onLoadCards, [], true);
 
   useEffect(() => {
     if (!defaultCards || !defaultCards.updated) {
@@ -47,7 +48,7 @@ const CardPage = () => {
         setDefaultCards({ data: result.data, updated: true });
       })();
     }
-  }, [defaultCards, state]);
+  }, [defaultCards]);
 
   useEffect(() => {
     setFolderHighlight([]);
@@ -71,7 +72,7 @@ const CardPage = () => {
                 onClick={() => {
                   setCurrentCards(defaultCards.data);
                   setFolderHighlight([]);
-                  setCardClassifer({ classifier: false });
+                  setCardClassifer({ classifier: CARD.CLASSIFIER.DEFAULT });
                 }}
               >
                 전체보기
@@ -88,11 +89,13 @@ const CardPage = () => {
             <Columns className="pt-4 pb-1 m-0">
               <Classifier className="pl-2">
                 &nbsp;[분류] ::&nbsp; <span>전체</span>
-                {cardClassifier.classifier &&
+                {cardClassifier.classifier.type &&
                   ' >  ' +
-                    cardClassifier.classifier +
-                    '> ' +
-                    (cardClassifier.parent ? cardClassifier.parent.name + ' > ' : '') +
+                    cardClassifier.classifier.name +
+                    ' > ' +
+                    (cardClassifier.parent.id
+                      ? (cardClassifier.parent.name || '이름없음') + ' > '
+                      : '') +
                     cardClassifier.name}
                 <hr />
               </Classifier>
@@ -100,7 +103,7 @@ const CardPage = () => {
             <Columns className="is-mobile">
               {currentCards.map((value, index) => {
                 return (
-                  <Columns.Column key={index} className="is-3-desktop  is-6-tablet is-half-mobile">
+                  <Columns.Column key={index} className="is-3-desktop is-6-tablet is-half-mobile">
                     <DownCards
                       id={value.cardId}
                       title={value.title}

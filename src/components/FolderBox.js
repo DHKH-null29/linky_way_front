@@ -1,3 +1,4 @@
+import { CARD, FOLDER } from '../constants/business';
 import { Colors, FontSize, Media, Shadows } from '../styles';
 import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
 import { folderHighlightState, folderListState } from '../state/folderState';
@@ -8,7 +9,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import AnimatedIcon from './icons/AnimatedIcon';
 import Close from './icons/Close';
 import Edit from './icons/Edit';
-import { FOLDER } from '../constants/business';
 import FolderArrow from './icons/FolderArrow';
 import { FontWeight } from '../styles/font';
 import { Icon } from 'react-bulma-components';
@@ -62,7 +62,12 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
       if (state.data) {
         setCurrentCards(state.data.data);
       }
-      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: parent });
+      setCardClassfier({
+        id: folderId,
+        classifier: CARD.CLASSIFIER.FOLDER,
+        name: children,
+        parent: parent,
+      });
     }
   }, [highlight]);
 
