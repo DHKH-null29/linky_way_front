@@ -1,6 +1,7 @@
 import { BorderRadius, Colors, Shadows } from '../../styles';
+import { Card, Icon } from 'react-bulma-components';
 
-import { Card } from 'react-bulma-components';
+import AnimatedIcon from '../../components/icons/AnimatedIcon';
 import styled from '@emotion/styled';
 
 const Package = ({ memeberId, nickname, numberOfCard }) => {
@@ -12,10 +13,19 @@ const Package = ({ memeberId, nickname, numberOfCard }) => {
           <p className="title is-6">태그이름{memeberId}</p>
         </div>
       </Card.Content>
-      <Card.Content>
+      <Card.Content className="columns is-mobile">
         <StyleLike>
-          <div className="his-1">🔖 15{numberOfCard}</div>
-          <div>👍 9999</div>
+          <div className="media-content is-right">
+            <Icon>
+              <AnimatedIcon.CardIcon />
+            </Icon>
+            15{numberOfCard}
+            &nbsp; &nbsp;
+            <Icon>
+              <AnimatedIcon.ThumbUp />
+            </Icon>
+            9999
+          </div>
         </StyleLike>
       </Card.Content>
     </StyleCard>
@@ -38,8 +48,10 @@ const StyleCard = styled(Card)`
 `;
 
 const StyleLike = styled.div`
-  text-align: right;
-  padding: 3px 15px;
+  padding: 2px 5px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
 `;
 
 export default Package;
