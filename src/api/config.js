@@ -1,3 +1,4 @@
+import { ERROR_CODE } from '../constants/status';
 import axios from 'axios';
 
 const createInstance = axios.create({
@@ -49,8 +50,9 @@ createAuthInstance.interceptors.response.use(
     return response.data;
   },
   error => {
-    if (error.response.status === 401) {
+    if (error.response.status === ERROR_CODE.UNAUTHORIZED) {
       window.location.reload();
+      return;
     }
     return Promise.reject(error.response.data);
   },
