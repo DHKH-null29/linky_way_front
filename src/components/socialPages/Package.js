@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 
 const Package = ({ memeberId, nickname, numberOfCard }) => {
   return (
-    <StyleCard style={{ width: 350, margin: 'auto' }}>
+    <StyleCard>
       <Card.Content>
         <div className="media-content">
           <p className="title is-4">닉네임{nickname}</p>
