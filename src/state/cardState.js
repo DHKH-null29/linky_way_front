@@ -1,4 +1,4 @@
-import { CARD } from '../constants/business';
+import { CARD_CLASSIFIER } from '../constants/query';
 import { atom } from 'recoil';
 import { persistAtom } from './sessionPersist';
 
@@ -27,7 +27,7 @@ export const currentCardClassifier = atom({
   key: 'cardClassifier',
   default: {
     ...classifierInfo,
-    classifier: CARD.CLASSIFIER.DEFAULT,
+    classifier: CARD_CLASSIFIER.DEFAULT,
     parent: { ...classifierInfo },
   },
 });

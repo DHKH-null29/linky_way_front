@@ -9,7 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { CARD } from '../constants/business';
+import { CARD_CLASSIFIER } from '../constants/query';
 import CardAddForm from '../components/CardAddForm';
 import DownCards from '../components/DownCards';
 import FolderBar from '../components/FolderBar';
@@ -72,7 +72,7 @@ const CardPage = () => {
                 onClick={() => {
                   setCurrentCards(defaultCards.data);
                   setFolderHighlight([]);
-                  setCardClassifer({ classifier: CARD.CLASSIFIER.DEFAULT });
+                  setCardClassifer({ classifier: CARD_CLASSIFIER.DEFAULT });
                 }}
               >
                 전체보기

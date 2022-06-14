@@ -6,24 +6,3 @@ export const FOLDER = {
     REQUIRE: '폴더 이름을 입력하세요',
   },
 };
-
-export const CARD = {
-  CLASSIFIER: {
-    DEFAULT: {
-      name: '',
-      type: undefined,
-    },
-    SEARCH: {
-      name: '검색',
-      type: 'search',
-    },
-    FOLDER: {
-      name: '폴더',
-      type: 'folder',
-    },
-    TAG: {
-      name: '태그',
-      type: 'tag',
-    },
-  },
-};
