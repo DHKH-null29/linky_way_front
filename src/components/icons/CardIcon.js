@@ -1,14 +1,14 @@
 import { Media } from '../../styles';
 import styled from '@emotion/styled';
 
-const CardIcon = () => {
+const CardIcon = ({ size }) => {
   return (
     <StyledSvg
       enableBackground="new 0 0 50 50"
       id="Layer_1"
       version="1.1"
       viewBox="0 0 50 50"
-      width="18px"
+      width={size}
       xmlSpace="preserve"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -26,6 +26,10 @@ const CardIcon = () => {
       <rect height="5" width="44" x="3" y="16" />
     </StyledSvg>
   );
+};
+
+CardIcon.defaultProps = {
+  size: 18,
 };
 
 const StyledSvg = styled.svg`
