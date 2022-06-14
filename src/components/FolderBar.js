@@ -1,7 +1,4 @@
 import { BorderRadius, Colors, FontSize, Media } from '../styles';
-import { folderHighlightState, folderListSelector, folderListState } from '../state/folderState';
-import { useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil';
 
 import { Box } from 'react-bulma-components';
 import { FOLDER } from '../constants/business';
@@ -10,25 +7,23 @@ import FolderBox from './FolderBox';
 import { FontWeight } from '../styles/font';
 import Modals from './modals/Modals';
 import Plus from './icons/Plus';
+import { REACT_QUERY_KEY } from '../constants/query';
+import { folderHighlightState } from '../state/folderState';
+import { onSelectFolderList } from '../api/folderApi';
 import styled from '@emotion/styled';
+import { useQuery } from 'react-query';
+import { useRecoilValue } from 'recoil';
+import { useState } from 'react';
 
 const FolderBar = () => {
-  const folderSelector = useRecoilValueLoadable(folderListSelector);
-  const [folders, setFolders] = useRecoilState(folderListState);
   const folderHighlight = useRecoilValue(folderHighlightState);
   const [folderModalActive, setFolderModalActive] = useState(false);
+  const { isLoading, data: folders } = useQuery(REACT_QUERY_KEY.FOLDERS, onSelectFolderList);
 
-  useEffect(() => {
-    if (folderSelector.state === 'hasValue') {
-      if (!folders || folders.length === 0) {
-        setFolders(folderSelector.contents);
-      }
-    }
-  }, [folderSelector]);
   return (
     <StyledFolderBar>
       <br />
-      {folderSelector.state !== 'hasValue' ? (
+      {isLoading ? (
         <div>...loading</div>
       ) : (
         <>
