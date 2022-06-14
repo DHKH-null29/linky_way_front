@@ -2,51 +2,65 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Media } from '../styles';
 import { Columns, Section } from 'react-bulma-components';
+import { useMutation, useQueryClient } from 'react-query';
 
 import { FOLDER } from '../constants/business';
 import IconInput from './IconInput';
 import ModalFooter from './modals/ModalFooter';
+import { REACT_QUERY_KEY } from '../constants/query';
 import Swal from 'sweetalert2';
-import { folderListState } from '../state/folderState';
 import { onAddFolder } from '../api/folderApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
-import { useRecoilState } from 'recoil';
 
 const FolderAddForm = ({ onClose }) => {
-  const [folders, setFolders] = useRecoilState(folderListState);
+  const FOLDER_QUERY_KEY = REACT_QUERY_KEY.FOLDERS;
+  const queryClient = useQueryClient();
+
+  const folders = queryClient.getQueryData(FOLDER_QUERY_KEY);
   const initialValues = {
     parentFolderId: undefined,
     name: '',
   };
+
+  const FOLDER_VALIDATION = FOLDER.NAME_VALIDATION;
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .strict(true)
-      .required('폴더이름을 입력하세요')
-      .max(10, '최대 10글자로 입력해주세요'),
+      .required(FOLDER_VALIDATION.REQUIRE)
+      .matches(FOLDER_VALIDATION.REGEX, FOLDER_VALIDATION.MESSAGE),
   });
+
+  const folderAddMutation = useMutation(folder => onAddFolder(folder), {
+    onMutate: () => {
+      return folders;
+    },
+    onSuccess: () => {
+      alert('성공');
+      queryClient.invalidateQueries(FOLDER_QUERY_KEY);
+      onClose();
+    },
+    onError: (error, values, rollback) => {
+      Swal.fire({
+        icon: 'error',
+        text: error.details || '폴더 생성 실패',
+      });
+      rollback && rollback();
+    },
+  });
+
+  const handleAddFolder = values => {
+    folderAddMutation.mutate(values);
+  };
 
   const { errors, handleBlur, handleSubmit, handleChange, touched, values } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
-      if (!values.parentFolderId) {
-        values.parentFolderId = folders[0].folderId;
-      }
-      const result = await onAddFolder(values);
+      handleAddFolder(values);
       formikHelper.resetForm();
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
-      if (result.code <= 201) {
-        alert('현재 생성된 폴더 자원의 아이디가 필요합니다.');
-        setFolders;
-        onClose();
-      } else {
-        Swal.fire({
-          icon: 'error',
-          text: '폴더 생성 실패',
-        });
-      }
     },
   });
   return (
@@ -66,9 +80,9 @@ const FolderAddForm = ({ onClose }) => {
                 {folders &&
                   folders
                     .filter(folder => folder.level === FOLDER.DEPTH_LIMIT - 1)
-                    .map((f, i) => {
+                    .map(f => {
                       return (
-                        <option key={i} value={f.folderId}>
+                        <option key={f.folderId} value={f.folderId}>
                           {f.name || '이름없음'}
                         </option>
                       );
