@@ -36,7 +36,6 @@ const FolderAddForm = ({ onClose }) => {
       return folders;
     },
     onSuccess: () => {
-      alert('성공');
       queryClient.invalidateQueries(FOLDER_QUERY_KEY);
       onClose();
     },
