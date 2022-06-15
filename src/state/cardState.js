@@ -1,3 +1,4 @@
+import { CARD_CLASSIFIER } from '../constants/query';
 import { atom } from 'recoil';
 import { persistAtom } from './sessionPersist';
 
@@ -17,7 +18,16 @@ export const cardChangeState = atom({
   default: false,
 });
 
+const classifierInfo = {
+  id: undefined,
+  name: '',
+};
+
 export const currentCardClassifier = atom({
   key: 'cardClassifier',
-  default: { id: -1, classifier: undefined, name: '', parent: undefined },
+  default: {
+    ...classifierInfo,
+    classifier: CARD_CLASSIFIER.DEFAULT,
+    parent: { ...classifierInfo },
+  },
 });

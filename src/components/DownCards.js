@@ -1,22 +1,25 @@
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
 import { Card, Content } from 'react-bulma-components';
-import { cardChangeState, currentCardState } from '../state/cardState';
 import { memo, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { FontWeight } from '../styles/font';
 import Swal from 'sweetalert2';
+import { cardChangeState } from '../state/cardState';
 import { linkPreviewState } from '../state/linkPreviewState';
 import { onDeleteCard } from '../api/cardApi';
 import { onSelectCardLinkPreview } from '../api/linkPreviewApi';
 import styled from '@emotion/styled';
 import useAsync from '../hooks/useAsync';
+import useCardChangeWithFolder from '../hooks/useCardChangeWithFolder';
 
-const DownCards = ({ title, content, id, index, link, writable = true }) => {
-  const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
+const DownCards = ({ title, content, id, link, writable = true }) => {
   const [linkPreview, setLinkPreview] = useRecoilState(linkPreviewState);
   const [currentData, setCurrentData] = useState();
   const setCardChange = useSetRecoilState(cardChangeState);
+
+  const deleteCardChangeWithFolder = useCardChangeWithFolder('DELETE');
+
   const handleDeleteClick = async () => {
     Swal.fire({
       icon: 'question',
@@ -30,9 +33,7 @@ const DownCards = ({ title, content, id, index, link, writable = true }) => {
       if (result.isConfirmed) {
         onDeleteCard(id)
           .then(() => {
-            const newCards = [...currentCards];
-            newCards.splice(index, 1);
-            setCurrentCards(newCards);
+            deleteCardChangeWithFolder(id);
             setCardChange(true);
           })
           .catch(error => {
@@ -79,7 +80,7 @@ const DownCards = ({ title, content, id, index, link, writable = true }) => {
             data-testid="image-container"
             className="Image"
             onClick={() => {
-              location.herf = link;
+              window.open(link);
             }}
             style={{
               cursor: 'pointer',
@@ -94,28 +95,12 @@ const DownCards = ({ title, content, id, index, link, writable = true }) => {
                 ? currentData.title.substr(0, 30) + '...'
                 : currentData.title}
             </h3>
-            <span data-testid="desc" className="Description Secondary">
-              {currentData.description.length > 43
-                ? currentData.description.substr(0, 40) + '...'
-                : currentData.description}
-            </span>
           </div>
         </div>
       )}
       <CardContent>
         <StyleTitle>{title || '제목없음'}</StyleTitle>
         <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>
-        {/* <TagList>
-          {tagList &&
-            false &&
-            tagList.map(value => {
-              return (
-                <IconTag key={value.tagId} size={'small'} style="font-size: 10px">
-                  {value.name}
-                </IconTag>
-              );
-            })}
-        </TagList> */}
       </CardContent>
     </StyleCard>
   );
@@ -130,7 +115,6 @@ const StyleCard = styled(Card)`
   :hover {
     box-shadow: ${Shadows.section};
   }
-
   .Secondary {
     text-align: left;
     align-items: center;
@@ -198,13 +182,6 @@ const StyleCard = styled(Card)`
   }
 `;
 
-// const StyleImage = styled(Card.Image)`
-//   font-family: 'ImcreSoojin';
-//   width: 100%;
-//   border-radius: ${BorderRadius.image};
-//   }
-// `;
-
 const CardContent = styled(Card.Content)`
   @media ${Media.desktop} {
     padding-top: 0.4rem;
@@ -269,17 +246,6 @@ const StyleContent = styled(Content)`
   }
 `;
 
-// const TagList = styled.p`
-//   display: -webkit-box;
-//   min-height: 60px;
-//   max-height: 60px;
-//   -webkit-line-clamp: 3;
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   line-height: 1.6;
-// `;
-
 const DeleteButton = styled.button`
   background-color: ${Colors.warningFirst};
   position: absolute;
@@ -289,11 +255,5 @@ const DeleteButton = styled.button`
     transform: scale(1.4);
   }
 `;
-
-// const LinkWrapper = styled.div``;
-// const LinkImageContainer = styled.div``;
-
-// const LinkLowerContainer = styled.div``;
-// const LinkDescription = styled.span``;
 
 export default memo(DownCards);

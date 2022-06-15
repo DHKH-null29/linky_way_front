@@ -1,19 +1,35 @@
+import { FOLDER } from '../constants/business';
 import { requestForAuth } from './config';
 
 const folderApi = 'api/folders';
 
-export const onSelectFolderList = async () => {
-  return requestForAuth.get(folderApi + '/super');
+const setFolderList = folderList => {
+  return folderList.map(folder => flatChildFolderList(folder)).flat(FOLDER.DEPTH_LIMIT + 1);
 };
 
-export const onDeleteFolder = async folderId => {
+const flatChildFolderList = currentFolder => {
+  if (!currentFolder.childFolderList) {
+    return currentFolder;
+  }
+  return [currentFolder, currentFolder.childFolderList.map(child => flatChildFolderList(child))];
+};
+
+export const onSelectFolderList = async () => {
+  console.log('CALL FOLDER LIST');
+  return requestForAuth
+    .get(folderApi + '/super')
+    .then(response => setFolderList(response.data))
+    .catch(() => []);
+};
+
+export const onDeleteFolder = folderId => {
   return requestForAuth.delete(folderApi + `/${folderId}`);
 };
 
-export const onUpdateFolderName = async (folderId, folderName) => {
+export const onUpdateFolderName = (folderId, folderName) => {
   return requestForAuth.put(folderApi + `/${folderId}/name`, { name: folderName });
 };
 
-export const onAddFolder = async ({ name, parentFolderId }) => {
+export const onAddFolder = ({ name, parentFolderId }) => {
   return requestForAuth.post(folderApi, { name, parentFolderId });
 };

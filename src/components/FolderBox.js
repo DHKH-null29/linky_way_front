@@ -1,44 +1,41 @@
+import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../constants/query';
 import { Colors, FontSize, Media, Shadows } from '../styles';
-import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
-import { folderHighlightState, folderListState } from '../state/folderState';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { onDeleteFolder, onUpdateFolderName } from '../api/folderApi';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import AnimatedIcon from './icons/AnimatedIcon';
 import Close from './icons/Close';
 import Edit from './icons/Edit';
+import { FOLDER } from '../constants/business';
 import FolderArrow from './icons/FolderArrow';
 import { FontWeight } from '../styles/font';
 import { Icon } from 'react-bulma-components';
 import Swal from 'sweetalert2';
+import { currentCardClassifier } from '../state/cardState';
+import { folderHighlightState } from '../state/folderState';
 import { onSelectCardsByFolder } from '../api/cardApi';
 import styled from '@emotion/styled';
-import useAsync from '../hooks/useAsync';
+import { useSetRecoilState } from 'recoil';
 
-const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
-  const setCurrentCards = useSetRecoilState(currentCardState);
+const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
+  const FOLDER_QUERY_KEY = REACT_QUERY_KEY.FOLDERS;
+
+  const queryClient = useQueryClient();
+  const folders = queryClient.getQueryData(FOLDER_QUERY_KEY);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
-  const [folderList, setFolderList] = useRecoilState(folderListState);
   const [mouseOver, setMouseOver] = useState(false);
   const [modifiable, setModifiable] = useState(false);
-  const [cardChange, setCardChange] = useRecoilState(cardChangeState);
   const folderInputRef = useRef();
-  useEffect(() => {
-    if (highlight && cardChange) {
-      (async () => {
-        const result = await fetch();
-        setCurrentCards(result.data);
-        setCardChange(false);
-      })();
+
+  const changeHighlightState = () => {
+    if (!highlight) {
+      const newArray = [];
+      newArray[idx] = true;
+      setFolderHighlight(newArray);
     }
-  }, [cardChange]);
-  const handleGetCards = async () => {
-    const result = await onSelectCardsByFolder(folderId);
-    return result;
   };
-  const [state, fetch] = useAsync(handleGetCards, [], true);
 
   const handleMouseOver = () => {
     setMouseOver(true);
@@ -48,22 +45,59 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
     setMouseOver(false);
   };
 
-  const handleNameClick = useCallback(async () => {
-    if (!highlight) {
-      const newArray = [];
-      newArray[idx] = true;
-      setFolderHighlight(newArray);
-      if (!state.data) {
-        await fetch().then(response => {
-          setCurrentCards(response.data);
-        });
-      }
-      if (state.data) {
-        setCurrentCards(state.data.data);
-      }
-      setCardClassfier({ id: folderId, classifier: '폴더', name: children, parent: hasParent });
+  const handleGetCards = async () => {
+    const findDeep = level < FOLDER.DEPTH_LIMIT ? true : false;
+    return await onSelectCardsByFolder(folderId, findDeep).then(response => response.data);
+  };
+
+  const handleNameClick = async () => {
+    const currentCardsByFolder = queryClient.getQueryData([
+      REACT_QUERY_KEY.CARDS_BY_FOLDER,
+      folderId,
+    ]);
+    if (!currentCardsByFolder) {
+      await fetchCardsByFolder();
     }
-  }, [highlight]);
+    changeHighlightState();
+    setCardClassfier({
+      id: folderId,
+      classifier: CARD_CLASSIFIER.FOLDER,
+      name: children,
+      parent: parent,
+    });
+  };
+
+  const { refetch: fetchCardsByFolder } = useQuery(
+    [REACT_QUERY_KEY.CARDS_BY_FOLDER, folderId],
+    handleGetCards,
+    {
+      refetchOnWindowFocus: true,
+      enabled: false,
+    },
+  );
+
+  const folderNameModifyMutation = useMutation(
+    inputName => onUpdateFolderName(folderId, inputName),
+    {
+      onMutate: async inputName => {
+        await queryClient.cancelQueries(FOLDER_QUERY_KEY);
+        const prevFolders = folders;
+        const newFolders = [...prevFolders];
+        newFolders[idx] = { ...newFolders[idx], name: inputName };
+        queryClient.setQueryData(FOLDER_QUERY_KEY, newFolders);
+        return { prevFolders };
+      },
+
+      onError: (error, values, context) => {
+        Swal.fire({
+          icon: 'error',
+          text: error.errors[0].msg || '폴더 생성 실패',
+        }).then(() => {
+          queryClient.setQueriesData(FOLDER_QUERY_KEY, context.prevFolders);
+        });
+      },
+    },
+  );
 
   const handleDeleteButtonClick = () => {
     Swal.fire({
@@ -77,8 +111,10 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
     }).then(result => {
       if (result.isConfirmed) {
         onDeleteFolder(folderId).then(() => {
-          const newFolderList = [...folderList];
-          setFolderList(newFolderList.filter(folder => folder.folderId !== folderId));
+          queryClient.setQueriesData(
+            FOLDER_QUERY_KEY,
+            folders.filter(folder => folder.folderId !== folderId),
+          );
         });
       }
     });
@@ -86,23 +122,16 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
 
   const handleUpdateButtonClick = async () => {
     const inputName = folderInputRef.current.value;
-    if (inputName === children || inputName === '' || inputName.length > 10) {
+    if (inputName === children || inputName === '') {
       return;
     }
-    const result = await onUpdateFolderName(folderId, inputName);
-    if (result.code === 200) {
-      const newFolder = { ...folderList[idx] };
-      newFolder.name = inputName;
-      const newFolderList = [...folderList];
-      newFolderList[idx] = newFolder;
-      setFolderList(newFolderList);
-    }
+    folderNameModifyMutation.mutate(inputName);
   };
 
   return (
     <Wrapper onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
       &nbsp;
-      {hasParent && (
+      {parent && (
         <Icon className="is-large">
           <span>
             <FolderArrow />
@@ -121,7 +150,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
         <FolderNameInput ref={folderInputRef} className="input" placeholder={children} />
       )}
       <span>&nbsp;&nbsp;</span>
-      {mouseOver && (
+      {level !== 0 && mouseOver && (
         <FolderModification>
           &nbsp;
           <Edit
@@ -151,7 +180,7 @@ const FolderBox = ({ children, folderId, highlight, idx, hasParent }) => {
 };
 
 FolderBox.defaultProps = {
-  hasParent: undefined,
+  parent: undefined,
 };
 
 const Wrapper = styled.div`

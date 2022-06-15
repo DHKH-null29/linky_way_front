@@ -1,4 +1,8 @@
+import { ERROR_CODE } from '../constants/status';
+import { TOKEN_INFO } from '../constants/tokens';
 import axios from 'axios';
+
+const ACCESS_TOKEN_NAME = TOKEN_INFO.ACCESS_TOKEN_NAME;
 
 const createInstance = axios.create({
   baseURL: process.env.REACT_APP_MAIN_API || 'http://localhost:8070',
@@ -28,7 +32,7 @@ const createAuthInstance = axios.create({
   baseURL: process.env.REACT_APP_MAIN_API || 'http://localhost:8070',
   headers: {
     'content-type': 'application/json',
-    Authorization: localStorage.getItem('act'),
+    Authorization: localStorage.getItem(ACCESS_TOKEN_NAME),
   },
   timeout: 2000,
 });
@@ -36,7 +40,7 @@ const createAuthInstance = axios.create({
 createAuthInstance.interceptors.request.use(
   config => {
     config.headers['Content-Type'] = 'application/json; charset=utf-8';
-    config.headers['Authorization'] = localStorage.getItem('act');
+    config.headers['Authorization'] = localStorage.getItem(ACCESS_TOKEN_NAME);
     return config;
   },
   error => {
@@ -49,8 +53,9 @@ createAuthInstance.interceptors.response.use(
     return response.data;
   },
   error => {
-    if (error.response.status === 401) {
+    if (error.response.status === ERROR_CODE.UNAUTHORIZED) {
       window.location.reload();
+      return;
     }
     return Promise.reject(error.response.data);
   },
