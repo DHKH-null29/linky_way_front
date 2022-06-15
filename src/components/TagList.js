@@ -1,27 +1,13 @@
-// import AnimatedIcon from './icons/AnimatedIcon';
-
 import { Columns } from 'react-bulma-components';
 import IconTag from '../components/IconTag';
-import { currentTagState } from '../state/tagState';
+import { REACT_QUERY_KEY } from '../constants/query';
 import { onGetTagList } from '../api/tagApi';
-import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useQuery } from 'react-query';
 
 const TagList = () => {
-  const [tags, setTags] = useRecoilState(currentTagState);
-
-  useEffect(() => {
-    if (!tags || tags.length === 0) {
-      onGetTagList()
-        .then(response => {
-          setTags(response.data);
-        })
-        .catch(error => {
-          setTags(JSON.stringify(error));
-          alert('인증이 필요합니다.');
-        });
-    }
-  }, [tags]);
+  const { isLoading, data: tags } = useQuery(REACT_QUERY_KEY.TAGS, () =>
+    onGetTagList().then(response => response.data),
+  );
 
   const tag = (value, index, size) => {
     return (
@@ -34,16 +20,18 @@ const TagList = () => {
   return (
     <Columns className="is-mobile">
       <Columns.Column>
-        {tags.map((value, index) => {
-          return (
-            <span key={index}>
-              <span className="is-hidden-mobile">{tag(value, index, 'large')}</span>
-              <span className="is-hidden-tablet is-hidden-desktop">
-                {tag(value, index, 'small')}
+        {isLoading && <div>...loading</div>}
+        {!isLoading &&
+          tags.map((value, index) => {
+            return (
+              <span key={index}>
+                <span className="is-hidden-mobile">{tag(value, index, 'large')}</span>
+                <span className="is-hidden-tablet is-hidden-desktop">
+                  {tag(value, index, 'small')}
+                </span>
               </span>
-            </span>
-          );
-        })}
+            );
+          })}
       </Columns.Column>
     </Columns>
   );
