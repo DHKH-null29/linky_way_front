@@ -2,7 +2,7 @@ import { CARD_CLASSIFIER, REACT_QUERY_KEY, getCardQueryKeyByClassifier } from '.
 import { Columns, Hero } from 'react-bulma-components';
 import { FontSize, Media } from '../styles';
 import { Link, useNavigate } from 'react-router-dom';
-import { currentCardClassifier, currentCardState } from '../state/cardState';
+import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -24,6 +24,7 @@ const CardPage = () => {
   const [cardClassifier, setCardClassifer] = useRecoilState(currentCardClassifier);
   const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
   const [cardAddModalActive, setCardAddModalActive] = useState(false);
+  const cardChange = useRecoilValue(cardChangeState);
 
   const navigate = useNavigate();
   if (!login) {
@@ -48,7 +49,7 @@ const CardPage = () => {
         ),
       );
     }
-  }, [cardClassifier]);
+  }, [cardClassifier, cardChange]);
 
   return (
     <div>
