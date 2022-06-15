@@ -1,16 +1,16 @@
 import { Colors, Shadows } from '../styles';
 
 import { Icon } from 'react-bulma-components';
+import { REACT_QUERY_KEY } from '../constants/query';
 import Swal from 'sweetalert2';
 import TagIcon from './icons/TagIcon';
-import { currentTagState } from '../state/tagState';
 import { onDeleteTag } from '../api/tagApi';
 import styled from '@emotion/styled';
-import { useRecoilState } from 'recoil';
+import { useQueryClient } from 'react-query';
 
-const IconTag = ({ size, tagId, index, children, writable, onClick }) => {
-  const [tags, setTags] = useRecoilState(currentTagState);
-
+const IconTag = ({ size, tagId, children, writable, onClick }) => {
+  const queryClient = useQueryClient();
+  const currentTagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS);
   const handleTagDeleteButtonClick = async event => {
     event.stopPropagation();
     Swal.fire({
@@ -25,9 +25,10 @@ const IconTag = ({ size, tagId, index, children, writable, onClick }) => {
       if (result.isConfirmed) {
         onDeleteTag(tagId)
           .then(() => {
-            const newTags = [...tags];
-            newTags.splice(index, 1);
-            setTags(newTags);
+            queryClient.setQueryData(
+              REACT_QUERY_KEY.TAGS,
+              currentTagList.filter(tag => tag.tagId !== tagId),
+            );
           })
           .catch(error => {
             Swal.fire({
