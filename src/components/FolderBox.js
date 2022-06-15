@@ -150,7 +150,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
         <FolderNameInput ref={folderInputRef} className="input" placeholder={children} />
       )}
       <span>&nbsp;&nbsp;</span>
-      {mouseOver && (
+      {level !== 0 && mouseOver && (
         <FolderModification>
           &nbsp;
           <Edit
