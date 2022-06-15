@@ -22,7 +22,7 @@ export const onDeleteCard = cardId => {
 };
 
 export const onSelectCardsByeTagId = tagId => {
-  return requestForAuth.get(cardApi + `/tags/${tagId}`);
+  return requestForAuth.get(cardApi + `/tag/${tagId}`);
 };
 
 export const onAddCard = cardRequest => {

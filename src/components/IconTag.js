@@ -1,16 +1,22 @@
+import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../constants/query';
 import { Colors, Shadows } from '../styles';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { Icon } from 'react-bulma-components';
-import { REACT_QUERY_KEY } from '../constants/query';
 import Swal from 'sweetalert2';
 import TagIcon from './icons/TagIcon';
+import { currentCardClassifier } from '../state/cardState';
 import { onDeleteTag } from '../api/tagApi';
+import { onSelectCardsByeTagId } from '../api/cardApi';
 import styled from '@emotion/styled';
-import { useQueryClient } from 'react-query';
+import { useEffect } from 'react';
+import { useSetRecoilState } from 'recoil';
 
-const IconTag = ({ size, tagId, children, writable, onClick }) => {
+const IconTag = ({ size, tagId, children, writable, onClick, highlight }) => {
   const queryClient = useQueryClient();
   const currentTagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS);
+  const setCardClassfier = useSetRecoilState(currentCardClassifier);
+
   const handleTagDeleteButtonClick = async event => {
     event.stopPropagation();
     Swal.fire({
@@ -39,10 +45,56 @@ const IconTag = ({ size, tagId, children, writable, onClick }) => {
       }
     });
   };
+
+  const handleTagClick = () => {
+    onClick();
+    if (!writable) {
+      return;
+    }
+    if (!queryClient.getQueryData([REACT_QUERY_KEY.CARDS_BY_TAG, tagId])) {
+      selectCardsByTag();
+    } else {
+      setCardClassfier({
+        id: tagId,
+        classifier: CARD_CLASSIFIER.TAG,
+        name: children,
+      });
+    }
+  };
+
+  const selectCardByTagId = async () => {
+    return await onSelectCardsByeTagId(tagId)
+      .then(response => response.data)
+      .catch(() => []);
+  };
+
+  const { isSuccess, refetch: selectCardsByTag } = useQuery(
+    [REACT_QUERY_KEY.CARDS_BY_TAG, tagId],
+    selectCardByTagId,
+    {
+      refetchOnWindowFocus: true,
+      enabled: false,
+    },
+  );
+
+  useEffect(() => {
+    if (isSuccess && highlight) {
+      setCardClassfier({
+        id: tagId,
+        classifier: CARD_CLASSIFIER.TAG,
+        name: children,
+      });
+    }
+  }, [isSuccess]);
+
   const SpanClassName = 'tag is-warning is-rounded is-' + size;
   const IconClassName = 'is' + size;
   return (
-    <StyledTag className={SpanClassName} onClick={onClick}>
+    <StyledTag
+      className={SpanClassName}
+      onClick={handleTagClick}
+      style={{ backgroundColor: highlight ? Colors.subFirst : Colors.card }}
+    >
       <Icon className={IconClassName}>
         <TagIcon />
         &nbsp;

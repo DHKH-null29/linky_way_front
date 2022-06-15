@@ -1,17 +1,40 @@
+import { useRecoilState, useSetRecoilState } from 'recoil';
+
 import { Columns } from 'react-bulma-components';
 import IconTag from '../components/IconTag';
 import { REACT_QUERY_KEY } from '../constants/query';
+import { folderHighlightState } from '../state/folderState';
 import { onGetTagList } from '../api/tagApi';
+import { tagHighlightState } from '../state/tagState';
 import { useQuery } from 'react-query';
 
 const TagList = () => {
+  const [tagHighlightList, setTagHighlightList] = useRecoilState(tagHighlightState);
+  const setFolderHighlight = useSetRecoilState(folderHighlightState);
+
   const { isLoading, data: tags } = useQuery(REACT_QUERY_KEY.TAGS, () =>
     onGetTagList().then(response => response.data),
   );
 
+  const handleTagClick = index => {
+    if (!tagHighlightList[index]) {
+      const newHighlghtList = [];
+      newHighlghtList[index] = true;
+      setTagHighlightList(newHighlghtList);
+      setFolderHighlight([]);
+    }
+  };
   const tag = (value, index, size) => {
     return (
-      <IconTag size={size} writable={true} key={value.tagId} tagId={value.tagId} index={index}>
+      <IconTag
+        size={size}
+        writable={true}
+        key={value.tagId}
+        tagId={value.tagId}
+        index={index}
+        highlight={tagHighlightList[index]}
+        onClick={() => handleTagClick(index)}
+      >
         {value.tagName}
       </IconTag>
     );
