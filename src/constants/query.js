@@ -35,11 +35,13 @@ export const CARD_CLASSIFIER = {
     name: '폴더',
     type: 'folder',
     query: REACT_QUERY_KEY.CARDS_BY_FOLDER,
+    byId: true,
   },
   TAG: {
     name: '태그',
     type: 'tag',
     query: REACT_QUERY_KEY.CARDS_BY_TAG,
+    byId: true,
   },
 };
 

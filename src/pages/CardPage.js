@@ -1,15 +1,12 @@
+import { CARD_CLASSIFIER, REACT_QUERY_KEY, getCardQueryKeyByClassifier } from '../constants/query';
 import { Columns, Hero } from 'react-bulma-components';
 import { FontSize, Media } from '../styles';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  currentCardClassifier,
-  currentCardState,
-  currentDefaultCardState,
-} from '../state/cardState';
+import { currentCardClassifier, currentCardState } from '../state/cardState';
 import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { CARD_CLASSIFIER } from '../constants/query';
 import CardAddForm from '../components/CardAddForm';
 import DownCards from '../components/DownCards';
 import FolderBar from '../components/FolderBar';
@@ -19,14 +16,13 @@ import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
 import { onSelectCardsByDefaultMember } from '../api/cardApi';
 import styled from '@emotion/styled';
-import useAsync from '../hooks/useAsync';
 
 const CardPage = () => {
+  const queryClient = useQueryClient();
   const login = useRecoilValue(loginState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
   const [cardClassifier, setCardClassifer] = useRecoilState(currentCardClassifier);
   const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
-  const [defaultCards, setDefaultCards] = useRecoilState(currentDefaultCardState);
   const [cardAddModalActive, setCardAddModalActive] = useState(false);
 
   const navigate = useNavigate();
@@ -34,26 +30,25 @@ const CardPage = () => {
     navigate('/login');
   }
 
-  const onLoadCards = async () => {
-    const result = await onSelectCardsByDefaultMember();
-    return result;
-  };
-  const [, fetch] = useAsync(onLoadCards, [], true);
+  const { isSuccess, isLoading, data } = useQuery(REACT_QUERY_KEY.CARDS_BY_DEFAULT, () =>
+    onSelectCardsByDefaultMember().then(response => response.data),
+  );
 
   useEffect(() => {
-    if (!defaultCards || !defaultCards.updated) {
-      console.log('fetch default cards');
-      (async () => {
-        const result = await fetch();
-        setDefaultCards({ data: result.data, updated: true });
-      })();
+    if (isSuccess) {
+      setCurrentCards(data);
     }
-  }, [defaultCards]);
+  }, [isSuccess]);
 
   useEffect(() => {
-    setFolderHighlight([]);
-    setCurrentCards(defaultCards.data);
-  }, [defaultCards]);
+    if (!isLoading) {
+      setCurrentCards(
+        queryClient.getQueryData(
+          getCardQueryKeyByClassifier(cardClassifier.classifier, cardClassifier.id),
+        ),
+      );
+    }
+  }, [cardClassifier]);
 
   return (
     <div>
@@ -70,9 +65,11 @@ const CardPage = () => {
                 className="mr-5"
                 to={'/card'}
                 onClick={() => {
-                  setCurrentCards(defaultCards.data);
                   setFolderHighlight([]);
-                  setCardClassifer({ classifier: CARD_CLASSIFIER.DEFAULT });
+                  setCardClassifer({
+                    ...cardClassifier,
+                    classifier: CARD_CLASSIFIER.DEFAULT,
+                  });
                 }}
               >
                 전체보기
@@ -101,19 +98,20 @@ const CardPage = () => {
               </Classifier>
             </Columns>
             <Columns className="is-mobile">
-              {currentCards.map((value, index) => {
-                return (
-                  <Columns.Column key={index} className="is-3-desktop is-6-tablet is-half-mobile">
-                    <DownCards
-                      id={value.cardId}
-                      title={value.title}
-                      content={value.content}
-                      link={value.link}
-                      tagList={value.tags}
-                    />
-                  </Columns.Column>
-                );
-              })}
+              {currentCards &&
+                currentCards.map((value, index) => {
+                  return (
+                    <Columns.Column key={index} className="is-3-desktop is-6-tablet is-half-mobile">
+                      <DownCards
+                        id={value.cardId}
+                        title={value.title}
+                        content={value.content}
+                        link={value.link}
+                        tagList={value.tags}
+                      />
+                    </Columns.Column>
+                  );
+                })}
             </Columns>
           </Columns.Column>
           <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
