@@ -24,7 +24,7 @@ const CardPage = () => {
   const [cardClassifier, setCardClassifer] = useRecoilState(currentCardClassifier);
   const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
   const [cardAddModalActive, setCardAddModalActive] = useState(false);
-  const cardChange = useRecoilValue(cardChangeState);
+  const [cardChange, setCardChange] = useRecoilState(cardChangeState);
 
   const navigate = useNavigate();
   if (!login) {
@@ -48,6 +48,7 @@ const CardPage = () => {
           getCardQueryKeyByClassifier(cardClassifier.classifier, cardClassifier.id),
         ),
       );
+      setCardChange(false);
     }
   }, [cardClassifier, cardChange]);
 

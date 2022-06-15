@@ -19,16 +19,39 @@ const useCardChangeWithFolder = command => {
     return folder && folder.parentId;
   };
 
-  const changeCardListStateWithFolders = (folderId, newCard) => {
-    if (command === 'CREATE') {
-      const parentId = findParentFolderIdByFolderId(folderId);
-      parentId && changeCardByFolderDataWithCardAdd(parentId, newCard);
-      changeCardByFolderDataWithCardAdd(folderId, newCard);
-      return;
-    }
+  const createCardListStateWithFolders = (folderId, newCard) => {
+    const parentId = findParentFolderIdByFolderId(folderId);
+    parentId && changeCardByFolderDataWithCardAdd(parentId, newCard);
+    changeCardByFolderDataWithCardAdd(folderId, newCard);
   };
 
-  return changeCardListStateWithFolders;
+  const deleteCardListStateWithFolders = cardId => {
+    const currentAllCardsByFolderQueries = queryClient.getQueriesData(
+      REACT_QUERY_KEY.CARDS_BY_FOLDER,
+    );
+    currentAllCardsByFolderQueries.forEach(query => {
+      if (query[1]) {
+        queryClient.setQueryData(
+          query[0],
+          query[1].filter(card => card.cardId !== cardId),
+        );
+      }
+    });
+    const defaultCards = queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT);
+    queryClient.setQueriesData(
+      REACT_QUERY_KEY.CARDS_BY_DEFAULT,
+      defaultCards.filter(card => card.cardId !== cardId),
+    );
+  };
+
+  //TODO: 커맨드 상수화
+  if (command === 'CREATE') {
+    return createCardListStateWithFolders;
+  }
+  if (command === 'DELETE') {
+    return deleteCardListStateWithFolders;
+  }
+  return;
 };
 
 export default useCardChangeWithFolder;
