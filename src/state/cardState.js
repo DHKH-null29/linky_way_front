@@ -1,16 +1,9 @@
 import { CARD_CLASSIFIER } from '../constants/query';
 import { atom } from 'recoil';
-import { persistAtom } from './sessionPersist';
 
 export const currentCardState = atom({
   key: 'currentCards',
   default: [],
-});
-
-export const currentDefaultCardState = atom({
-  key: 'currentDefaultCards',
-  default: { data: [], updated: false },
-  effects_UNSTABLE: [persistAtom],
 });
 
 export const cardChangeState = atom({
@@ -30,4 +23,9 @@ export const currentCardClassifier = atom({
     classifier: CARD_CLASSIFIER.DEFAULT,
     parent: { ...classifierInfo },
   },
+});
+
+export const prevSearchKeywordState = atom({
+  key: 'prevCardKeyword',
+  default: '',
 });

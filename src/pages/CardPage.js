@@ -92,7 +92,7 @@ const CardPage = () => {
                   ' >  ' +
                     cardClassifier.classifier.name +
                     ' > ' +
-                    (cardClassifier.parent.id
+                    (cardClassifier.parent && cardClassifier.parent.id
                       ? (cardClassifier.parent.name || '이름없음') + ' > '
                       : '') +
                     cardClassifier.name}
