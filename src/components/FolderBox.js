@@ -5,12 +5,10 @@ import { onDeleteFolder, onUpdateFolderName } from '../api/folderApi';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import AnimatedIcon from './icons/AnimatedIcon';
-import Close from './icons/Close';
-import Edit from './icons/Edit';
 import { FOLDER } from '../constants/business';
-import FolderArrow from './icons/FolderArrow';
 import { FontWeight } from '../styles/font';
 import { Icon } from 'react-bulma-components';
+import NormalIcon from './icons/NormalIcon';
 import Swal from 'sweetalert2';
 import { currentCardClassifier } from '../state/cardState';
 import { folderHighlightState } from '../state/folderState';
@@ -21,7 +19,6 @@ import { useSetRecoilState } from 'recoil';
 
 const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   const FOLDER_QUERY_KEY = REACT_QUERY_KEY.FOLDERS;
-
   const queryClient = useQueryClient();
   const folders = queryClient.getQueryData(FOLDER_QUERY_KEY);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
@@ -137,7 +134,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
       {parent && (
         <Icon className="is-large">
           <span>
-            <FolderArrow />
+            <NormalIcon.FolderArrow />
           </span>
         </Icon>
       )}
@@ -156,7 +153,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
       {level !== 0 && mouseOver && (
         <FolderModification>
           &nbsp;
-          <Edit
+          <NormalIcon.Edit
             size={16}
             color={modifiable ? 'black' : 'none'}
             onClick={() => {
@@ -167,9 +164,9 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
             }}
           />
           &nbsp;
-          {!modifiable && <Close size={16} onClick={handleDeleteButtonClick} />}
+          {!modifiable && <NormalIcon.Close size={16} onClick={handleDeleteButtonClick} />}
           {modifiable && (
-            <Close
+            <NormalIcon.Close
               size={16}
               onClick={() => {
                 setModifiable(false);

@@ -1,8 +1,7 @@
 import { FontSize, Media } from '../styles';
 
 import { Button } from 'react-bulma-components';
-import CrowdIcon from './icons/CrowdIcon';
-import UserIcon from './icons/UserIcon';
+import NormalIcon from './icons/NormalIcon';
 import { headerClickState } from '../state/headerState';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +24,7 @@ const HeaderSwitcher = ({ colors }) => {
           handleSwitchClick('/card');
         }}
       >
-        <UserIcon></UserIcon>
+        <NormalIcon.User />
       </LeftSwitch>
       <RightSwitch
         bg={clicked === false ? colors : 'none'}
@@ -34,7 +33,7 @@ const HeaderSwitcher = ({ colors }) => {
           handleSwitchClick('/social');
         }}
       >
-        <CrowdIcon></CrowdIcon>
+        <NormalIcon.Crowd />
       </RightSwitch>
     </SwitchContainer>
   );

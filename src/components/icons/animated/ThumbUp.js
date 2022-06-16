@@ -1,12 +1,12 @@
-import { Colors, IconSize } from '../../styles';
+import { Colors, IconSize } from '../../../styles';
 
 import UseAnimations from 'react-useanimations';
-import arrowdown from 'react-useanimations/lib/arrowDown';
+import thumbUp from 'react-useanimations/lib/thumbUp';
 
-const ArrowDown = ({ lineColor, fillColor, size, ...props }) => {
+const ThumbUp = ({ lineColor, fillColor, size, ...props }) => {
   return (
     <UseAnimations
-      animation={arrowdown}
+      animation={thumbUp}
       size={IconSize[size]}
       strokeColor={lineColor}
       fillColor={fillColor}
@@ -15,10 +15,10 @@ const ArrowDown = ({ lineColor, fillColor, size, ...props }) => {
   );
 };
 
-ArrowDown.defaultProps = {
+ThumbUp.defaultProps = {
   size: IconSize.normal,
   lineColor: Colors.formIconFirst,
   fillColor: '',
 };
 
-export default ArrowDown;
+export default ThumbUp;

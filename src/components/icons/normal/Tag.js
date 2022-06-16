@@ -1,9 +1,9 @@
-import { Colors, Media } from '../../styles';
+import { Colors, Media } from '../../../styles';
 
 import styled from '@emotion/styled';
 
 // fill: 아이콘 색상 stroke: 아이콘 선색상
-const TagIcon = ({ size, fill, stroke }) => {
+const Tag = ({ size, fill, stroke }) => {
   return (
     <>
       <StyledSvg size={size} version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -20,7 +20,7 @@ const TagIcon = ({ size, fill, stroke }) => {
   );
 };
 
-TagIcon.defaultProps = {
+Tag.defaultProps = {
   size: 45,
   fill: Colors.tagicon,
   stroke: Colors.tagstroke,
@@ -34,4 +34,4 @@ const StyledSvg = styled.svg`
   }
 `;
 
-export default TagIcon;
+export default Tag;

@@ -1,8 +1,8 @@
-import { Colors, Media } from '../../styles';
+import { Colors, Media } from '../../../styles';
 
 import styled from '@emotion/styled';
 
-const CrowdIcon = ({ size, fill }) => {
+const Crowd = ({ size, fill }) => {
   return (
     <StyledSvg
       size={size}
@@ -32,7 +32,7 @@ const CrowdIcon = ({ size, fill }) => {
   );
 };
 
-CrowdIcon.defaultProps = {
+Crowd.defaultProps = {
   size: 45,
   fill: Colors.subFirst,
 };
@@ -45,4 +45,4 @@ const StyledSvg = styled.svg`
   }
 `;
 
-export default CrowdIcon;
+export default Crowd;

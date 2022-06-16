@@ -1,12 +1,12 @@
-import { Colors, IconSize } from '../../styles';
+import { Colors, IconSize } from '../../../styles';
 
 import UseAnimations from 'react-useanimations';
-import lock from 'react-useanimations/lib/lock';
+import search from 'react-useanimations/lib/searchToX';
 
-const Password = ({ lineColor, fillColor, size, ...props }) => {
+const Search = ({ lineColor, fillColor, size, ...props }) => {
   return (
     <UseAnimations
-      animation={lock}
+      animation={search}
       size={IconSize[size]}
       strokeColor={lineColor}
       fillColor={fillColor}
@@ -15,10 +15,10 @@ const Password = ({ lineColor, fillColor, size, ...props }) => {
   );
 };
 
-Password.defaultProps = {
+Search.defaultProps = {
   size: IconSize.normal,
   lineColor: Colors.formIconFirst,
   fillColor: '',
 };
 
-export default Password;
+export default Search;

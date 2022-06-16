@@ -6,7 +6,7 @@ import FolderAddForm from './FolderAddForm';
 import FolderBox from './FolderBox';
 import { FontWeight } from '../styles/font';
 import Modals from './modals/Modals';
-import Plus from './icons/Plus';
+import NormalIcon from './icons/NormalIcon';
 import { REACT_QUERY_KEY } from '../constants/query';
 import { folderHighlightState } from '../state/folderState';
 import { onSelectFolderList } from '../api/folderApi';
@@ -56,7 +56,7 @@ const FolderBar = () => {
           }}
         >
           &nbsp;&nbsp;추가하기
-          <Plus size={17} />
+          <NormalIcon.Plus size={17} />
         </FolderAddText>
       </FolderAddSection>
       <Modals

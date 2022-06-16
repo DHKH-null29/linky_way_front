@@ -1,4 +1,4 @@
-import { IconSize } from '../../styles';
+import { IconSize } from '../../../styles';
 import styled from '@emotion/styled';
 
 const FolderArrow = ({ size }) => {

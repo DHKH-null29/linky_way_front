@@ -1,11 +1,11 @@
-import { IconSize } from '../../styles';
-import Skipforward from 'react-useanimations/lib/skipForward';
+import { IconSize } from '../../../styles';
+import Skipback from 'react-useanimations/lib/skipBack';
 import UseAnimations from 'react-useanimations';
 
-const SkipForward = ({ lineColor, fillColor, size, autoplay, ...props }) => {
+const SkipBack = ({ lineColor, fillColor, size, autoplay, ...props }) => {
   return (
     <UseAnimations
-      animation={Skipforward}
+      animation={Skipback}
       size={IconSize[size]}
       strokeColor={lineColor}
       fillColor={fillColor}
@@ -15,11 +15,11 @@ const SkipForward = ({ lineColor, fillColor, size, autoplay, ...props }) => {
   );
 };
 
-SkipForward.defaultProps = {
+SkipBack.defaultProps = {
   size: IconSize.large,
   lineColor: 'black',
   fillColor: '',
   autoplay: true,
 };
 
-export default SkipForward;
+export default SkipBack;

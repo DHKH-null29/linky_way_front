@@ -1,7 +1,7 @@
-import { Media } from '../../styles';
+import { Media } from '../../../styles';
 import styled from '@emotion/styled';
 
-const CardIcon = ({ size }) => {
+const Card = ({ size }) => {
   return (
     <StyledSvg
       enableBackground="new 0 0 50 50"
@@ -28,7 +28,7 @@ const CardIcon = ({ size }) => {
   );
 };
 
-CardIcon.defaultProps = {
+Card.defaultProps = {
   size: 18,
 };
 
@@ -40,4 +40,4 @@ const StyledSvg = styled.svg`
   }
 `;
 
-export default CardIcon;
+export default Card;

@@ -3,8 +3,8 @@ import { Colors, Shadows } from '../styles';
 import { useQuery, useQueryClient } from 'react-query';
 
 import { Icon } from 'react-bulma-components';
+import NormalIcon from './icons/NormalIcon';
 import Swal from 'sweetalert2';
-import TagIcon from './icons/TagIcon';
 import { currentCardClassifier } from '../state/cardState';
 import { onDeleteTag } from '../api/tagApi';
 import { onSelectCardsByeTagId } from '../api/cardApi';
@@ -96,7 +96,7 @@ const IconTag = ({ size, tagId, children, writable, onClick, highlight }) => {
       style={{ backgroundColor: highlight ? Colors.subFirst : Colors.card }}
     >
       <Icon className={IconClassName}>
-        <TagIcon />
+        <NormalIcon.Tag />
         &nbsp;
       </Icon>
       {children}

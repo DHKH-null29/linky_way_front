@@ -1,4 +1,4 @@
-import { IconSize } from '../../styles';
+import { IconSize } from '../../../styles';
 import UseAnimations from 'react-useanimations';
 import arrowRightCircle from 'react-useanimations/lib/arrowRightCircle';
 

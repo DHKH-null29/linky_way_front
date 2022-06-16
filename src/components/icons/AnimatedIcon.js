@@ -1,18 +1,18 @@
-import ArrowDown from './ArrowDown';
-import Bookmark from './Bookmark';
-import CardIcon from './CardIcon';
-import CheckMark from './CheckMark';
-import CommonInput from './CommonInput';
-import Email from './Email';
-import Folder from './Folder';
-import Password from './Password';
-import RightArrow from './RightArrow';
-import Search from './SearchIcon';
-import SkipBack from './SkipBack';
-import SkipForward from './SkipForward';
-import ThumbUp from './ThumbUp';
-import WarningAlert from './WarningAlert';
+import ArrowDown from './animated/ArrowDown';
+import Bookmark from './animated/Bookmark';
+import CheckMark from './animated/CheckMark';
+import CommonInput from './animated/CommonInput';
+import Email from './animated/Email';
+import Folder from './animated/Folder';
+import Password from './animated/Password';
+import RightArrow from './animated/RightArrow';
+import Search from './animated/Search';
+import SkipBack from './animated/SkipBack';
+import SkipForward from './animated/SkipForward';
+import ThumbUp from './animated/ThumbUp';
+import WarningAlert from './animated/WarningAlert';
 
+WarningAlert;
 const AnimatedIcon = {
   Email,
   Password,
@@ -27,7 +27,6 @@ const AnimatedIcon = {
   SkipForward,
   Bookmark,
   ThumbUp,
-  CardIcon,
 };
 
 export default AnimatedIcon;

@@ -1,8 +1,8 @@
-import { Colors, Media } from '../../styles';
+import { Colors, Media } from '../../../styles';
 
 import styled from '@emotion/styled';
 
-const UserIcon = ({ size, fill }) => {
+const User = ({ size, fill }) => {
   return (
     <StyledSvg
       size={size}
@@ -22,7 +22,7 @@ const UserIcon = ({ size, fill }) => {
   );
 };
 
-UserIcon.defaultProps = {
+User.defaultProps = {
   size: 45,
   fill: Colors.subFirst,
 };
@@ -35,4 +35,4 @@ const StyledSvg = styled.svg`
   }
 `;
 
-export default UserIcon;
+export default User;

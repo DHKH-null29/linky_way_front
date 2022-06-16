@@ -1,4 +1,4 @@
-import { Colors, IconSize } from '../../styles';
+import { Colors, IconSize } from '../../../styles';
 
 import UseAnimations from 'react-useanimations';
 import info from 'react-useanimations/lib/info';

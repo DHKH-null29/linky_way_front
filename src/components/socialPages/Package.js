@@ -17,7 +17,7 @@ const Package = ({ memeberId, nickname, numberOfCard }) => {
         <StyleLike>
           <div className="media-content is-right">
             <Icon>
-              <AnimatedIcon.CardIcon />
+              <AnimatedIcon.Card />
             </Icon>
             15{numberOfCard}
             &nbsp; &nbsp;
