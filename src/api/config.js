@@ -54,7 +54,7 @@ createAuthInstance.interceptors.response.use(
   },
   error => {
     if (error.response.status === ERROR_CODE.UNAUTHORIZED) {
-      window.location.reload();
+      setTimeout(() => (window.location.href = '/login'), 150);
       return;
     }
     return Promise.reject(error.response.data);

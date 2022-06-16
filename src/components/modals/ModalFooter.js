@@ -1,4 +1,4 @@
-import Buttons from '../Buttons';
+import Buttons from '../common/Buttons';
 import { Colors } from '../../styles';
 import styled from '@emotion/styled';
 

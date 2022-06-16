@@ -1,6 +1,6 @@
 import { Columns, Hero } from 'react-bulma-components';
 
-import Layout from '../components/socialPages/Layout';
+import SocialLayout from '../components/social/SocialLayout';
 
 // import Package from '../components/socialPages/Package';
 
@@ -36,7 +36,7 @@ const SocialPage = () => {
 
   return (
     <div>
-      <Layout />
+      <SocialLayout />
       <Hero className="medium">
         <Hero.Body className="columns">
           <Columns.Column>

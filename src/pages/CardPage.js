@@ -7,11 +7,11 @@ import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import CardAddForm from '../components/CardAddForm';
-import DownCards from '../components/DownCards';
-import FolderBar from '../components/FolderBar';
+import CardAddForm from '../components/card/CardAddForm';
+import DownCards from '../components/card/Cards';
+import FolderBar from '../components/folder/FolderBar';
 import Modals from '../components/modals/Modals';
-import SearchLayout from '../components/SearchLayout';
+import SearchLayout from '../components/card/SearchLayout';
 import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
 import { onSelectCardsByDefaultMember } from '../api/cardApi';

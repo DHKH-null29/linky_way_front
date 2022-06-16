@@ -5,8 +5,8 @@ import { Columns, Container, Hero } from 'react-bulma-components';
 import { onCheckNicknameDuplication, onJoin } from '../api/memberApi';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
-import Buttons from '../components/Buttons';
-import IconInput from '../components/IconInput';
+import Buttons from '../components/common/Buttons';
+import IconInput from '../components/common/IconInput';
 import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';

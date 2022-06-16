@@ -10,7 +10,7 @@ import {
 } from './pages';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import HeaderBar from './components/HeaderBar';
+import HeaderBar from './components/header/HeaderBar';
 import { checkAuth } from './utils/authUtils';
 import { loginState } from './state/loginState';
 import { useRecoilValue } from 'recoil';
