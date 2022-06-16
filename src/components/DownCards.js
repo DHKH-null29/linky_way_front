@@ -36,7 +36,7 @@ const DownCards = ({ title, content, id, link, tagList, writable = true }) => {
         onDeleteCard(id)
           .then(() => {
             deleteCardChangeWithFolder(id);
-            deleteCardChangeWithTag(tagList, id);
+            deleteCardChangeWithTag(tagList && tagList.map(tag => tag.tagId), id);
             setCardChange(true);
           })
           .catch(error => {

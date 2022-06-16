@@ -5,21 +5,19 @@ const useCardChangeWithTag = command => {
   const queryClient = useQueryClient();
   const cardByTag = queryClient.getQueriesData(REACT_QUERY_KEY.CARDS_BY_TAG);
 
-  const deleteCardListStateWithFolders = (tagList, deletedCardId) => {
-    if (!tagList) {
-      return;
-    }
-    cardByTag.forEach(
-      card =>
+  const deleteCardListStateWithFolders = (tagIdList, deletedCardId) => {
+    tagIdList &&
+      tagIdList.forEach(tagId => {
+        const card = cardByTag.find(c => c[0][1] === tagId);
         card[1] &&
-        queryClient.setQueryData(card[0], [...card[1].filter(c => c.cardId !== deletedCardId)]),
-    );
+          queryClient.setQueryData(card[0], [...card[1].filter(c => c.cardId !== deletedCardId)]);
+      });
   };
 
   const createCardListStateWithTags = (tagIdList, newCard) => {
     tagIdList &&
-      tagIdList.forEach(tag => {
-        const card = cardByTag.find(c => c[0][1] === tag);
+      tagIdList.forEach(tagId => {
+        const card = cardByTag.find(c => c[0][1] === tagId);
         card[1] && queryClient.setQueryData(card[0], [newCard].concat(card[1]));
       });
   };
