@@ -1,20 +1,20 @@
-import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../constants/query';
-import { Colors, FontSize, Media, Shadows } from '../styles';
+import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
+import { Colors, FontSize, Media, Shadows } from '../../styles';
 import { memo, useRef, useState } from 'react';
-import { onDeleteFolder, onUpdateFolderName } from '../api/folderApi';
+import { onDeleteFolder, onUpdateFolderName } from '../../api/folderApi';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import AnimatedIcon from './icons/AnimatedIcon';
-import { FOLDER } from '../constants/business';
-import { FontWeight } from '../styles/font';
+import AnimatedIcon from '../icons/AnimatedIcon';
+import { FOLDER } from '../../constants/business';
+import { FontWeight } from '../../styles/font';
 import { Icon } from 'react-bulma-components';
-import NormalIcon from './icons/NormalIcon';
+import NormalIcon from '../icons/NormalIcon';
 import Swal from 'sweetalert2';
-import { currentCardClassifier } from '../state/cardState';
-import { folderHighlightState } from '../state/folderState';
-import { onSelectCardsByFolder } from '../api/cardApi';
+import { currentCardClassifier } from '../../state/cardState';
+import { folderHighlightState } from '../../state/folderState';
+import { onSelectCardsByFolder } from '../../api/cardApi';
 import styled from '@emotion/styled';
-import { tagHighlightState } from '../state/tagState';
+import { tagHighlightState } from '../../state/tagState';
 import { useSetRecoilState } from 'recoil';
 
 const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {

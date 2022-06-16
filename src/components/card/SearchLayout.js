@@ -1,19 +1,23 @@
 import * as Yup from 'yup';
 
-import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../constants/query';
+import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
 import { Columns, Hero } from 'react-bulma-components';
-import { FontSize, Media } from '../styles';
-import { cardChangeState, currentCardClassifier, prevSearchKeywordState } from '../state/cardState';
+import { FontSize, Media } from '../../styles';
+import {
+  cardChangeState,
+  currentCardClassifier,
+  prevSearchKeywordState,
+} from '../../state/cardState';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import AnimatedIcon from '../components/icons/AnimatedIcon';
-import Buttons from './Buttons';
-import { Colors } from '../styles/colors';
-import IconInput from './IconInput';
+import AnimatedIcon from '../icons/AnimatedIcon';
+import Buttons from '../common/Buttons';
+import { Colors } from '../../styles/colors';
+import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
-import TagList from './TagList';
-import { onSelectCardsByKeyword } from '../api/cardApi';
+import TagList from '../tag/TagList';
+import { onSelectCardsByKeyword } from '../../api/cardApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useQuery } from 'react-query';

@@ -1,8 +1,8 @@
-import { FontSize, Media } from '../styles';
+import { FontSize, Media } from '../../styles';
 
 import { Button } from 'react-bulma-components';
-import NormalIcon from './icons/NormalIcon';
-import { headerClickState } from '../state/headerState';
+import NormalIcon from '../icons/NormalIcon';
+import { headerClickState } from '../../state/headerState';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';

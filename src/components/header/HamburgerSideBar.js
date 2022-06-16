@@ -1,12 +1,12 @@
-import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
+import { BorderRadius, Colors, FontSize, Media, Shadows } from '../../styles';
 import { Container, Section } from 'react-bulma-components';
 
-import AnimatedIcon from './icons/AnimatedIcon';
-import Buttons from './Buttons';
+import AnimatedIcon from '../icons/AnimatedIcon';
+import Buttons from '../common/Buttons';
 import { keyframes } from '@emotion/react';
-import { loginState } from '../state/loginState';
+import { loginState } from '../../state/loginState';
 import styled from '@emotion/styled';
-import useClickAway from '../hooks/useClickAway';
+import useClickAway from '../../hooks/useClickAway';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 

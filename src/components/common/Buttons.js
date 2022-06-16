@@ -1,4 +1,4 @@
-import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
+import { BorderRadius, Colors, FontSize, Media, Shadows } from '../../styles';
 
 import { Button } from 'react-bulma-components';
 import styled from '@emotion/styled';

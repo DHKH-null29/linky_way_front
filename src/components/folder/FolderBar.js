@@ -1,15 +1,15 @@
-import { BorderRadius, Colors, FontSize, Media } from '../styles';
+import { BorderRadius, Colors, FontSize, Media } from '../../styles';
 
 import { Box } from 'react-bulma-components';
-import { FOLDER } from '../constants/business';
+import { FOLDER } from '../../constants/business';
 import FolderAddForm from './FolderAddForm';
 import FolderBox from './FolderBox';
-import { FontWeight } from '../styles/font';
-import Modals from './modals/Modals';
-import NormalIcon from './icons/NormalIcon';
-import { REACT_QUERY_KEY } from '../constants/query';
-import { folderHighlightState } from '../state/folderState';
-import { onSelectFolderList } from '../api/folderApi';
+import { FontWeight } from '../../styles/font';
+import Modals from '../modals/Modals';
+import NormalIcon from '../icons/NormalIcon';
+import { REACT_QUERY_KEY } from '../../constants/query';
+import { folderHighlightState } from '../../state/folderState';
+import { onSelectFolderList } from '../../api/folderApi';
 import styled from '@emotion/styled';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';

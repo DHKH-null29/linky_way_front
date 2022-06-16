@@ -1,13 +1,13 @@
-import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../constants/query';
-import { Colors, Shadows } from '../styles';
+import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
+import { Colors, Shadows } from '../../styles';
 import { useQuery, useQueryClient } from 'react-query';
 
 import { Icon } from 'react-bulma-components';
-import NormalIcon from './icons/NormalIcon';
+import NormalIcon from '../icons/NormalIcon';
 import Swal from 'sweetalert2';
-import { currentCardClassifier } from '../state/cardState';
-import { onDeleteTag } from '../api/tagApi';
-import { onSelectCardsByeTagId } from '../api/cardApi';
+import { currentCardClassifier } from '../../state/cardState';
+import { onDeleteTag } from '../../api/tagApi';
+import { onSelectCardsByeTagId } from '../../api/cardApi';
 import styled from '@emotion/styled';
 import { useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';

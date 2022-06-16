@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { FontSize } from '../styles/font';
+import { FontSize } from '../../styles/font';
 import HamburgerSideBar from './HamburgerSideBar';
 import HeaderSwitcher from './HeaderSwitcher';
-import { Media } from '../styles/media';
-import { Shadows } from '../styles/shadow';
+import { Media } from '../../styles/media';
+import { Shadows } from '../../styles/shadow';
 import Swal from 'sweetalert2';
-import { headerClickState } from '../state/headerState';
-import { loginState } from '../state/loginState';
+import { headerClickState } from '../../state/headerState';
+import { loginState } from '../../state/loginState';
 import styled from '@emotion/styled';
 
 const HeaderBar = () => {

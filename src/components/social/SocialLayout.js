@@ -4,18 +4,18 @@ import { Columns, Hero } from 'react-bulma-components';
 import { FontSize, Media } from '../../styles';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
-import Buttons from '../Buttons';
+import Buttons from '../common/Buttons';
 import { Colors } from '../../styles/colors';
-import IconInput from '../IconInput';
+import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
-import TagList from '../TagList';
+import TagList from '../tag/TagList';
 import { currentCardState } from '../../state/cardState';
 import { onSelectCardsByKeyword } from '../../api/cardApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useSetRecoilState } from 'recoil';
 
-const Layout = () => {
+const SocialLayout = () => {
   const setCurrentCards = useSetRecoilState(currentCardState);
 
   const initialValues = {
@@ -136,4 +136,4 @@ const TagContainer = styled.div`
   }
 `;
 
-export default Layout;
+export default SocialLayout;

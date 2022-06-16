@@ -1,20 +1,20 @@
-import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
+import { BorderRadius, Colors, FontSize, Media, Shadows } from '../../styles';
 import { Card, Content } from 'react-bulma-components';
 import { memo, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { FontWeight } from '../styles/font';
+import { FontWeight } from '../../styles/font';
 import Swal from 'sweetalert2';
-import { cardChangeState } from '../state/cardState';
-import { linkPreviewState } from '../state/linkPreviewState';
-import { onDeleteCard } from '../api/cardApi';
-import { onSelectCardLinkPreview } from '../api/linkPreviewApi';
+import { cardChangeState } from '../../state/cardState';
+import { linkPreviewState } from '../../state/linkPreviewState';
+import { onDeleteCard } from '../../api/cardApi';
+import { onSelectCardLinkPreview } from '../../api/linkPreviewApi';
 import styled from '@emotion/styled';
-import useAsync from '../hooks/useAsync';
-import useCardChangeWithFolder from '../hooks/useCardChangeWithFolder';
-import useCardChangeWithTag from '../hooks/useCardChangeWithTag';
+import useAsync from '../../hooks/useAsync';
+import useCardChangeWithFolder from '../../hooks/useCardChangeWithFolder';
+import useCardChangeWithTag from '../../hooks/useCardChangeWithTag';
 
-const DownCards = ({ title, content, id, link, tagList, writable = true }) => {
+const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const [linkPreview, setLinkPreview] = useRecoilState(linkPreviewState);
   const [currentData, setCurrentData] = useState();
   const setCardChange = useSetRecoilState(cardChangeState);
@@ -259,4 +259,4 @@ const DeleteButton = styled.button`
   }
 `;
 
-export default memo(DownCards);
+export default memo(Cards);

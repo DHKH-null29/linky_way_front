@@ -3,9 +3,9 @@ import * as Yup from 'yup';
 import { Columns, Container, Hero } from 'react-bulma-components';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
-import Buttons from '../components/Buttons';
+import Buttons from '../components/common/Buttons';
 import { Colors } from '../styles';
-import IconInput from '../components/IconInput';
+import IconInput from '../components/common/IconInput';
 import Swal from 'sweetalert2';
 import { TOKEN_INFO } from '../constants/tokens';
 import { loginState } from '../state/loginState';

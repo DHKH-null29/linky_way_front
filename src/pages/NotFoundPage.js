@@ -1,7 +1,7 @@
 import { BorderRadius, Colors, FontSize, Shadows } from '../styles';
 import { Container, Hero } from 'react-bulma-components';
 
-import Buttons from '../components/Buttons';
+import Buttons from '../components/common/Buttons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 

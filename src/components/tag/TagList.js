@@ -1,11 +1,11 @@
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { Columns } from 'react-bulma-components';
-import IconTag from '../components/IconTag';
-import { REACT_QUERY_KEY } from '../constants/query';
-import { folderHighlightState } from '../state/folderState';
-import { onGetTagList } from '../api/tagApi';
-import { tagHighlightState } from '../state/tagState';
+import IconTag from './IconTag';
+import { REACT_QUERY_KEY } from '../../constants/query';
+import { folderHighlightState } from '../../state/folderState';
+import { onGetTagList } from '../../api/tagApi';
+import { tagHighlightState } from '../../state/tagState';
 import { useQuery } from 'react-query';
 
 const TagList = () => {

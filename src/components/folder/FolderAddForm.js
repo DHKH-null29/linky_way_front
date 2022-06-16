@@ -1,15 +1,15 @@
 import * as Yup from 'yup';
 
-import { Colors, FontSize, Media } from '../styles';
+import { Colors, FontSize, Media } from '../../styles';
 import { Columns, Section } from 'react-bulma-components';
 import { useMutation, useQueryClient } from 'react-query';
 
-import { FOLDER } from '../constants/business';
-import IconInput from './IconInput';
-import ModalFooter from './modals/ModalFooter';
-import { REACT_QUERY_KEY } from '../constants/query';
+import { FOLDER } from '../../constants/business';
+import IconInput from '../common/IconInput';
+import ModalFooter from '../modals/ModalFooter';
+import { REACT_QUERY_KEY } from '../../constants/query';
 import Swal from 'sweetalert2';
-import { onAddFolder } from '../api/folderApi';
+import { onAddFolder } from '../../api/folderApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 

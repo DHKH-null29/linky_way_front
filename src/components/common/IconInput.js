@@ -1,4 +1,4 @@
-import { Colors, FontSize, Media, Shadows } from '../styles';
+import { Colors, FontSize, Media, Shadows } from '../../styles';
 
 import { Icon } from 'react-bulma-components';
 import styled from '@emotion/styled';

@@ -1,7 +1,7 @@
 import { BorderRadius, Colors, Shadows } from '../../styles';
 import { Card, Icon } from 'react-bulma-components';
 
-import AnimatedIcon from '../../components/icons/AnimatedIcon';
+import AnimatedIcon from '../icons/AnimatedIcon';
 import styled from '@emotion/styled';
 
 const Package = ({ memeberId, nickname, numberOfCard }) => {
