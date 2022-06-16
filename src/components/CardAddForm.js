@@ -3,7 +3,6 @@ import * as Yup from 'yup';
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../styles';
 import { Columns, Section } from 'react-bulma-components';
 import { useEffect, useState } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Buttons from './Buttons';
 import IconInput from './IconInput';
@@ -11,24 +10,26 @@ import IconTag from './IconTag';
 import ModalFooter from './modals/ModalFooter';
 import { REACT_QUERY_KEY } from '../constants/query';
 import { cardChangeState } from '../state/cardState';
-import { currentTagState } from '../state/tagState';
 import { makeCardFromRequest } from '../utils/cardUtils';
 import { onAddCard } from '../api/cardApi';
 import styled from '@emotion/styled';
 import useCardChangeWithFolder from '../hooks/useCardChangeWithFolder';
+import useCardChangeWithTag from '../hooks/useCardChangeWithTag';
 import useDebounce from '../hooks/useDebounce';
 import { useFormik } from 'formik';
 import { useQueryClient } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 
 const CardAddForm = ({ onClose, active }) => {
   const queryClient = useQueryClient();
   const folders = queryClient.getQueryData(REACT_QUERY_KEY.FOLDERS);
   const setCardChange = useSetRecoilState(cardChangeState);
   const [open, setOpen] = useState(false);
-  const tagList = useRecoilValue(currentTagState);
+  const tagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS);
   const [searchedTags, setSearchedTags] = useState(new Set());
   const [selectedTags, setSelectedTags] = useState(new Set());
   const cardCreationWithFolder = useCardChangeWithFolder('CREATE');
+  const cardCreationWithTag = useCardChangeWithTag('CREATE');
 
   const initialValues = {
     link: '',
@@ -36,7 +37,7 @@ const CardAddForm = ({ onClose, active }) => {
     content: '',
     folderId: '',
     tagKeyword: '',
-    tagIdList: [],
+    tagIdSet: [],
   };
   const validationSchema = Yup.object().shape({
     link: Yup.string().strict(true).required('링크 url을 입력하세요'),
@@ -56,10 +57,11 @@ const CardAddForm = ({ onClose, active }) => {
       if (!values.folderId) {
         values.folderId = folders[0].folderId;
       }
-      values.tagIdList = Array.from(selectedTags).map(tag => tag.tagId);
+      values.tagIdSet = Array.from(selectedTags).map(tag => tag.tagId);
       onAddCard(values).then(response => {
         const newCard = makeCardFromRequest(response.data.cardId, { body: values });
         cardCreationWithFolder(parseInt(values.folderId), newCard);
+        cardCreationWithTag(values.tagIdSet, newCard);
         queryClient.setQueryData(
           REACT_QUERY_KEY.CARDS_BY_DEFAULT,
           [newCard].concat(queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT)),

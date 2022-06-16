@@ -16,11 +16,13 @@ import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
 import { onSelectCardsByDefaultMember } from '../api/cardApi';
 import styled from '@emotion/styled';
+import { tagHighlightState } from '../state/tagState';
 
 const CardPage = () => {
   const queryClient = useQueryClient();
   const login = useRecoilValue(loginState);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const setTagHighlight = useSetRecoilState(tagHighlightState);
   const [cardClassifier, setCardClassifer] = useRecoilState(currentCardClassifier);
   const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
   const [cardAddModalActive, setCardAddModalActive] = useState(false);
@@ -68,6 +70,7 @@ const CardPage = () => {
                 to={'/card'}
                 onClick={() => {
                   setFolderHighlight([]);
+                  setTagHighlight([]);
                   setCardClassifer({
                     ...cardClassifier,
                     classifier: CARD_CLASSIFIER.DEFAULT,

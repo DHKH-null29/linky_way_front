@@ -16,6 +16,7 @@ import { currentCardClassifier } from '../state/cardState';
 import { folderHighlightState } from '../state/folderState';
 import { onSelectCardsByFolder } from '../api/cardApi';
 import styled from '@emotion/styled';
+import { tagHighlightState } from '../state/tagState';
 import { useSetRecoilState } from 'recoil';
 
 const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
@@ -24,6 +25,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   const queryClient = useQueryClient();
   const folders = queryClient.getQueryData(FOLDER_QUERY_KEY);
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
+  const setTagHighlight = useSetRecoilState(tagHighlightState);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
   const [mouseOver, setMouseOver] = useState(false);
   const [modifiable, setModifiable] = useState(false);
@@ -34,6 +36,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
       const newArray = [];
       newArray[idx] = true;
       setFolderHighlight(newArray);
+      setTagHighlight([]);
     }
   };
 

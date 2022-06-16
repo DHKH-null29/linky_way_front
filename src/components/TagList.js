@@ -1,31 +1,40 @@
-// import AnimatedIcon from './icons/AnimatedIcon';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { Columns } from 'react-bulma-components';
 import IconTag from '../components/IconTag';
-import { currentTagState } from '../state/tagState';
+import { REACT_QUERY_KEY } from '../constants/query';
+import { folderHighlightState } from '../state/folderState';
 import { onGetTagList } from '../api/tagApi';
-import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { tagHighlightState } from '../state/tagState';
+import { useQuery } from 'react-query';
 
 const TagList = () => {
-  const [tags, setTags] = useRecoilState(currentTagState);
+  const [tagHighlightList, setTagHighlightList] = useRecoilState(tagHighlightState);
+  const setFolderHighlight = useSetRecoilState(folderHighlightState);
 
-  useEffect(() => {
-    if (!tags || tags.length === 0) {
-      onGetTagList()
-        .then(response => {
-          setTags(response.data);
-        })
-        .catch(error => {
-          setTags(JSON.stringify(error));
-          alert('인증이 필요합니다.');
-        });
+  const { isLoading, data: tags } = useQuery(REACT_QUERY_KEY.TAGS, () =>
+    onGetTagList().then(response => response.data),
+  );
+
+  const handleTagClick = index => {
+    if (!tagHighlightList[index]) {
+      const newHighlghtList = [];
+      newHighlghtList[index] = true;
+      setTagHighlightList(newHighlghtList);
+      setFolderHighlight([]);
     }
-  }, [tags]);
-
+  };
   const tag = (value, index, size) => {
     return (
-      <IconTag size={size} writable={true} key={value.tagId} tagId={value.tagId} index={index}>
+      <IconTag
+        size={size}
+        writable={true}
+        key={value.tagId}
+        tagId={value.tagId}
+        index={index}
+        highlight={tagHighlightList[index]}
+        onClick={() => handleTagClick(index)}
+      >
         {value.tagName}
       </IconTag>
     );
@@ -34,16 +43,18 @@ const TagList = () => {
   return (
     <Columns className="is-mobile">
       <Columns.Column>
-        {tags.map((value, index) => {
-          return (
-            <span key={index}>
-              <span className="is-hidden-mobile">{tag(value, index, 'large')}</span>
-              <span className="is-hidden-tablet is-hidden-desktop">
-                {tag(value, index, 'small')}
+        {isLoading && <div>...loading</div>}
+        {!isLoading &&
+          tags.map((value, index) => {
+            return (
+              <span key={index}>
+                <span className="is-hidden-mobile">{tag(value, index, 'large')}</span>
+                <span className="is-hidden-tablet is-hidden-desktop">
+                  {tag(value, index, 'small')}
+                </span>
               </span>
-            </span>
-          );
-        })}
+            );
+          })}
       </Columns.Column>
     </Columns>
   );
