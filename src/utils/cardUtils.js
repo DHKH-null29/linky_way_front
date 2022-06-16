@@ -1,8 +1,8 @@
 export const makeCardFromRequest = (cardId, { body }) => {
-  const newCard = (({ title, content, shareable, link }) => ({
+  const newCard = (({ title, content, isPublic, link }) => ({
     title,
     content,
-    shareable,
+    isPublic,
     link,
   }))(body);
   newCard.tags = body.tagIdSet.map(id => (id = { tagId: id }));

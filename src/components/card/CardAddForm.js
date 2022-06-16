@@ -53,22 +53,27 @@ const CardAddForm = ({ onClose, active }) => {
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
-      values.shareable = open;
+      values.isPublic = open;
       if (!values.folderId) {
         values.folderId = folders[0].folderId;
       }
       values.tagIdSet = Array.from(selectedTags).map(tag => tag.tagId);
-      onAddCard(values).then(response => {
-        const newCard = makeCardFromRequest(response.data.cardId, { body: values });
-        cardCreationWithFolder(parseInt(values.folderId), newCard);
-        cardCreationWithTag(values.tagIdSet, newCard);
-        queryClient.setQueryData(
-          REACT_QUERY_KEY.CARDS_BY_DEFAULT,
-          [newCard].concat(queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT)),
-        );
-        setCardChange(true);
-        onClose();
-      });
+      onAddCard(values)
+        .then(response => {
+          const newCard = makeCardFromRequest(response.data.cardId, { body: values });
+          cardCreationWithFolder(parseInt(values.folderId), newCard);
+          cardCreationWithTag(values.tagIdSet, newCard);
+          queryClient.setQueryData(
+            REACT_QUERY_KEY.CARDS_BY_DEFAULT,
+            [newCard].concat(queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT)),
+          );
+          setCardChange(true);
+          onClose();
+        })
+        .catch(error => {
+          console.log(error);
+          alert('오류가 발생했습니다.');
+        });
       formikHelper.resetForm();
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
