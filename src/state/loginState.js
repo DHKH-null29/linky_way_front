@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { persistAtom } from './localPersist';
+import { persistAtom } from './persist/localPersist';
 
 export const loginState = atom({
   key: 'loginState',

@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { persistAtom } from './sessionPersist';
+import { persistAtom } from './persist/sessionPersist';
 
 export const linkPreviewState = atom({
   key: 'linkPreview',
