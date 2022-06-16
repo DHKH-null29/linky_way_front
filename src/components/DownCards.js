@@ -12,13 +12,15 @@ import { onSelectCardLinkPreview } from '../api/linkPreviewApi';
 import styled from '@emotion/styled';
 import useAsync from '../hooks/useAsync';
 import useCardChangeWithFolder from '../hooks/useCardChangeWithFolder';
+import useCardChangeWithTag from '../hooks/useCardChangeWithTag';
 
-const DownCards = ({ title, content, id, link, writable = true }) => {
+const DownCards = ({ title, content, id, link, tagList, writable = true }) => {
   const [linkPreview, setLinkPreview] = useRecoilState(linkPreviewState);
   const [currentData, setCurrentData] = useState();
   const setCardChange = useSetRecoilState(cardChangeState);
 
   const deleteCardChangeWithFolder = useCardChangeWithFolder('DELETE');
+  const deleteCardChangeWithTag = useCardChangeWithTag('DELETE');
 
   const handleDeleteClick = async () => {
     Swal.fire({
@@ -34,6 +36,7 @@ const DownCards = ({ title, content, id, link, writable = true }) => {
         onDeleteCard(id)
           .then(() => {
             deleteCardChangeWithFolder(id);
+            deleteCardChangeWithTag(tagList, id);
             setCardChange(true);
           })
           .catch(error => {
