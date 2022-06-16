@@ -7,7 +7,7 @@ import NormalIcon from '../icons/NormalIcon';
 import Swal from 'sweetalert2';
 import { currentCardClassifier } from '../../state/cardState';
 import { onDeleteTag } from '../../api/tagApi';
-import { onSelectCardsByeTagId } from '../../api/cardApi';
+import { onSelectCardsByTagId } from '../../api/cardApi';
 import styled from '@emotion/styled';
 import { useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -63,7 +63,7 @@ const IconTag = ({ size, tagId, children, writable, onClick, highlight }) => {
   };
 
   const selectCardByTagId = async () => {
-    return await onSelectCardsByeTagId(tagId)
+    return await onSelectCardsByTagId(tagId)
       .then(response => response.data)
       .catch(() => []);
   };

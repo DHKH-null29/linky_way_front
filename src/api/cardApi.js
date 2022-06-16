@@ -21,7 +21,7 @@ export const onDeleteCard = cardId => {
   return requestForAuth.delete(cardApi + `/${cardId}`);
 };
 
-export const onSelectCardsByeTagId = tagId => {
+export const onSelectCardsByTagId = tagId => {
   return requestForAuth.get(cardApi + `/tag/${tagId}`);
 };
 
