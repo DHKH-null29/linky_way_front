@@ -5,6 +5,7 @@ import { Columns, Section } from 'react-bulma-components';
 import { useEffect, useState } from 'react';
 
 import Buttons from '../common/Buttons';
+import { FontWeight } from '../../styles/font';
 import IconInput from '../common/IconInput';
 import IconTag from '../tag/IconTag';
 import ModalFooter from '../modals/ModalFooter';
@@ -12,6 +13,7 @@ import { REACT_QUERY_KEY } from '../../constants/query';
 import { cardChangeState } from '../../state/cardState';
 import { makeCardFromRequest } from '../../utils/cardUtils';
 import { onAddCard } from '../../api/cardApi';
+import { onAddTag } from '../../api/tagApi';
 import styled from '@emotion/styled';
 import useCardChangeWithFolder from '../../hooks/useCardChangeWithFolder';
 import useCardChangeWithTag from '../../hooks/useCardChangeWithTag';
@@ -25,9 +27,11 @@ const CardAddForm = ({ onClose, active }) => {
   const folders = queryClient.getQueryData(REACT_QUERY_KEY.FOLDERS);
   const setCardChange = useSetRecoilState(cardChangeState);
   const [open, setOpen] = useState(false);
-  const tagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS);
+  const tagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS) || [];
   const [searchedTags, setSearchedTags] = useState(new Set());
   const [selectedTags, setSelectedTags] = useState(new Set());
+  const [addableTag, setAddableTag] = useState();
+
   const cardCreationWithFolder = useCardChangeWithFolder('CREATE');
   const cardCreationWithTag = useCardChangeWithTag('CREATE');
 
@@ -80,11 +84,12 @@ const CardAddForm = ({ onClose, active }) => {
     },
   });
 
-  const inputValidation = value => {
-    if (!value || value.trim() === '') {
-      return false;
-    }
-    return true;
+  const inputTagValidation = tagName => {
+    return !tagName || tagName.length > 10 ? false : true;
+  };
+
+  const inputTagHasOnlySpace = tagName => {
+    return tagName === '' || tagName.trim() === '' ? true : false;
   };
 
   const handlePushSelectedTags = tag => {
@@ -112,9 +117,6 @@ const CardAddForm = ({ onClose, active }) => {
   };
 
   const handleSearchTagsChange = val => {
-    if (!inputValidation(val)) {
-      return;
-    }
     setSearchedTags(
       new Set(
         tagList.filter(tag => {
@@ -126,10 +128,34 @@ const CardAddForm = ({ onClose, active }) => {
     );
   };
 
+  const handleTagSAddButtonClick = async () => {
+    onAddTag({ tagName: addableTag, isPublic: false })
+      .then(response => {
+        const resultTag = { tagId: response.data.tagId, tagName: addableTag, isPublic: false };
+        queryClient.setQueryData(REACT_QUERY_KEY.TAGS, tagList.concat(resultTag));
+        setSearchedTags(new Set(Array.from(searchedTags).concat(resultTag)));
+      })
+      .catch(error => {
+        console.log(error);
+        alert('태그 등록 실패');
+      });
+    setAddableTag(undefined);
+  };
+
+  const handleAddableTagsChange = val => {
+    inputTagHasOnlySpace(values.tagKeyword)
+      ? setAddableTag(undefined)
+      : !tagList.find(tag => tag.tagName === val) && setAddableTag(val);
+  };
+
   const debounceValue = useDebounce(values.tagKeyword, 350);
 
   useEffect(() => {
+    if (!inputTagValidation(debounceValue)) {
+      return;
+    }
     handleSearchTagsChange(debounceValue);
+    handleAddableTagsChange(debounceValue);
   }, [values.tagKeyword, debounceValue]);
 
   useEffect(() => {
@@ -234,7 +260,7 @@ const CardAddForm = ({ onClose, active }) => {
               {!open && '비'}공개
             </Buttons>
           </Columns.Column>
-          <Columns.Column className="is-5 is-offset-1">
+          <Columns.Column className="is-8 is-offset-1">
             <label className="label">태그 선택</label>
             <IconInput
               type="text"
@@ -244,6 +270,15 @@ const CardAddForm = ({ onClose, active }) => {
               autocomplete="off"
               placeholder="태그 선택"
             />
+            {!addableTag && <p className="mt-1">&nbsp;</p>}
+            {addableTag && (
+              <p className="mt-1">
+                <StyledAddTagText onClick={handleTagSAddButtonClick}>
+                  &#39;{addableTag}&#39;
+                </StyledAddTagText>
+                &nbsp;태그 추가하기
+              </p>
+            )}
           </Columns.Column>
           <Columns.Column className="is-10 is-offset-1" style={{ minHeight: '120px' }}>
             <label className="label">검색된 태그</label>
@@ -302,6 +337,15 @@ const StyledTextArea = styled.textarea`
   box-shadow: ${Shadows.input};
   border: 2px solid ${Colors.mainFirst};
   border-radius: ${BorderRadius.input};
+`;
+
+const StyledAddTagText = styled.span`
+  color: ${Colors.warningFirst};
+  font-size: ${FontSize.medium};
+  :hover {
+    cursor: pointer;
+    font-weight: ${FontWeight.bolder};
+  }
 `;
 
 export default CardAddForm;
