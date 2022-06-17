@@ -3,6 +3,8 @@ import { Card, Content } from 'react-bulma-components';
 import { memo, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
+import AnimatedIcon from '../icons/AnimatedIcon';
+import Buttons from '../common/Buttons';
 import { FontWeight } from '../../styles/font';
 import Swal from 'sweetalert2';
 import { cardChangeState } from '../../state/cardState';
@@ -13,6 +15,7 @@ import styled from '@emotion/styled';
 import useAsync from '../../hooks/useAsync';
 import useCardChangeWithFolder from '../../hooks/useCardChangeWithFolder';
 import useCardChangeWithTag from '../../hooks/useCardChangeWithTag';
+import useMouseHover from '../../hooks/useMouseHover';
 
 const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const [linkPreview, setLinkPreview] = useRecoilState(linkPreviewState);
@@ -21,6 +24,8 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
 
   const deleteCardChangeWithFolder = useCardChangeWithFolder('DELETE');
   const deleteCardChangeWithTag = useCardChangeWithTag('DELETE');
+
+  const [hoverRef, isHovered] = useMouseHover();
 
   const handleDeleteClick = async () => {
     Swal.fire({
@@ -66,46 +71,64 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
       setCurrentData(linkPreview[link]);
     }
   }, [link]);
-
+  console.log(isHovered);
   return (
-    <StyleCard ok={currentData && currentData.ok ? 1 : 0}>
-      {writable && <DeleteButton className="delete" onClick={handleDeleteClick}></DeleteButton>}
-      <Card.Content className="pt-1 pb-1"></Card.Content>
-      {state.loading && <div>...loading</div>}
-      {state.error && <div>...error!</div>}
-      {currentData && (
-        <div
-          data-testid="container"
-          className="Container "
-          style={{ backgroundColor: 'white', borderColor: 'rgb(204, 204, 204)' }}
-        >
+    <div ref={hoverRef} style={{ position: 'relative' }}>
+      <StyleCard ok={currentData && currentData.ok ? 1 : 0}>
+        {writable && <DeleteButton className="delete" onClick={handleDeleteClick}></DeleteButton>}
+        <Card.Content className="pt-1 pb-1"></Card.Content>
+        {state.loading && <div>...loading</div>}
+        {state.error && <div>...error!</div>}
+        {currentData && (
           <div
-            data-testid="image-container"
-            className="Image"
-            onClick={() => {
-              window.open(link);
-            }}
-            style={{
-              cursor: 'pointer',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: '100% 100%',
-              backgroundImage: `url("${currentData.image}")`,
-            }}
-          ></div>
-          <div className="LowerContainer">
-            <h3 data-testid="title" className="Title">
-              {currentData.title.length > 33
-                ? currentData.title.substr(0, 30) + '...'
-                : currentData.title}
-            </h3>
+            data-testid="container"
+            className="Container "
+            style={{ backgroundColor: 'white', borderColor: 'rgb(204, 204, 204)' }}
+          >
+            <div
+              data-testid="image-container"
+              className="Image"
+              style={{
+                cursor: 'pointer',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '100% 100%',
+                backgroundImage: `url("${currentData.image}")`,
+              }}
+            ></div>
+            <div className="LowerContainer">
+              <h3 data-testid="title" className="Title">
+                {currentData.title.length > 33
+                  ? currentData.title.substr(0, 30) + '...'
+                  : currentData.title}
+              </h3>
+            </div>
           </div>
-        </div>
+        )}
+        <CardContent>
+          <StyleTitle>{title || '제목없음'}</StyleTitle>
+          <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>
+        </CardContent>
+      </StyleCard>
+      {isHovered && (
+        <StyleCardHovered>
+          <StyledCardHoveredButtonGroups>
+            <Buttons
+              className="mb-2"
+              onClick={() => {
+                window.open(link);
+              }}
+            >
+              <AnimatedIcon.CommonInput />
+              &nbsp;링크가기
+            </Buttons>
+            <Buttons>
+              <AnimatedIcon.Search />
+              &nbsp;상세보기
+            </Buttons>
+          </StyledCardHoveredButtonGroups>
+        </StyleCardHovered>
       )}
-      <CardContent>
-        <StyleTitle>{title || '제목없음'}</StyleTitle>
-        <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>
-      </CardContent>
-    </StyleCard>
+    </div>
   );
 };
 
@@ -182,6 +205,27 @@ const StyleCard = styled(Card)`
       font-size: ${FontSize.micro};
       height: 60px;
     }
+  }
+`;
+
+const StyleCardHovered = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: black;
+  opacity: 0.82;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledCardHoveredButtonGroups = styled.div`
+  button {
+    color: white;
+    background-color: black;
+    opacity: 1;
   }
 `;
 
