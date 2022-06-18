@@ -5,10 +5,13 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
+import CardDetailBody from './CardDetailBody';
 import { FontWeight } from '../../styles/font';
+import Modals from '../modals/Modals';
 import Swal from 'sweetalert2';
 import { cardChangeState } from '../../state/cardState';
 import { linkPreviewState } from '../../state/linkPreviewState';
+import noimageImage from '../../assets/images/noimage.JPG';
 import { onDeleteCard } from '../../api/cardApi';
 import { onSelectCardLinkPreview } from '../../api/linkPreviewApi';
 import styled from '@emotion/styled';
@@ -20,6 +23,7 @@ import useMouseHover from '../../hooks/useMouseHover';
 const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const [linkPreview, setLinkPreview] = useRecoilState(linkPreviewState);
   const [currentData, setCurrentData] = useState();
+  const [cardDetailModalActive, setCardDetailModalActive] = useState(false);
   const setCardChange = useSetRecoilState(cardChangeState);
 
   const deleteCardChangeWithFolder = useCardChangeWithFolder('DELETE');
@@ -71,7 +75,11 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
       setCurrentData(linkPreview[link]);
     }
   }, [link]);
-  console.log(isHovered);
+
+  const handleCardDetailModalClose = () => {
+    setCardDetailModalActive(false);
+  };
+
   return (
     <div ref={hoverRef} style={{ position: 'relative' }}>
       <StyleCard ok={currentData && currentData.ok ? 1 : 0}>
@@ -92,13 +100,13 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
                 cursor: 'pointer',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: '100% 100%',
-                backgroundImage: `url("${currentData.image}")`,
+                backgroundImage: `url("${currentData.image}"), url("${noimageImage}")`,
               }}
             ></div>
             <div className="LowerContainer">
               <h3 data-testid="title" className="Title">
-                {currentData.title.length > 33
-                  ? currentData.title.substr(0, 30) + '...'
+                {currentData.title.length > 17
+                  ? currentData.title.substr(0, 15) + '..'
                   : currentData.title}
               </h3>
             </div>
@@ -121,13 +129,20 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
               <AnimatedIcon.CommonInput />
               &nbsp;링크가기
             </Buttons>
-            <Buttons>
+            <Buttons
+              onClick={() => {
+                setCardDetailModalActive(true);
+              }}
+            >
               <AnimatedIcon.Search />
               &nbsp;상세보기
             </Buttons>
           </StyledCardHoveredButtonGroups>
         </StyleCardHovered>
       )}
+      <Modals title={title} active={cardDetailModalActive} onClose={handleCardDetailModalClose}>
+        <CardDetailBody onClose={handleCardDetailModalClose} cardId={id} />
+      </Modals>
     </div>
   );
 };
@@ -167,20 +182,18 @@ const StyleCard = styled(Card)`
     overflow: hidden;
     text-align: center;
     justify-content: center;
-
-    display: flex;
     align-items: center;
     @media ${Media.desktop} {
       font-size: ${FontSize.normal};
-      height: 3.5rem;
+      height: 1.5rem;
     }
     @media ${Media.tablet} {
       font-size: ${FontSize.small};
-      height: 3.5rem;
+      height: 1.2rem;
     }
     @media ${Media.mobile} {
       font-size: ${FontSize.micro};
-      height: 2rem;
+      height: 1.2rem;
     }
   }
   .LowerContainer {
@@ -206,6 +219,7 @@ const StyleCard = styled(Card)`
       height: 60px;
     }
   }
+  padding-bottom: 0.3rem;
 `;
 
 const StyleCardHovered = styled.div`
@@ -219,6 +233,7 @@ const StyleCardHovered = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: ${BorderRadius.card};
 `;
 
 const StyledCardHoveredButtonGroups = styled.div`
@@ -248,47 +263,45 @@ const CardContent = styled(Card.Content)`
 
 const StyleTitle = styled.div`
   font-weight: ${FontWeight.bolder};
-  line-height: 1.2em;
   overflow-x: hidden;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   @media ${Media.desktop} {
-    font-size: ${FontSize.medium};
-    min-height: ${FontSize.large};
-    height: 3.5rem;
+    font-size: ${FontSize.normal};
+    min-height: ${FontSize.medium};
+    height: 1.8rem;
   }
   @media ${Media.tablet} {
     font-size: ${FontSize.normal};
     min-height: ${FontSize.medium};
-    height: 3.5rem;
+    height: 1.6rem;
   }
   @media ${Media.mobile} {
-    font-size: ${FontSize.small};
-    min-height: ${FontSize.normal};
-    height: 2.5rem;
+    font-size: ${FontSize.micro};
+    min-height: ${FontSize.small};
+    height: 1.2rem;
   }
 `;
 
 const StyleContent = styled(Content)`
   line-height: 1em;
-  overflow-y: hidden;
+  overflow: hidden;
   @media ${Media.desktop} {
-    font-size: ${FontSize.normal};
-    min-height: 70px;
-    max-height: 70px;
-    padding-top: 0.35rem;
+    font-size: ${FontSize.small};
+    min-height: 40px;
+    max-height: 40px;
   }
   @media ${Media.tablet} {
     font-size: ${FontSize.small};
-    min-height: 55px;
-    max-height: 55px;
+    min-height: 40px;
+    max-height: 40px;
   }
   @media ${Media.mobile} {
-    font-size: ${FontSize.micro};
-    min-height: 50px;
-    max-height: 50px;
+    font-size: 0.6rem;
+    min-height: 20px;
+    max-height: 20px;
     padding-top: 0.1rem;
   }
 `;
@@ -300,7 +313,9 @@ const DeleteButton = styled.button`
   left: 0;
   @media ${Media.desktop} {
     transform: scale(1.4);
+    z-index: 2;
   }
+  z-index: 2;
 `;
 
 export default memo(Cards);
