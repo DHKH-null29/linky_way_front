@@ -1,14 +1,16 @@
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../../styles';
-import { Card, Content } from 'react-bulma-components';
+import { Card, Container, Content } from 'react-bulma-components';
 import { memo, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
+import CardAddForm from './CardAddForm';
 import CardDetailBody from './CardDetailBody';
 import { FontWeight } from '../../styles/font';
 import Modals from '../modals/Modals';
 import Swal from 'sweetalert2';
+import Tab from '../common/Tab';
 import { cardChangeState } from '../../state/cardState';
 import { linkPreviewState } from '../../state/linkPreviewState';
 import noimageImage from '../../assets/images/noimage.JPG';
@@ -23,7 +25,9 @@ import useMouseHover from '../../hooks/useMouseHover';
 const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const [linkPreview, setLinkPreview] = useRecoilState(linkPreviewState);
   const [currentData, setCurrentData] = useState();
+  const [modalActive, setModalActive] = useState(false);
   const [cardDetailModalActive, setCardDetailModalActive] = useState(false);
+  const [cardUpdateModalActive, setCardUpdateModalActive] = useState(false);
   const setCardChange = useSetRecoilState(cardChangeState);
 
   const deleteCardChangeWithFolder = useCardChangeWithFolder('DELETE');
@@ -76,8 +80,8 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
     }
   }, [link]);
 
-  const handleCardDetailModalClose = () => {
-    setCardDetailModalActive(false);
+  const handleModalClose = () => {
+    setModalActive(false);
   };
 
   return (
@@ -100,6 +104,7 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
                 cursor: 'pointer',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: '100% 100%',
+                minHeight: '90px',
                 backgroundImage: `url("${currentData.image}"), url("${noimageImage}")`,
               }}
             ></div>
@@ -130,8 +135,9 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
               &nbsp;링크가기
             </Buttons>
             <Buttons
+              className="mb-2"
               onClick={() => {
-                setCardDetailModalActive(true);
+                setModalActive(true);
               }}
             >
               <AnimatedIcon.Search />
@@ -140,9 +146,34 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
           </StyledCardHoveredButtonGroups>
         </StyleCardHovered>
       )}
-      <Modals title={title} active={cardDetailModalActive} onClose={handleCardDetailModalClose}>
-        <CardDetailBody onClose={handleCardDetailModalClose} cardId={id} />
-      </Modals>
+      {modalActive && (
+        <Modals title={title} active={modalActive} onClose={handleModalClose}>
+          <Container>
+            <Tab
+              contents={['보기', '편집']}
+              onClickList={[
+                () => {
+                  setCardDetailModalActive(true);
+                  setCardUpdateModalActive(false);
+                },
+                () => {
+                  setCardDetailModalActive(false);
+                  setCardUpdateModalActive(true);
+                },
+              ]}
+            />
+          </Container>
+          {cardUpdateModalActive && (
+            <CardAddForm
+              onClose={handleModalClose}
+              currentCardId={id}
+              active={modalActive}
+              method="UPDATE"
+            />
+          )}
+          {cardDetailModalActive && <CardDetailBody onClose={handleModalClose} cardId={id} />}
+        </Modals>
+      )}
     </div>
   );
 };
@@ -241,6 +272,12 @@ const StyledCardHoveredButtonGroups = styled.div`
     color: white;
     background-color: black;
     opacity: 1;
+    @media ${Media.tablet} {
+      font-size: ${FontSize.small};
+    }
+    @media ${Media.mobile} {
+      font-size: 10px;
+    }
   }
 `;
 

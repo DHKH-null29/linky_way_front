@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../../styles';
 import { Columns, Section } from 'react-bulma-components';
+import { onAddCard, onUpdateCardById } from '../../api/cardApi';
 import { useEffect, useState } from 'react';
 
 import Buttons from '../common/Buttons';
@@ -12,7 +13,6 @@ import ModalFooter from '../modals/ModalFooter';
 import { REACT_QUERY_KEY } from '../../constants/query';
 import { cardChangeState } from '../../state/cardState';
 import { makeCardFromRequest } from '../../utils/cardUtils';
-import { onAddCard } from '../../api/cardApi';
 import { onAddTag } from '../../api/tagApi';
 import styled from '@emotion/styled';
 import useCardChangeWithFolder from '../../hooks/useCardChangeWithFolder';
@@ -22,33 +22,44 @@ import { useFormik } from 'formik';
 import { useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
-const CardAddForm = ({ onClose, active }) => {
+const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
   const queryClient = useQueryClient();
+  const currentCard = queryClient.getQueryData([REACT_QUERY_KEY.CARDS_BY_ID, currentCardId]);
+
   const folders = queryClient.getQueryData(REACT_QUERY_KEY.FOLDERS);
-  const setCardChange = useSetRecoilState(cardChangeState);
-  const [open, setOpen] = useState(false);
   const tagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS) || [];
+  const [open, setOpen] = useState(currentCard ? currentCard.isPublic : false);
+  const setCardChange = useSetRecoilState(cardChangeState);
   const [searchedTags, setSearchedTags] = useState(new Set());
-  const [selectedTags, setSelectedTags] = useState(new Set());
+  const [selectedTags, setSelectedTags] = !currentCard ? useState(new Set()) : useState(new Set());
   const [addableTag, setAddableTag] = useState();
 
-  const cardCreationWithFolder = useCardChangeWithFolder('CREATE');
-  const cardCreationWithTag = useCardChangeWithTag('CREATE');
+  const cardModificationWithFolder = useCardChangeWithFolder(method);
+  const cardModificationWithTag = useCardChangeWithTag(method);
 
-  const initialValues = {
-    link: '',
-    title: '',
-    content: '',
-    folderId: '',
-    tagKeyword: '',
-    tagIdSet: [],
-  };
+  const initialValues = currentCard
+    ? {
+        link: currentCard.link,
+        title: currentCard.title,
+        content: currentCard.content,
+        folderId: currentCard.folderId,
+        tagIdSet: currentCard.tags ? currentCard.tags.map(tag => tag.tagId) : [],
+      }
+    : {
+        link: '',
+        title: '',
+        content: '',
+        folderId: '',
+        tagKeyword: '',
+        tagIdSet: [],
+      };
+
   const validationSchema = Yup.object().shape({
     link: Yup.string().strict(true).required('링크 url을 입력하세요'),
     title: Yup.string()
       .strict(true)
       .required('제목을 입력하세요')
-      .max(10, '최대 15글자로 입력해주세요'),
+      .max(15, '최대 15글자로 입력해주세요'),
     content: Yup.string().strict(true).required('내용을 입력하세요'),
     tagKeyword: Yup.string(),
   });
@@ -62,25 +73,34 @@ const CardAddForm = ({ onClose, active }) => {
         values.folderId = folders[0].folderId;
       }
       values.tagIdSet = Array.from(selectedTags).map(tag => tag.tagId);
-      onAddCard(values)
-        .then(response => {
-          const newCard = makeCardFromRequest(response.data.cardId, { body: values });
-          cardCreationWithFolder(parseInt(values.folderId), newCard);
-          cardCreationWithTag(values.tagIdSet, newCard);
-          queryClient.setQueryData(
-            REACT_QUERY_KEY.CARDS_BY_DEFAULT,
-            [newCard].concat(queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT)),
-          );
-          setCardChange(true);
-          onClose();
-        })
-        .catch(error => {
-          console.log(error);
-          alert('오류가 발생했습니다.');
-        });
+
+      try {
+        const response = !currentCard
+          ? await onAddCard(values)
+          : await onUpdateCardById(currentCardId, values);
+        const newCard = makeCardFromRequest(
+          currentCard ? currentCard.cardId : response.data.cardId,
+          { body: values },
+        );
+        cardModificationWithFolder(parseInt(values.folderId), newCard);
+        cardModificationWithTag(values.tagIdSet, newCard, currentCard && currentCard.tags);
+
+        queryClient.setQueryData(
+          REACT_QUERY_KEY.CARDS_BY_DEFAULT,
+          [newCard].concat(queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT)),
+        );
+
+        if (currentCard) {
+          queryClient.invalidateQueries([REACT_QUERY_KEY.CARDS_BY_ID, currentCardId]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
       formikHelper.resetForm();
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
+      setCardChange(true);
+      onClose();
     },
   });
 
@@ -149,6 +169,16 @@ const CardAddForm = ({ onClose, active }) => {
   };
 
   const debounceValue = useDebounce(values.tagKeyword, 350);
+
+  useEffect(() => {
+    if (currentCard && currentCard.tags) {
+      setSelectedTags(
+        new Set(
+          tagList.filter(tag => currentCard.tags.find(current => current.tagId === tag.tagId)),
+        ),
+      );
+    }
+  }, [currentCard]);
 
   useEffect(() => {
     if (!inputTagValidation(debounceValue)) {
@@ -239,7 +269,11 @@ const CardAddForm = ({ onClose, active }) => {
                 {folders &&
                   folders.map((f, i) => {
                     return (
-                      <option key={i} value={f.folderId}>
+                      <option
+                        key={i}
+                        value={f.folderId}
+                        selected={currentCard && currentCard.folderId === f.filderId}
+                      >
                         {f.level >= 3 ? '- ' + f.name : f.name}
                       </option>
                     );
