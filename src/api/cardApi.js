@@ -32,3 +32,11 @@ export const onAddCard = cardRequest => {
 export const onSelectCardsByKeyword = keyword => {
   return requestForAuth.get(cardApi + '/personal/keyword', { params: { keyword } });
 };
+
+export const onSelectCardById = async cardId => {
+  return requestForAuth.get(cardApi + `/${cardId}`).then(response => response.data);
+};
+
+export const onUpdateCardById = async (cardId, cardRequest) => {
+  return requestForAuth.put(cardApi + `/${cardId}`, cardRequest);
+};
