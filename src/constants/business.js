@@ -6,3 +6,9 @@ export const FOLDER = {
     REQUIRE: '폴더 이름을 입력하세요',
   },
 };
+
+export const EMAIL_CODE = {
+  LENGTH: 8,
+  MESSAGE: '올바른 인증 코드를 입력해주세요',
+  EXPIRATION_MILLS: 1000 * 60 * 5,
+};
