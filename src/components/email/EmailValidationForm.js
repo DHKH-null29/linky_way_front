@@ -63,10 +63,6 @@ const EmailValidationForm = () => {
 
   return (
     <StyledForm onSubmit={handleSubmit}>
-      <div className="control">
-        <h2 className="container has-text-centered title is-2">이메일 인증</h2>
-      </div>
-      <p className="is-size-1">&nbsp;</p>
       <div className="p-2 mt-2">
         <p style={{ fontSize: FontSize.normal, fontWeight: FontWeight.bolder }}>
           메일을 받지 못하셨나요..?

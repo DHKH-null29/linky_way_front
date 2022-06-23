@@ -119,8 +119,6 @@ const JoinForm = ({ setFormSubmitted }) => {
 
   return (
     <StyledForm onSubmit={handleSubmit}>
-      <p className="container has-text-centered title is-2">회원가입</p>
-      <DevideLine space="small" color="none" />
       <label className="label">이메일</label>
       <IconInput
         name="email"
