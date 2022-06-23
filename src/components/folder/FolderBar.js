@@ -1,4 +1,7 @@
 import { BorderRadius, Colors, FontSize, Media } from '../../styles';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { onChangeFolderPath, onSelectFolderList } from '../../api/folderApi';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { Box } from 'react-bulma-components';
 import { FOLDER } from '../../constants/business';
@@ -9,69 +12,227 @@ import Modals from '../modals/Modals';
 import NormalIcon from '../icons/NormalIcon';
 import { REACT_QUERY_KEY } from '../../constants/query';
 import { folderHighlightState } from '../../state/folderState';
-import { onSelectFolderList } from '../../api/folderApi';
 import styled from '@emotion/styled';
-import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { useState } from 'react';
 
+const MOVE_TO_DROPPABLE = 'folderDroppable';
+const MOVE_TO_SUPER_DROPPABLE = 'superDroppable';
 const FolderBar = () => {
+  const queryClient = useQueryClient();
   const folderHighlight = useRecoilValue(folderHighlightState);
   const [folderModalActive, setFolderModalActive] = useState(false);
-  const { isLoading, data: folders } = useQuery(REACT_QUERY_KEY.FOLDERS, onSelectFolderList);
+  const {
+    isLoading,
+    data: folders,
+    refetch: loadNewFolders,
+  } = useQuery(REACT_QUERY_KEY.FOLDERS, onSelectFolderList);
+  const [draggingFolderId, setDraggingFolderId] = useState();
+  const [directoryChangeable, setDirectoryChangeable] = useState(false);
+
+  const getFolderById = id => {
+    return folders.find(folder => folder.folderId + '' === id + '');
+  };
+
+  const onDragEnd = result => {
+    if (!result.destination) {
+      return;
+    }
+    if (result.destination.droppableId === MOVE_TO_SUPER_DROPPABLE) {
+      setDirectoryChangeable(true);
+      return;
+    }
+
+    if (directoryChangeable) {
+      onChangeFolderPath(result.draggableId, folders[result.destination.index].folderId).then(
+        () => {
+          loadNewFolders();
+          queryClient.resetQueries([
+            REACT_QUERY_KEY.CARDS_BY_FOLDER,
+            getFolderById(result.draggableId).parentId,
+          ]);
+          queryClient.resetQueries([
+            REACT_QUERY_KEY.CARDS_BY_FOLDER,
+            getFolderById(folders[result.destination.index].folderId).folderId,
+          ]);
+        },
+      );
+    }
+    setDraggingFolderId(undefined);
+    setDirectoryChangeable(false);
+    if (!result.destination) {
+      return;
+    }
+    if (result.destination.index === result.source.index) {
+      return;
+    }
+  };
+  const onDragUpdate = result => {
+    setDirectoryChangeable(false);
+    if (!result.destination) {
+      return;
+    }
+    if (result.destination.index === result.source.index) {
+      return;
+    }
+    if (getFolderById(result.draggableId).level === 0) {
+      return;
+    }
+
+    if (result.destination.droppableId === MOVE_TO_DROPPABLE) {
+      const folderByIndex = folders[result.destination.index];
+      if (folderByIndex.level === 0) {
+        return;
+      }
+      if (getFolderById(result.draggableId).parentId === folderByIndex.folderId) {
+        return;
+      }
+      if (folderByIndex.level < FOLDER.DEPTH_LIMIT) {
+        setDirectoryChangeable(true);
+        return;
+      }
+    }
+    if (
+      result.destination.droppableId === MOVE_TO_SUPER_DROPPABLE &&
+      getFolderById(result.draggableId).parentId
+    ) {
+      setDirectoryChangeable(true);
+      return;
+    }
+    setDirectoryChangeable(false);
+  };
+
+  const onDragStart = result => {
+    setDraggingFolderId(result.draggableId);
+  };
+
+  const getItemStyle = (isDragging, draggableStyle, isDraggingOver) => ({
+    userSelect: 'none',
+    background:
+      isDraggingOver && isDragging ? Colors.layout : isDragging ? Colors.warningFirst : 'none',
+    ...draggableStyle,
+  });
+
+  const getItemChangeableStyle = draggableStyle => ({
+    userSelect: 'none',
+    background: Colors.successFirst,
+    ...draggableStyle,
+  });
+
+  const makeFolderBox = (value, index) => {
+    return (
+      <FolderBox
+        parent={
+          value.level < FOLDER.DEPTH_LIMIT ? false : { id: value.parentId, name: value.parentName }
+        }
+        folderId={value.folderId}
+        idx={index}
+        highlight={folderHighlight[index]}
+        level={value.level}
+      >
+        {value.level === 0 ? '미분류' : value.name || '이름없음'}
+      </FolderBox>
+    );
+  };
 
   return (
-    <StyledFolderBar>
-      <br />
-      {isLoading ? (
-        <div>...loading</div>
-      ) : (
-        <>
-          {folders.map((value, index) => {
-            return (
-              <FolderBox
-                key={value.folderId}
-                parent={
-                  value.level < FOLDER.DEPTH_LIMIT
-                    ? false
-                    : { id: value.parentId, name: value.parentName }
-                }
-                folderId={value.folderId}
-                idx={index}
-                highlight={folderHighlight[index]}
-                level={value.level}
-              >
-                {value.level === 0 ? '미분류' : value.name || '이름없음'}
-              </FolderBox>
-            );
-          })}
-        </>
-      )}
-      <br />
-      <FolderAddSection>
-        &nbsp;
-        <FolderAddText
-          onClick={() => {
-            setFolderModalActive(true);
-          }}
-        >
-          &nbsp;&nbsp;추가하기
-          <NormalIcon.Plus size={17} />
-        </FolderAddText>
-      </FolderAddSection>
-      <Modals
-        active={folderModalActive}
-        onClose={() => {
-          setFolderModalActive(false);
-        }}
-      >
-        <FolderAddForm
+    <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate} onDragStart={onDragStart}>
+      <StyledFolderBar>
+        <br />
+        {isLoading ? (
+          <div>...loading</div>
+        ) : (
+          <div>
+            <Droppable droppableId={MOVE_TO_DROPPABLE}>
+              {(droppableProvided, droppableSnapshot) => (
+                <div {...droppableProvided.droppableProps} ref={droppableProvided.innerRef}>
+                  <div>
+                    {folders.map((value, index) => {
+                      return (
+                        <div key={value.folderId}>
+                          <Draggable draggableId={value.folderId + ''} index={index}>
+                            {(draggableProvided, draggableSnapshot) => (
+                              <div
+                                ref={draggableProvided.innerRef}
+                                {...draggableProvided.draggableProps}
+                                {...draggableProvided.dragHandleProps}
+                                style={
+                                  directoryChangeable
+                                    ? getItemChangeableStyle(draggableProvided.draggableProps.style)
+                                    : getItemStyle(
+                                        draggableSnapshot.isDragging,
+                                        draggableProvided.draggableProps.style,
+                                        droppableSnapshot.isDraggingOver,
+                                      )
+                                }
+                              >
+                                {(!draggingFolderId ||
+                                  draggingFolderId + '' === value.folderId + '') &&
+                                  makeFolderBox(value, index)}
+                              </div>
+                            )}
+                          </Draggable>
+                          {draggingFolderId && makeFolderBox(value, index)}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {droppableProvided.placeholder}
+                </div>
+              )}
+            </Droppable>
+            <Droppable droppableId={MOVE_TO_SUPER_DROPPABLE}>
+              {superDroppableProvided => (
+                <div
+                  {...superDroppableProvided.droppableProps}
+                  ref={superDroppableProvided.innerRef}
+                >
+                  {draggingFolderId && getFolderById(draggingFolderId).parentId && (
+                    <ChildFolderMoveSection className="has-text-centered p-1">
+                      <p>&nbsp;</p>
+                      <p>&nbsp;</p>
+                      <p>최상위 폴더로</p>
+                      <p>&nbsp;</p>
+                      <p>&nbsp;</p>
+                    </ChildFolderMoveSection>
+                  )}
+                  {!draggingFolderId && (
+                    <div>
+                      <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p>
+                    </div>
+                  )}
+                  {superDroppableProvided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
+        )}
+        <br />
+        <FolderAddSection>
+          &nbsp;
+          <FolderAddText
+            onClick={() => {
+              setFolderModalActive(true);
+            }}
+          >
+            &nbsp;&nbsp;추가하기
+            <NormalIcon.Plus size={17} />
+          </FolderAddText>
+        </FolderAddSection>
+        <Modals
+          active={folderModalActive}
           onClose={() => {
             setFolderModalActive(false);
           }}
-        />
-      </Modals>
-    </StyledFolderBar>
+        >
+          <FolderAddForm
+            onClose={() => {
+              setFolderModalActive(false);
+            }}
+          />
+        </Modals>
+      </StyledFolderBar>
+    </DragDropContext>
   );
 };
 
@@ -110,6 +271,13 @@ const FolderAddText = styled.span`
   :hover {
     font-weight: ${FontWeight.bold};
   }
+`;
+
+const ChildFolderMoveSection = styled.div`
+  width: 90%;
+  background-color: ${Colors.backgroundForm};
+  border: 1px dotted;
+  border-radius: ${BorderRadius.card};
 `;
 
 export default FolderBar;
