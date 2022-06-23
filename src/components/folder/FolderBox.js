@@ -106,7 +106,9 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
         onDeleteFolder(folderId).then(() => {
           queryClient.setQueriesData(
             FOLDER_QUERY_KEY,
-            folders.filter(folder => folder.folderId !== folderId),
+            folders.filter(
+              folder => !(folder.folderId === folderId || folder.parentId === folderId),
+            ),
           );
         });
       }

@@ -57,11 +57,11 @@ const FolderAddForm = ({ onClose }) => {
     validationSchema,
     onSubmit: async (values, formikHelper) => {
       handleAddFolder(values);
-      formikHelper.resetForm();
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
     },
   });
+
   return (
     <form onSubmit={handleSubmit}>
       <Section>
