@@ -20,3 +20,11 @@ export const EMAIL = {
     REQUIRE: '이메일을 입력하세요',
   },
 };
+
+export const PASSWORD = {
+  VALIDATION: {
+    REGEX: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{4,16}$/,
+    MESSAGE: '비밀번호는 4~16자의 대소영문자,숫자,특수문자를 포함해야 합니다.',
+    REQUIRE: '비밀번호를 입력하세요',
+  },
+};

@@ -1,12 +1,12 @@
 import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../../styles';
+import { EMAIL, PASSWORD } from '../../constants/business';
 import { useEffect, useState } from 'react';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
 import { Columns } from 'react-bulma-components';
-import { EMAIL } from '../../constants/business';
 import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
 import { currentJoinFormState } from '../../state/joinState';
@@ -30,6 +30,7 @@ const JoinForm = ({ setFormSubmitted }) => {
   };
 
   const EMAIL_VALIDATION = EMAIL.VALIDATION;
+  const PASSWORD_VALIDATION = PASSWORD.VALIDATION;
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -41,11 +42,8 @@ const JoinForm = ({ setFormSubmitted }) => {
       .required('닉네임을 입력해주세요')
       .matches(/^[a-zA-Z0-9가-힣_]{2,10}$/, '2~10 글자의 문자를 입력해주세요'),
     password: Yup.string()
-      .required('비밀번호를 입력하세요')
-      .matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{4,16}$/,
-        '비밀번호는 4~16자의 대소영문자,숫자,특수문자를 포함해야 합니다',
-      ),
+      .required(PASSWORD_VALIDATION.REQUIRE)
+      .matches(PASSWORD_VALIDATION.REGEX, PASSWORD_VALIDATION.MESSAGE),
     checkPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], '비밀번호가 일치하지 않습니다.')
       .required('확인 비밀번호를 입력해주세요.'),
