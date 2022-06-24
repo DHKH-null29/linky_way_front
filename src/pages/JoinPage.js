@@ -3,11 +3,35 @@ import { Columns, Container, Hero } from 'react-bulma-components';
 import EmailValidationForm from '../components/email/EmailValidationForm';
 import JoinForm from '../components/member/JoinForm';
 import PageTitle from '../components/common/PageTitle';
+import Swal from 'sweetalert2';
+import { currentJoinFormState } from '../state/joinState';
+import { onJoin } from '../api/memberApi';
 import styled from '@emotion/styled';
+import { useRecoilState } from 'recoil';
 import { useState } from 'react';
 
 const JoinPage = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [currentJoinForm, setCurrentJoinForm] = useRecoilState(currentJoinFormState);
+
+  const onSuccessJoin = async () => {
+    return onJoin(currentJoinForm)
+      .then(() => {
+        setCurrentJoinForm(undefined);
+        Swal.fire({
+          icon: 'success',
+          text: '회원가입 성공!',
+        }).then(() => {
+          window.location.href = '/';
+        });
+      })
+      .catch(error => {
+        Swal.fire({
+          icon: 'fail',
+          text: error.details || error.message || '회원가입 실패!',
+        });
+      });
+  };
 
   return (
     <>
@@ -23,7 +47,11 @@ const JoinPage = () => {
               }}
             >
               {formSubmitted ? (
-                <EmailValidationForm />
+                <EmailValidationForm
+                  onSuccess={onSuccessJoin}
+                  isJoinRequest={true}
+                  email={currentJoinForm.email}
+                />
               ) : (
                 <JoinForm setFormSubmitted={setFormSubmitted} />
               )}
