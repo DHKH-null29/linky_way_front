@@ -22,11 +22,22 @@ const useCardChangeWithTag = command => {
       });
   };
 
+  const updateCardListStateWithFolders = (tagIdList, newCard, prevTagList = []) => {
+    deleteCardListStateWithFolders(
+      prevTagList.map(prev => prev.tagId),
+      newCard.cardId,
+    );
+    createCardListStateWithTags(tagIdList, newCard);
+  };
+
   if (command === 'CREATE') {
     return createCardListStateWithTags;
   }
   if (command === 'DELETE') {
     return deleteCardListStateWithFolders;
+  }
+  if (command === 'UPDATE') {
+    return updateCardListStateWithFolders;
   }
   return;
 };

@@ -3,6 +3,7 @@ export const REACT_QUERY_KEY = {
   CARDS_BY_FOLDER: 'cardsByFolder',
   CARDS_BY_TAG: 'cardsByTag',
   CARDS_BY_SEARCH: 'cardsBySearch',
+  CARDS_BY_ID: 'cardsById',
 
   FOLDERS: 'folders',
   TAGS: 'tags',

@@ -44,12 +44,20 @@ const useCardChangeWithFolder = command => {
     );
   };
 
+  const updateCardListStateWithFolders = (folderId, newCard) => {
+    deleteCardListStateWithFolders(newCard.cardId);
+    createCardListStateWithFolders(folderId, newCard);
+  };
+
   //TODO: 커맨드 상수화
   if (command === 'CREATE') {
     return createCardListStateWithFolders;
   }
   if (command === 'DELETE') {
     return deleteCardListStateWithFolders;
+  }
+  if (command === 'UPDATE') {
+    return updateCardListStateWithFolders;
   }
   return;
 };

@@ -47,7 +47,7 @@ const IconTag = ({ size, tagId, children, writable, onClick, highlight }) => {
   };
 
   const handleTagClick = () => {
-    onClick();
+    onClick && onClick();
     if (!writable) {
       return;
     }

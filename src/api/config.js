@@ -6,7 +6,8 @@ const ACCESS_TOKEN_NAME = TOKEN_INFO.ACCESS_TOKEN_NAME;
 
 const createInstance = axios.create({
   baseURL: process.env.REACT_APP_MAIN_API || 'http://localhost:8070',
-  timeout: 2000,
+  withCredentials: true,
+  timeout: 10000,
 });
 
 createInstance.interceptors.request.use(
@@ -34,7 +35,8 @@ const createAuthInstance = axios.create({
     'content-type': 'application/json',
     Authorization: localStorage.getItem(ACCESS_TOKEN_NAME),
   },
-  timeout: 2000,
+  withCredentials: true,
+  timeout: 10000,
 });
 
 createAuthInstance.interceptors.request.use(
