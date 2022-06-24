@@ -5,6 +5,7 @@ import { Columns, Container, Hero } from 'react-bulma-components';
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/common/Buttons';
 import { Colors } from '../styles';
+import { EMAIL } from '../constants/business';
 import IconInput from '../components/common/IconInput';
 import PageTitle from '../components/common/PageTitle';
 import Swal from 'sweetalert2';
@@ -20,6 +21,8 @@ const LoginPage = () => {
   const [login, setLogin] = useRecoilState(loginState);
   const navigate = useNavigate();
 
+  const EMAIL_VALIDATION = EMAIL.VALIDATION;
+
   const initialValues = {
     email: '',
     password: '',
@@ -28,11 +31,10 @@ const LoginPage = () => {
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .strict(true)
-      .email('이메일 형식으로 작성해주세요.')
-      .required('이메일을 입력해주세요.'),
-    password: Yup.string()
-      .min(4, '최소 4글자 이상 입력하세요.')
-      .max(16, '최대 16글자 이하여야 합니다.')
+      .matches(EMAIL_VALIDATION.REGEX, EMAIL_VALIDATION.MESSAGE)
+      .required(EMAIL_VALIDATION.REQUIRE),
+    password:
+      Yup.string()
       .required('비밀번호를 입력해주세요.'),
   });
 

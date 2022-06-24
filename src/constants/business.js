@@ -12,3 +12,11 @@ export const EMAIL_CODE = {
   MESSAGE: '올바른 인증 코드를 입력해주세요',
   EXPIRATION_MILLS: 1000 * 60 * 5,
 };
+
+export const EMAIL = {
+  VALIDATION: {
+    REGEX: /^[a-zA-Z\d]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,3}$/,
+    MESSAGE: '올바른 이메일 형태로 입력하세요',
+    REQUIRE: '이메일을 입력하세요',
+  },
+};

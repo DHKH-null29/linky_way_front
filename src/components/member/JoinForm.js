@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
 import { Columns } from 'react-bulma-components';
+import { EMAIL } from '../../constants/business';
 import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
 import { currentJoinFormState } from '../../state/joinState';
@@ -28,11 +29,13 @@ const JoinForm = ({ setFormSubmitted }) => {
     checkPassword: '',
   };
 
+  const EMAIL_VALIDATION = EMAIL.VALIDATION;
+
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .strict(true)
-      .email('이메일 형식으로 작성해주세요.')
-      .required('이메일을 입력해주세요.'),
+      .matches(EMAIL_VALIDATION.REGEX, EMAIL_VALIDATION.MESSAGE)
+      .required(EMAIL_VALIDATION.REQUIRE),
     nickname: Yup.string()
       .strict(true)
       .required('닉네임을 입력해주세요')
