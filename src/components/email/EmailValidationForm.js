@@ -9,6 +9,7 @@ import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
 import { Columns } from 'react-bulma-components';
 import CountdownTimer from '../common/CountDownTimer';
+import { ERROR_CODE } from '../../constants/status';
 import { FontWeight } from '../../styles/font';
 import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
@@ -69,7 +70,20 @@ const EmailValidationForm = ({ onSuccess, isJoinRequest = false, email, setEmail
     }
     setCurrentTime(new Date().getTime());
     setIsFirstRequest(false);
-    onRequestEmailCode(values.email);
+    onRequestEmailCode(values.email).catch(error => {
+      if (error.code === ERROR_CODE.BAD_REQUEST) {
+        Swal.fire({
+          icon: 'warning',
+          text: error.details,
+        });
+      }
+      if (error.code === ERROR_CODE.INTERNAL_SERVER_ERROR) {
+        Swal.fire({
+          icon: 'error',
+          text: '알 수없는 이유로 이메일 인증에 실패했습니다',
+        });
+      }
+    });
     Swal.fire({
       icon: 'success',
       text: '인증 코드를 발송했어요!',
