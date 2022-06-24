@@ -126,13 +126,21 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   return (
     <Wrapper ref={hoverRef}>
       &nbsp;
-      {parent && (
-        <Icon className="is-large">
-          <span>
-            <NormalIcon.FolderArrow />
-          </span>
-        </Icon>
-      )}
+      {parent &&
+        [...Array(level)].map((value, index) => {
+          const opacity = index === level - 1 ? 1 : 0;
+          if (index === 0) {
+            return;
+          }
+          return (
+            <Icon key={index} className="is-medium">
+              <span>
+                &nbsp;&nbsp;
+                <NormalIcon.FolderArrow opacity={opacity} />
+              </span>
+            </Icon>
+          );
+        })}
       <Icon className="is-large">
         <AnimatedIcon.Folder size={30} />
       </Icon>
