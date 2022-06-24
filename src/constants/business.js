@@ -12,3 +12,19 @@ export const EMAIL_CODE = {
   MESSAGE: '올바른 인증 코드를 입력해주세요',
   EXPIRATION_MILLS: 1000 * 60 * 5,
 };
+
+export const EMAIL = {
+  VALIDATION: {
+    REGEX: /^[a-zA-Z\d]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,3}$/,
+    MESSAGE: '올바른 이메일 형태로 입력하세요',
+    REQUIRE: '이메일을 입력하세요',
+  },
+};
+
+export const PASSWORD = {
+  VALIDATION: {
+    REGEX: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{4,16}$/,
+    MESSAGE: '비밀번호는 4~16자의 대소영문자,숫자,특수문자를 포함해야 합니다.',
+    REQUIRE: '비밀번호를 입력하세요',
+  },
+};
