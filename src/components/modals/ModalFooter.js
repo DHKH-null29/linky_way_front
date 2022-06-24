@@ -5,9 +5,11 @@ import styled from '@emotion/styled';
 const ModalFooter = ({ confirm, onConfirm, onClose, cancel }) => {
   return (
     <Footer className="modal-card-foot">
-      <Buttons type="submit" onClick={onConfirm}>
-        {confirm}
-      </Buttons>
+      {confirm && (
+        <Buttons type="submit" onClick={confirm && onConfirm}>
+          {confirm}
+        </Buttons>
+      )}
       &nbsp;&nbsp;
       {cancel && (
         <Buttons type="button" className="is-light" onClick={onClose}>
@@ -19,7 +21,7 @@ const ModalFooter = ({ confirm, onConfirm, onClose, cancel }) => {
 };
 
 ModalFooter.defaultProps = {
-  confirm: '확인',
+  confirm: undefined,
   cancel: '닫기',
 };
 

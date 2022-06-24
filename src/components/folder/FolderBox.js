@@ -15,6 +15,7 @@ import { folderHighlightState } from '../../state/folderState';
 import { onSelectCardsByFolder } from '../../api/cardApi';
 import styled from '@emotion/styled';
 import { tagHighlightState } from '../../state/tagState';
+import useMouseHover from '../../hooks/useMouseHover';
 import { useSetRecoilState } from 'recoil';
 
 const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
@@ -24,9 +25,9 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   const setFolderHighlight = useSetRecoilState(folderHighlightState);
   const setTagHighlight = useSetRecoilState(tagHighlightState);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
-  const [mouseOver, setMouseOver] = useState(false);
   const [modifiable, setModifiable] = useState(false);
   const folderInputRef = useRef();
+  const [hoverRef, isHovered] = useMouseHover();
 
   const changeHighlightState = () => {
     if (!highlight) {
@@ -35,14 +36,6 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
       setFolderHighlight(newArray);
       setTagHighlight([]);
     }
-  };
-
-  const handleMouseOver = () => {
-    setMouseOver(true);
-  };
-
-  const handleMouseLeave = () => {
-    setMouseOver(false);
   };
 
   const handleGetCards = async () => {
@@ -129,7 +122,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   };
 
   return (
-    <Wrapper onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
+    <Wrapper ref={hoverRef}>
       &nbsp;
       {parent && (
         <Icon className="is-large">
@@ -150,7 +143,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
         <FolderNameInput ref={folderInputRef} className="input" placeholder={children} />
       )}
       <span>&nbsp;&nbsp;</span>
-      {level !== 0 && mouseOver && (
+      {level !== 0 && isHovered && (
         <FolderModification>
           &nbsp;
           <NormalIcon.Edit

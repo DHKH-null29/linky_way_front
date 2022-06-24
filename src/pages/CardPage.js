@@ -120,20 +120,22 @@ const CardPage = () => {
             </Columns>
           </Columns.Column>
           <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
-          <Modals
-            title={'카드 등록'}
-            active={cardAddModalActive}
-            onClose={() => {
-              setCardAddModalActive(false);
-            }}
-          >
-            <CardAddForm
+          {cardAddModalActive && (
+            <Modals
+              title={'카드 등록'}
               active={cardAddModalActive}
               onClose={() => {
                 setCardAddModalActive(false);
               }}
-            />
-          </Modals>
+            >
+              <CardAddForm
+                active={cardAddModalActive}
+                onClose={() => {
+                  setCardAddModalActive(false);
+                }}
+              />
+            </Modals>
+          )}
         </Hero.Body>
       </Hero>
     </div>
