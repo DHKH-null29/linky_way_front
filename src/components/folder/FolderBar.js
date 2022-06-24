@@ -18,6 +18,7 @@ import { useState } from 'react';
 
 const MOVE_TO_DROPPABLE = 'folderDroppable';
 const MOVE_TO_SUPER_DROPPABLE = 'superDroppable';
+
 const FolderBar = () => {
   const queryClient = useQueryClient();
   const folderHighlight = useRecoilValue(folderHighlightState);
@@ -34,12 +35,20 @@ const FolderBar = () => {
     return folders.find(folder => folder.folderId + '' === id + '');
   };
 
+  const resetCardsByFolderQuery = () => {
+    queryClient.resetQueries(REACT_QUERY_KEY);
+  };
+
   const onDragEnd = result => {
+    setDraggingFolderId(false);
     if (!result.destination) {
       return;
     }
     if (result.destination.droppableId === MOVE_TO_SUPER_DROPPABLE) {
-      setDirectoryChangeable(true);
+      onChangeFolderPath(result.draggableId).then(() => {
+        loadNewFolders();
+        setDirectoryChangeable(false);
+      });
       return;
     }
 
@@ -47,19 +56,11 @@ const FolderBar = () => {
       onChangeFolderPath(result.draggableId, folders[result.destination.index].folderId).then(
         () => {
           loadNewFolders();
-          queryClient.resetQueries([
-            REACT_QUERY_KEY.CARDS_BY_FOLDER,
-            getFolderById(result.draggableId).parentId,
-          ]);
-          queryClient.resetQueries([
-            REACT_QUERY_KEY.CARDS_BY_FOLDER,
-            getFolderById(folders[result.destination.index].folderId).folderId,
-          ]);
+          resetCardsByFolderQuery();
         },
       );
+      setDirectoryChangeable(false);
     }
-    setDraggingFolderId(undefined);
-    setDirectoryChangeable(false);
     if (!result.destination) {
       return;
     }
@@ -67,6 +68,7 @@ const FolderBar = () => {
       return;
     }
   };
+
   const onDragUpdate = result => {
     setDirectoryChangeable(false);
     if (!result.destination) {
@@ -78,7 +80,9 @@ const FolderBar = () => {
     if (getFolderById(result.draggableId).level === 0) {
       return;
     }
-
+    if (folders[result.destination.index].parentId + '' === result.draggableId + '') {
+      return;
+    }
     if (result.destination.droppableId === MOVE_TO_DROPPABLE) {
       const folderByIndex = folders[result.destination.index];
       if (folderByIndex.level === 0) {
@@ -122,9 +126,7 @@ const FolderBar = () => {
   const makeFolderBox = (value, index) => {
     return (
       <FolderBox
-        parent={
-          value.level < FOLDER.DEPTH_LIMIT ? false : { id: value.parentId, name: value.parentName }
-        }
+        parent={value.level <= 1 ? false : { id: value.parentId, name: value.parentName }}
         folderId={value.folderId}
         idx={index}
         highlight={folderHighlight[index]}
@@ -138,6 +140,17 @@ const FolderBar = () => {
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate} onDragStart={onDragStart}>
       <StyledFolderBar>
+        <FolderAddSection>
+          &nbsp;
+          <FolderAddText
+            onClick={() => {
+              setFolderModalActive(true);
+            }}
+          >
+            &nbsp;&nbsp;추가하기
+            <NormalIcon.Plus size={17} />
+          </FolderAddText>
+        </FolderAddSection>
         <br />
         {isLoading ? (
           <div>...loading</div>
@@ -208,17 +221,6 @@ const FolderBar = () => {
           </div>
         )}
         <br />
-        <FolderAddSection>
-          &nbsp;
-          <FolderAddText
-            onClick={() => {
-              setFolderModalActive(true);
-            }}
-          >
-            &nbsp;&nbsp;추가하기
-            <NormalIcon.Plus size={17} />
-          </FolderAddText>
-        </FolderAddSection>
         <Modals
           active={folderModalActive}
           onClose={() => {
