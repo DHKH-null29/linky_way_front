@@ -4,13 +4,13 @@ import { Card, Icon } from 'react-bulma-components';
 import AnimatedIcon from '../icons/AnimatedIcon';
 import styled from '@emotion/styled';
 
-const Package = ({ memeberId, nickname, numberOfCard }) => {
+const Package = ({ tagName, nickname, numberOfCard }) => {
   return (
     <StyleCard>
       <Card.Content>
         <div className="media-content">
           <p className="title is-4">닉네임{nickname}</p>
-          <p className="title is-6">태그이름{memeberId}</p>
+          <p className="title is-6">태그이름{tagName}</p>
         </div>
       </Card.Content>
       <Card.Content className="columns is-mobile">
