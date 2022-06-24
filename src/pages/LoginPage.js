@@ -6,6 +6,7 @@ import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/common/Buttons';
 import { Colors } from '../styles';
 import IconInput from '../components/common/IconInput';
+import PageTitle from '../components/common/PageTitle';
 import Swal from 'sweetalert2';
 import { TOKEN_INFO } from '../constants/tokens';
 import { loginState } from '../state/loginState';
@@ -61,7 +62,8 @@ const LoginPage = () => {
 
   return (
     <>
-      <Hero size={'medium'}>
+      <PageTitle>로그인</PageTitle>
+      <Hero size={'small'}>
         <StyledHeroBody>
           <Container>
             <Columns.Column
@@ -72,10 +74,6 @@ const LoginPage = () => {
               }}
             >
               <StyledForm onSubmit={handleSubmit}>
-                <div className="control">
-                  <h2 className="container has-text-centered title is-2">로그인</h2>
-                </div>
-                <p className="is-size-3">&nbsp;</p>
                 <div className="control">
                   <label className="label">이메일</label>
                   <IconInput
