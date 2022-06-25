@@ -17,6 +17,7 @@ const MyPage = () => {
   const navigate = useNavigate();
   const [validNickname, setValidNickname] = useState(false);
   const [validNicknameHistory, setValidNicknameHistory] = useState(undefined);
+  const [nicknameDisabled, setNicknameDisabled] = useState(true);
   const initialValues = {
     email: '',
     nickname: '',
@@ -49,15 +50,16 @@ const MyPage = () => {
         if (result.code <= 201) {
           Swal.fire({
             icon: 'success',
-            text: '정보가 수정되었습니다.',
+            text: '정보가 수정되었습니다.'
           }).then(() => {
             navigate('/');
           });
+          setNicknameDisabled(true);
         }
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          text: `정보 수정 실패: ${error.details}`,
+          text: `정보 수정 실패: ${error.details}`
         });
       }
     },
@@ -143,20 +145,21 @@ const MyPage = () => {
                       name="nickname"
                       autocomplete="off"
                       required
-                      placeholder="닉네임을 입력하세요"
+                      placeholder="nickname"
                       onChange={handleNicknameInputChange}
                       onBlur={handleBlur}
                       value={values.nickname}
                       leftIconComponent={<AnimatedIcon.CommonInput />}
                       rightIconComponent={resolveRightIconComponent('nickname')}
+                      disabled={nicknameDisabled}
                     />
                   </Columns.Column>
-                  <Columns.Column>
+                  <Columns.Column className="is-4">
                     <Buttons
                       type="button"
-                      onClick={() => handleCheckDuplicatedNameButton(values.nickname)}
+                      onClick={() => nicknameDisabled == true ? setNicknameDisabled(false) : handleCheckDuplicatedNameButton(values.nickname)}
                     >
-                      중복확인
+                      {nicknameDisabled == true ? "변경하기" : "중복확인"}
                     </Buttons>
                   </Columns.Column>
                   <p style={{ color: errors.nickname ? Colors.warningFirst : Colors.successFirst }}>
@@ -165,7 +168,14 @@ const MyPage = () => {
                       (errors.nickname ||
                         (validNickname ? '닉네임 검증 완료!' : '닉네임 입력이 확인되었어요'))}
                   </p>
-                <p className="is-size-3">&nbsp;</p>
+                  </Columns>
+                  {nicknameDisabled == false 
+                      ? <Columns>
+                          <Columns.Column>
+                            <Buttons type={'submit'}>수정완료</Buttons>
+                          </Columns.Column>
+                        </Columns> 
+                      : <Columns></Columns>}
                 <DevideLine space="medium" color="none" />
                 <Columns>
                   <Columns.Column>
