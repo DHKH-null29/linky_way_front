@@ -11,7 +11,8 @@ import CardAddForm from '../components/card/CardAddForm';
 import DownCards from '../components/card/Cards';
 import FolderBar from '../components/folder/FolderBar';
 import Modals from '../components/modals/Modals';
-import RightSideBar from '../components/card/RightSideBar';
+import RightLowerSideBar from '../components/card/RightLowerSideBar';
+import RightUpperSideBar from '../components/card/RightUpperSideBar';
 import SearchLayout from '../components/card/SearchLayout';
 import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
@@ -65,9 +66,12 @@ const CardPage = () => {
         <FolderBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
           <FolderBar />
         </FolderBarWrapper>
-        <RightSideBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
-          <RightSideBar />
-        </RightSideBarWrapper>
+        <RightUpperSideBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
+          <RightUpperSideBar />
+        </RightUpperSideBarWrapper>
+        <RightLowerSideBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 50 : 250 }}>
+          <RightLowerSideBar />
+        </RightLowerSideBarWrapper>
         <StyledContainer className="">
           <StyledHeroBody className="columns">
             <Columns.Column className="is-12">
@@ -167,10 +171,22 @@ const FolderBarWrapper = styled(Columns.Column)`
   }
 `;
 
-const RightSideBarWrapper = styled(Columns.Column)`
+const RightUpperSideBarWrapper = styled(Columns.Column)`
   z-index: 1;
   position: absolute;
   right: 6vw;
+  width: 17vw;
+  visibility: hidden;
+  @media ${Media.desktop} {
+    visibility: visible;
+  }
+`;
+
+const RightLowerSideBarWrapper = styled(Columns.Column)`
+  z-index: 1;
+  position: absolute;
+  right: 6vw;
+  top: 250px;
   width: 17vw;
   visibility: hidden;
   @media ${Media.desktop} {

@@ -5,7 +5,7 @@ import AnimatedIcon from '../icons/AnimatedIcon';
 import NormalIcon from '../icons/NormalIcon';
 import styled from '@emotion/styled';
 
-const RightSideBar = () => {
+const RightUpperSideBar = () => {
   return (
     <StyledSideBar>
       <p className="pt-2">&nbsp;관리하기</p>
@@ -68,4 +68,4 @@ const StyledIcon = styled(Icon)`
     box-shadow: ${Shadows.card};
   }
 `;
-export default RightSideBar;
+export default RightUpperSideBar;
