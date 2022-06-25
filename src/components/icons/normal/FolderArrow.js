@@ -34,8 +34,8 @@ FolderArrow.defaultProps = {
 const StyledSvg = styled.svg`
   width: ${({ size }) => size + 'px'};
   height: auto;
-  margin-top: 2px;
-  margin-left: 2px;
+  margin: 0;
+  padding: 0;
 `;
 
 export default FolderArrow;

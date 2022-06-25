@@ -184,6 +184,9 @@ const StyleCard = styled(Card)`
   border-radius: ${BorderRadius.card};
   background-color: ${({ ok }) => (ok ? Colors.layout : Colors.warningSecond)};
   box-shadow: ${Shadows.card};
+  @media ${Media.desktop} {
+    max-width: 14vw;
+  }
   :hover {
     box-shadow: ${Shadows.section};
   }
@@ -194,7 +197,7 @@ const StyleCard = styled(Card)`
     height: 3.5rem;
 
     @media ${Media.desktop} {
-      font-size: ${FontSize.normal};
+      font-size: ${FontSize.large};
     }
     @media ${Media.tablet} {
       font-size: ${FontSize.small};
@@ -215,16 +218,16 @@ const StyleCard = styled(Card)`
     justify-content: center;
     align-items: center;
     @media ${Media.desktop} {
-      font-size: ${FontSize.normal};
-      height: 1.5rem;
+      font-size: 0.7vw;
+      height: 1.4rem;
     }
     @media ${Media.tablet} {
-      font-size: ${FontSize.small};
-      height: 1.2rem;
+      font-size: 12px;
+      height: 1rem;
     }
     @media ${Media.mobile} {
-      font-size: ${FontSize.micro};
-      height: 1.2rem;
+      font-size: 10px;
+      height: 1rem;
     }
   }
   .LowerContainer {
@@ -239,11 +242,11 @@ const StyleCard = styled(Card)`
     }
     @media ${Media.desktop} {
       font-size: ${FontSize.normal};
-      height: 160px;
+      height: 6.2vw;
     }
     @media ${Media.tablet} {
       font-size: ${FontSize.small};
-      height: 120px;
+      height: 140px;
     }
     @media ${Media.mobile} {
       font-size: ${FontSize.micro};
@@ -272,8 +275,9 @@ const StyledCardHoveredButtonGroups = styled.div`
     color: white;
     background-color: black;
     opacity: 1;
+    font-size: 0.8vw;
     @media ${Media.tablet} {
-      font-size: ${FontSize.small};
+      font-size: ${FontSize.micro};
     }
     @media ${Media.mobile} {
       font-size: 10px;
@@ -284,7 +288,7 @@ const StyledCardHoveredButtonGroups = styled.div`
 const CardContent = styled(Card.Content)`
   @media ${Media.desktop} {
     padding-top: 0.4rem;
-    padding-bottom: 0.25rem;
+    padding-bottom: 0.2rem;
   }
   @media ${Media.tablet} {
     padding-top: 0;
@@ -306,17 +310,17 @@ const StyleTitle = styled.div`
   align-items: center;
   justify-content: center;
   @media ${Media.desktop} {
-    font-size: ${FontSize.normal};
-    min-height: ${FontSize.medium};
-    height: 1.8rem;
+    font-size: 0.8vw;
+    min-height: ${FontSize.small};
+    height: 1.55rem;
   }
   @media ${Media.tablet} {
-    font-size: ${FontSize.normal};
+    font-size: 12px;
     min-height: ${FontSize.medium};
-    height: 1.6rem;
+    height: 1.5rem;
   }
   @media ${Media.mobile} {
-    font-size: ${FontSize.micro};
+    font-size: 10px;
     min-height: ${FontSize.small};
     height: 1.2rem;
   }
@@ -325,20 +329,20 @@ const StyleTitle = styled.div`
 const StyleContent = styled(Content)`
   line-height: 1em;
   overflow: hidden;
+  font-size: 11px;
+  opacity: 0.8;
   @media ${Media.desktop} {
-    font-size: ${FontSize.small};
-    min-height: 40px;
-    max-height: 40px;
+    font-size: 0.8vw;
+    min-height: 2.4vw;
+    max-height: 2.4vw;
   }
   @media ${Media.tablet} {
-    font-size: ${FontSize.small};
     min-height: 40px;
     max-height: 40px;
   }
   @media ${Media.mobile} {
-    font-size: 0.6rem;
-    min-height: 20px;
-    max-height: 20px;
+    min-height: 25px;
+    max-height: 25px;
     padding-top: 0.1rem;
   }
 `;
