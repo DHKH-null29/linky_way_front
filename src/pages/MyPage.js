@@ -119,6 +119,20 @@ const MyPage = () => {
                 <p className="container has-text-centered title is-2">My Page</p>
                 <DevideLine space="small" color="none" />
                 <Columns>
+                  <Columns.Column>
+                    <IconInput
+                      name="calendar"
+                      type="text"
+                      value={values.calendar}
+                      autocomplete="off"
+                      placeholder="2022년 01월 01일"
+                      leftIconComponent={<AnimatedIcon.Calendar />}
+                      rightIconComponent={resolveRightIconComponent('calendar')}
+                      disabled = {true}
+                      />
+                  </Columns.Column>
+                </Columns>
+                <Columns>
                   <Columns.Column className="is-12 pb-0" style={{ width: '100%' }}>
                     <label className="label">이메일</label>
                   </Columns.Column>
