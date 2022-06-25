@@ -119,6 +119,9 @@ const MyPage = () => {
                 <p className="container has-text-centered title is-2">My Page</p>
                 <DevideLine space="small" color="none" />
                 <Columns>
+                  <Columns.Column className="is-12 pb-0" style={{ width: '100%' }}>
+                    <label className="label">가입 날짜</label>
+                  </Columns.Column>
                   <Columns.Column>
                     <IconInput
                       name="calendar"
