@@ -17,11 +17,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Generate Env
+      - name: Create env file
         run: |
-        echo "REACT_APP_MAIN_API=$REACT_APP_MAIN_API" >> .env
-        env:
-          REACT_APP_MAIN_API: ${{ secrets.REACT_APP_MAIN_API }}
+        touch .env
+        echo REACT_APP_MAIN_API=${{ secrets.REACT_APP_MAIN_API }} >> .env
+        cat .env
       - name: Npm Install
         run: |
           npm install --force
