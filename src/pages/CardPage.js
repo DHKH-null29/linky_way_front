@@ -65,7 +65,7 @@ const CardPage = () => {
         <FolderBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
           <FolderBar />
         </FolderBarWrapper>
-        <RightSideBarWrapper>
+        <RightSideBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
           <RightSideBar />
         </RightSideBarWrapper>
         <StyledContainer className="">
@@ -104,7 +104,7 @@ const CardPage = () => {
                   <hr />
                 </Classifier>
               </Columns>
-              <Columns className="is-mobile">
+              <CardColumn className="is-mobile">
                 {currentCards &&
                   currentCards.map((value, index) => {
                     return (
@@ -112,17 +112,19 @@ const CardPage = () => {
                         key={index}
                         className="is-3-desktop is-6-tablet is-half-mobile"
                       >
-                        <DownCards
-                          id={value.cardId}
-                          title={value.title}
-                          content={value.content}
-                          link={value.link}
-                          tagList={value.tags}
-                        />
+                        <div>
+                          <DownCards
+                            id={value.cardId}
+                            title={value.title}
+                            content={value.content}
+                            link={value.link}
+                            tagList={value.tags}
+                          />
+                        </div>
                       </Columns.Column>
                     );
                   })}
-              </Columns>
+              </CardColumn>
             </Columns.Column>
             <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
             {cardAddModalActive && (
@@ -147,6 +149,12 @@ const CardPage = () => {
     </div>
   );
 };
+
+const CardColumn = styled(Columns)`
+  @media ${Media.desktop} {
+    max-width: 50vw;
+  }
+`;
 
 const FolderBarWrapper = styled(Columns.Column)`
   z-index: 1;
