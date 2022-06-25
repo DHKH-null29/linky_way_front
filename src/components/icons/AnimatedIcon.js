@@ -4,6 +4,7 @@ import CheckMark from './animated/CheckMark';
 import CommonInput from './animated/CommonInput';
 import Email from './animated/Email';
 import Folder from './animated/Folder';
+import Heart from './animated/Heart';
 import Password from './animated/Password';
 import RightArrow from './animated/RightArrow';
 import Search from './animated/Search';
@@ -27,6 +28,7 @@ const AnimatedIcon = {
   SkipForward,
   Bookmark,
   ThumbUp,
+  Heart,
 };
 
 export default AnimatedIcon;
