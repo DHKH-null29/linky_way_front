@@ -11,6 +11,7 @@ import CardAddForm from '../components/card/CardAddForm';
 import DownCards from '../components/card/Cards';
 import FolderBar from '../components/folder/FolderBar';
 import Modals from '../components/modals/Modals';
+import RightSideBar from '../components/card/RightSideBar';
 import SearchLayout from '../components/card/SearchLayout';
 import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
@@ -61,11 +62,12 @@ const CardPage = () => {
       <SearchLayout />
       <br />
       <Hero className="medium" style={{ position: 'relative' }}>
-        {1 === 1 && (
-          <FolderBarWrapper style={{ top: sideBarY > 300 ? sideBarY - 300 : 0 }}>
-            <FolderBar />
-          </FolderBarWrapper>
-        )}
+        <FolderBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
+          <FolderBar />
+        </FolderBarWrapper>
+        <RightSideBarWrapper>
+          <RightSideBar />
+        </RightSideBarWrapper>
         <StyledContainer className="">
           <StyledHeroBody className="columns">
             <Columns.Column className="is-12">
@@ -98,13 +100,7 @@ const CardPage = () => {
                 <Classifier className="pl-2">
                   &nbsp;[분류] ::&nbsp; <span>전체</span>
                   {cardClassifier.classifier.type &&
-                    ' >  ' +
-                      cardClassifier.classifier.name +
-                      ' > ' +
-                      (cardClassifier.parent && cardClassifier.parent.id
-                        ? (cardClassifier.parent.name || '이름없음') + ' > '
-                        : '') +
-                      cardClassifier.name}
+                    ' >  ' + cardClassifier.classifier.name + ' > ' + cardClassifier.name}
                   <hr />
                 </Classifier>
               </Columns>
@@ -155,7 +151,18 @@ const CardPage = () => {
 const FolderBarWrapper = styled(Columns.Column)`
   z-index: 1;
   position: absolute;
-  left: 8vw;
+  left: 7vw;
+  width: 17vw;
+  visibility: hidden;
+  @media ${Media.desktop} {
+    visibility: visible;
+  }
+`;
+
+const RightSideBarWrapper = styled(Columns.Column)`
+  z-index: 1;
+  position: absolute;
+  right: 6vw;
   width: 17vw;
   visibility: hidden;
   @media ${Media.desktop} {
@@ -194,8 +201,8 @@ const StyledLink = styled(Link)`
 
 const StyledHeroBody = styled(Hero.Body)`
   @media ${Media.desktop} {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 `;
 
