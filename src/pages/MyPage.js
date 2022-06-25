@@ -25,10 +25,6 @@ const MyPage = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .strict(true)
-      .email('이메일 형식으로 작성해주세요.')
-      .required('이메일을 입력해주세요.'),
     nickname: Yup.string()
       .strict(true)
       .required('닉네임을 입력해주세요')
@@ -147,6 +143,23 @@ const MyPage = () => {
                 <DevideLine space="small" color="none" />
                 <Columns>
                   <Columns.Column className="is-12 pb-0" style={{ width: '100%' }}>
+                    <label className="label">이메일</label>
+                  </Columns.Column>
+                  <Columns.Column>
+                    <IconInput
+                      name="email"
+                      type="text"
+                      value={values.email}
+                      autocomplete="off"
+                      placeholder="email@email.com"
+                      leftIconComponent={<AnimatedIcon.Email />}
+                      rightIconComponent={resolveRightIconComponent('email')}
+                      disabled = {true}
+                    />
+                  </Columns.Column>
+                </Columns>
+                <Columns>
+                  <Columns.Column className="is-12 pb-0" style={{ width: '100%' }}>
                     <label className="label">닉네임</label>
                   </Columns.Column>
                   <Columns.Column className="is-8">
@@ -222,31 +235,6 @@ const MyPage = () => {
                   {touched.checkPassword &&
                     (errors.checkPassword || '비밀번호 입력이 확인되었어요')}
                 </p>
-                <p className="is-size-4">&nbsp;</p>
-                <Buttons type={'submit'}>수정하기</Buttons>
-                <DevideLine space="medium" color="none" />
-                <label className="label">이메일</label>
-                <IconInput
-                  name="email"
-                  type="text"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.email}
-                  autocomplete="off"
-                  placeholder="이메일을 입력하세요"
-                  required
-                  leftIconComponent={<AnimatedIcon.Email />}
-                  rightIconComponent={resolveRightIconComponent('email')}
-                />
-                <p
-                  className="m-2"
-                  style={{ color: errors.email ? Colors.warningFirst : Colors.successFirst }}
-                >
-                  &nbsp;{touched.email && (errors.email || '이메일 입력이 확인되었어요')}
-                </p>
-                <Buttons type="button" onClick={handleEmailAuthenticationButtonClick}>
-                  이메일 인증번호 전송
-                </Buttons>
                 <p className="is-size-3">&nbsp;</p>
                 <DevideLine space="medium" color="none" />
                 <label className="label">회원 탈퇴하고 싶어요</label>
