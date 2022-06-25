@@ -11,6 +11,7 @@ import Search from './animated/Search';
 import SkipBack from './animated/SkipBack';
 import SkipForward from './animated/SkipForward';
 import ThumbUp from './animated/ThumbUp';
+import Trash from './animated/Trash';
 import WarningAlert from './animated/WarningAlert';
 
 WarningAlert;
@@ -29,6 +30,7 @@ const AnimatedIcon = {
   Bookmark,
   ThumbUp,
   Heart,
+  Trash,
 };
 
 export default AnimatedIcon;
