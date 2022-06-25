@@ -27,7 +27,7 @@ const MyPage = () => {
     nickname: Yup.string()
       .strict(true)
       .required('닉네임을 입력해주세요')
-      .matches(/^[a-zA-Z0-9가-힣_]{2,10}$/, '2~10 글자의 문자를 입력해주세요')
+      .matches(/^[a-zA-Z0-9가-힣_]{2,10}$/, '2~10 글자의 문자를 입력해주세요'),
   });
 
   const { errors, handleBlur, handleSubmit, handleChange, touched, values } = useFormik({
@@ -50,7 +50,7 @@ const MyPage = () => {
         if (result.code <= 201) {
           Swal.fire({
             icon: 'success',
-            text: '정보가 수정되었습니다.'
+            text: '정보가 수정되었습니다.',
           }).then(() => {
             navigate('/');
           });
@@ -59,7 +59,7 @@ const MyPage = () => {
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          text: `정보 수정 실패: ${error.details}`
+          text: `정보 수정 실패: ${error.details}`,
         });
       }
     },
@@ -131,8 +131,8 @@ const MyPage = () => {
                       placeholder="2022년 01월 01일"
                       leftIconComponent={<AnimatedIcon.Calendar />}
                       rightIconComponent={resolveRightIconComponent('calendar')}
-                      disabled = {true}
-                      />
+                      disabled={true}
+                    />
                   </Columns.Column>
                 </Columns>
                 <Columns>
@@ -148,7 +148,7 @@ const MyPage = () => {
                       placeholder="email@email.com"
                       leftIconComponent={<AnimatedIcon.Email />}
                       rightIconComponent={resolveRightIconComponent('email')}
-                      disabled = {true}
+                      disabled={true}
                     />
                   </Columns.Column>
                 </Columns>
@@ -174,9 +174,13 @@ const MyPage = () => {
                   <Columns.Column className="is-4">
                     <Buttons
                       type="button"
-                      onClick={() => nicknameDisabled == true ? setNicknameDisabled(false) : handleCheckDuplicatedNameButton(values.nickname)}
+                      onClick={() =>
+                        nicknameDisabled == true
+                          ? setNicknameDisabled(false)
+                          : handleCheckDuplicatedNameButton(values.nickname)
+                      }
                     >
-                      {nicknameDisabled == true ? "변경하기" : "중복확인"}
+                      {nicknameDisabled == true ? '변경하기' : '중복확인'}
                     </Buttons>
                   </Columns.Column>
                   <p style={{ color: errors.nickname ? Colors.warningFirst : Colors.successFirst }}>
@@ -185,14 +189,16 @@ const MyPage = () => {
                       (errors.nickname ||
                         (validNickname ? '닉네임 검증 완료!' : '닉네임 입력이 확인되었어요'))}
                   </p>
+                </Columns>
+                {nicknameDisabled == false ? (
+                  <Columns>
+                    <Columns.Column>
+                      <Buttons type="submit">수정완료</Buttons>
+                    </Columns.Column>
                   </Columns>
-                  {nicknameDisabled == false 
-                      ? <Columns>
-                          <Columns.Column>
-                            <Buttons type="submit">수정완료</Buttons>
-                          </Columns.Column>
-                        </Columns> 
-                      : <Columns></Columns>}
+                ) : (
+                  <Columns></Columns>
+                )}
                 <DevideLine space="medium" color="none" />
                 <Columns>
                   <Columns.Column>
@@ -203,7 +209,9 @@ const MyPage = () => {
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">회원 탈퇴하고 싶어요</label>
-                    <Buttons type="button" colortype="warn">회원 탈퇴</Buttons>
+                    <Buttons type="button" colortype="warn">
+                      회원 탈퇴
+                    </Buttons>
                   </Columns.Column>
                 </Columns>
               </StyledForm>
