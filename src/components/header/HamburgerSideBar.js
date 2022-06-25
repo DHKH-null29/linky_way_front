@@ -61,6 +61,15 @@ const HamburgerSideBar = ({ onCancle, onLogout, visible }) => {
               ) : (
                 <>
                   <Buttons
+                    onClick={() => {
+                      handlePageButtonClick('/mypage');
+                      onCancle();
+                    }}
+                  >
+                    마이페이지
+                  </Buttons>
+                  <DevideLine space="micro" color="none" />
+                  <Buttons
                     colortype={'sub'}
                     onClick={() => {
                       onLogout();

@@ -120,6 +120,23 @@ const MyPage = () => {
                 <DevideLine space="small" color="none" />
                 <Columns>
                   <Columns.Column className="is-12 pb-0" style={{ width: '100%' }}>
+                    <label className="label">가입 날짜</label>
+                  </Columns.Column>
+                  <Columns.Column>
+                    <IconInput
+                      name="calendar"
+                      type="text"
+                      value={values.calendar}
+                      autocomplete="off"
+                      placeholder="2022년 01월 01일"
+                      leftIconComponent={<AnimatedIcon.Calendar />}
+                      rightIconComponent={resolveRightIconComponent('calendar')}
+                      disabled = {true}
+                      />
+                  </Columns.Column>
+                </Columns>
+                <Columns>
+                  <Columns.Column className="is-12 pb-0" style={{ width: '100%' }}>
                     <label className="label">이메일</label>
                   </Columns.Column>
                   <Columns.Column>
@@ -172,7 +189,7 @@ const MyPage = () => {
                   {nicknameDisabled == false 
                       ? <Columns>
                           <Columns.Column>
-                            <Buttons type={'submit'}>수정완료</Buttons>
+                            <Buttons type="submit">수정완료</Buttons>
                           </Columns.Column>
                         </Columns> 
                       : <Columns></Columns>}
@@ -181,12 +198,12 @@ const MyPage = () => {
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">비밀번호 변경</label>
-                    <Buttons type={'submit'}>변경하기</Buttons>
+                    <Buttons type="button">변경하기</Buttons>
                   </Columns.Column>
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">회원 탈퇴하고 싶어요</label>
-                    <Buttons colortype="warn">회원 탈퇴</Buttons>
+                    <Buttons type="button" colortype="warn">회원 탈퇴</Buttons>
                   </Columns.Column>
                 </Columns>
               </StyledForm>
