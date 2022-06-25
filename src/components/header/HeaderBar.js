@@ -96,6 +96,13 @@ const HeaderBar = () => {
             </Navbar.Container>
           ) : (
             <Navbar.Container align="right">
+              <StyledLink
+                className="is-hidden-tablet-only is-hidden-mobile navbar-item"
+                to={'/mypage'}
+                onClick={handleLinkClick}
+              >
+                마이페이지
+              </StyledLink>
               <StyledA
                 className="is-hidden-tablet-only is-hidden-mobile navbar-item"
                 onClick={handleLogoutClick}
