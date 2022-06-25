@@ -11,6 +11,8 @@ import CardAddForm from '../components/card/CardAddForm';
 import DownCards from '../components/card/Cards';
 import FolderBar from '../components/folder/FolderBar';
 import Modals from '../components/modals/Modals';
+import RightLowerSideBar from '../components/card/RightLowerSideBar';
+import RightUpperSideBar from '../components/card/RightUpperSideBar';
 import SearchLayout from '../components/card/SearchLayout';
 import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
@@ -61,11 +63,15 @@ const CardPage = () => {
       <SearchLayout />
       <br />
       <Hero className="medium" style={{ position: 'relative' }}>
-        {1 === 1 && (
-          <FolderBarWrapper style={{ top: sideBarY > 300 ? sideBarY - 300 : 0 }}>
-            <FolderBar />
-          </FolderBarWrapper>
-        )}
+        <FolderBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
+          <FolderBar />
+        </FolderBarWrapper>
+        <RightUpperSideBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 300 : 0 }}>
+          <RightUpperSideBar />
+        </RightUpperSideBarWrapper>
+        <RightLowerSideBarWrapper style={{ top: sideBarY > 350 ? sideBarY - 50 : 250 }}>
+          <RightLowerSideBar />
+        </RightLowerSideBarWrapper>
         <StyledContainer className="">
           <StyledHeroBody className="columns">
             <Columns.Column className="is-12">
@@ -98,17 +104,11 @@ const CardPage = () => {
                 <Classifier className="pl-2">
                   &nbsp;[분류] ::&nbsp; <span>전체</span>
                   {cardClassifier.classifier.type &&
-                    ' >  ' +
-                      cardClassifier.classifier.name +
-                      ' > ' +
-                      (cardClassifier.parent && cardClassifier.parent.id
-                        ? (cardClassifier.parent.name || '이름없음') + ' > '
-                        : '') +
-                      cardClassifier.name}
+                    ' >  ' + cardClassifier.classifier.name + ' > ' + cardClassifier.name}
                   <hr />
                 </Classifier>
               </Columns>
-              <Columns className="is-mobile">
+              <CardColumn className="is-mobile">
                 {currentCards &&
                   currentCards.map((value, index) => {
                     return (
@@ -116,17 +116,19 @@ const CardPage = () => {
                         key={index}
                         className="is-3-desktop is-6-tablet is-half-mobile"
                       >
-                        <DownCards
-                          id={value.cardId}
-                          title={value.title}
-                          content={value.content}
-                          link={value.link}
-                          tagList={value.tags}
-                        />
+                        <div>
+                          <DownCards
+                            id={value.cardId}
+                            title={value.title}
+                            content={value.content}
+                            link={value.link}
+                            tagList={value.tags}
+                          />
+                        </div>
                       </Columns.Column>
                     );
                   })}
-              </Columns>
+              </CardColumn>
             </Columns.Column>
             <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
             {cardAddModalActive && (
@@ -152,10 +154,39 @@ const CardPage = () => {
   );
 };
 
+const CardColumn = styled(Columns)`
+  @media ${Media.desktop} {
+    max-width: 50vw;
+  }
+`;
+
 const FolderBarWrapper = styled(Columns.Column)`
   z-index: 1;
   position: absolute;
-  left: 8vw;
+  left: 7vw;
+  width: 17vw;
+  visibility: hidden;
+  @media ${Media.desktop} {
+    visibility: visible;
+  }
+`;
+
+const RightUpperSideBarWrapper = styled(Columns.Column)`
+  z-index: 1;
+  position: absolute;
+  right: 6vw;
+  width: 17vw;
+  visibility: hidden;
+  @media ${Media.desktop} {
+    visibility: visible;
+  }
+`;
+
+const RightLowerSideBarWrapper = styled(Columns.Column)`
+  z-index: 1;
+  position: absolute;
+  right: 6vw;
+  top: 250px;
   width: 17vw;
   visibility: hidden;
   @media ${Media.desktop} {
@@ -194,8 +225,8 @@ const StyledLink = styled(Link)`
 
 const StyledHeroBody = styled(Hero.Body)`
   @media ${Media.desktop} {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 `;
 

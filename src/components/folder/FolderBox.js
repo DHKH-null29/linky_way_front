@@ -148,13 +148,11 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
           if (index === 0) {
             return;
           }
-          if (opacity === 0) {
-            return <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>;
-          }
+
           return (
             <Icon key={index} className="is-medium">
               <span>
-                &nbsp;&nbsp;
+                &nbsp;
                 <NormalIcon.FolderArrow size={15} opacity={opacity} />
               </span>
             </Icon>

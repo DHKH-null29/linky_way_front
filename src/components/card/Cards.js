@@ -85,7 +85,7 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   };
 
   return (
-    <div ref={hoverRef} style={{ position: 'relative' }}>
+    <StyleCardWrapper ref={hoverRef} style={{ position: 'relative' }}>
       <StyleCard ok={currentData && currentData.ok ? 1 : 0}>
         {writable && <DeleteButton className="delete" onClick={handleDeleteClick}></DeleteButton>}
         <Card.Content className="pt-1 pb-1"></Card.Content>
@@ -174,10 +174,15 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
           {cardDetailModalActive && <CardDetailBody onClose={handleModalClose} cardId={id} />}
         </Modals>
       )}
-    </div>
+    </StyleCardWrapper>
   );
 };
 
+const StyleCardWrapper = styled.div`
+  @media ${Media.desktop} {
+    max-width: 14vw;
+  }
+`;
 const StyleCard = styled(Card)`
   font-family: 'ImcreSoojin';
   width: 100%;
@@ -212,6 +217,7 @@ const StyleCard = styled(Card)`
   }
   .Title {
     margin-bottom: 0;
+    white-space: nowrap;
     font-weight: ${FontWeight.bold};
     overflow: hidden;
     text-align: center;
@@ -219,15 +225,12 @@ const StyleCard = styled(Card)`
     align-items: center;
     @media ${Media.desktop} {
       font-size: 0.7vw;
-      height: 1.4rem;
     }
     @media ${Media.tablet} {
       font-size: 12px;
-      height: 1rem;
     }
     @media ${Media.mobile} {
       font-size: 10px;
-      height: 1rem;
     }
   }
   .LowerContainer {
@@ -268,6 +271,9 @@ const StyleCardHovered = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: ${BorderRadius.card};
+  @media ${Media.desktop} {
+    max-width: 14vw;
+  }
 `;
 
 const StyledCardHoveredButtonGroups = styled.div`
@@ -305,24 +311,22 @@ const CardContent = styled(Card.Content)`
 const StyleTitle = styled.div`
   font-weight: ${FontWeight.bolder};
   overflow-x: hidden;
+  white-space: nowrap;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   @media ${Media.desktop} {
-    font-size: 0.8vw;
+    font-size: 0.7vw;
     min-height: ${FontSize.small};
-    height: 1.55rem;
   }
   @media ${Media.tablet} {
     font-size: 12px;
     min-height: ${FontSize.medium};
-    height: 1.5rem;
   }
   @media ${Media.mobile} {
     font-size: 10px;
     min-height: ${FontSize.small};
-    height: 1.2rem;
   }
 `;
 
@@ -332,9 +336,9 @@ const StyleContent = styled(Content)`
   font-size: 11px;
   opacity: 0.8;
   @media ${Media.desktop} {
-    font-size: 0.8vw;
-    min-height: 2.4vw;
-    max-height: 2.4vw;
+    font-size: 0.6vw;
+    min-height: 1.9vw;
+    max-height: 1.9vw;
   }
   @media ${Media.tablet} {
     min-height: 40px;
