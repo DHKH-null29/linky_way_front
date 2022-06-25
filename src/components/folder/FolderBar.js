@@ -159,7 +159,7 @@ const FolderBar = () => {
             <Droppable droppableId={MOVE_TO_DROPPABLE}>
               {(droppableProvided, droppableSnapshot) => (
                 <div {...droppableProvided.droppableProps} ref={droppableProvided.innerRef}>
-                  <div>
+                  <div style={{ overflow: 'auto', minHeight: '400px' }}>
                     {folders.map((value, index) => {
                       return (
                         <div key={value.folderId}>

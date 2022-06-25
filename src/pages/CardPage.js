@@ -1,5 +1,5 @@
 import { CARD_CLASSIFIER, REACT_QUERY_KEY, getCardQueryKeyByClassifier } from '../constants/query';
-import { Columns, Hero } from 'react-bulma-components';
+import { Columns, Container, Hero } from 'react-bulma-components';
 import { FontSize, Media } from '../styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
@@ -17,6 +17,7 @@ import { loginState } from '../state/loginState';
 import { onSelectCardsByDefaultMember } from '../api/cardApi';
 import styled from '@emotion/styled';
 import { tagHighlightState } from '../state/tagState';
+import useScroll from '../hooks/useScroll';
 
 const CardPage = () => {
   const queryClient = useQueryClient();
@@ -36,6 +37,7 @@ const CardPage = () => {
   const { isSuccess, isLoading, data } = useQuery(REACT_QUERY_KEY.CARDS_BY_DEFAULT, () =>
     onSelectCardsByDefaultMember().then(response => response.data),
   );
+  const { y: sideBarY } = useScroll();
 
   useEffect(() => {
     if (isSuccess) {
@@ -58,85 +60,93 @@ const CardPage = () => {
     <div>
       <SearchLayout />
       <br />
-      <Hero className="medium">
-        <Hero.Body className="columns">
-          <FolderBarWrapper className="is-3-desktop is-3-tablet">
-            <FolderBar></FolderBar>
+      <Hero className="medium" style={{ position: 'relative' }}>
+        {1 === 1 && (
+          <FolderBarWrapper style={{ top: sideBarY > 300 ? sideBarY - 300 : 0 }}>
+            <FolderBar />
           </FolderBarWrapper>
-          <Columns.Column className="is-8-desktop is-9-tablet is-12-mobile">
-            <Columns className="pl-2 m-3 pb-3">
-              <StyledLink
-                className="mr-5"
-                to={'/card'}
-                onClick={() => {
-                  setFolderHighlight([]);
-                  setTagHighlight([]);
-                  setCardClassifer({
-                    ...cardClassifier,
-                    classifier: CARD_CLASSIFIER.DEFAULT,
-                  });
-                }}
-              >
-                전체보기
-              </StyledLink>
-              <StyledLink
-                to={'/card'}
-                onClick={() => {
-                  setCardAddModalActive(true);
-                }}
-              >
-                카드추가+
-              </StyledLink>
-            </Columns>
-            <Columns className="pt-4 pb-1 m-0">
-              <Classifier className="pl-2">
-                &nbsp;[분류] ::&nbsp; <span>전체</span>
-                {cardClassifier.classifier.type &&
-                  ' >  ' +
-                    cardClassifier.classifier.name +
-                    ' > ' +
-                    (cardClassifier.parent && cardClassifier.parent.id
-                      ? (cardClassifier.parent.name || '이름없음') + ' > '
-                      : '') +
-                    cardClassifier.name}
-                <hr />
-              </Classifier>
-            </Columns>
-            <Columns className="is-mobile">
-              {currentCards &&
-                currentCards.map((value, index) => {
-                  return (
-                    <Columns.Column key={index} className="is-3-desktop is-6-tablet is-half-mobile">
-                      <DownCards
-                        id={value.cardId}
-                        title={value.title}
-                        content={value.content}
-                        link={value.link}
-                        tagList={value.tags}
-                      />
-                    </Columns.Column>
-                  );
-                })}
-            </Columns>
-          </Columns.Column>
-          <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
-          {cardAddModalActive && (
-            <Modals
-              title={'카드 등록'}
-              active={cardAddModalActive}
-              onClose={() => {
-                setCardAddModalActive(false);
-              }}
-            >
-              <CardAddForm
+        )}
+        <StyledContainer className="">
+          <StyledHeroBody className="columns">
+            <Columns.Column className="is-12">
+              <Columns className="pl-2 m-3 pb-3">
+                <StyledLink
+                  className="mr-5 is-size-4-desktop is-size-7-mobile"
+                  to={'/card'}
+                  onClick={() => {
+                    setFolderHighlight([]);
+                    setTagHighlight([]);
+                    setCardClassifer({
+                      ...cardClassifier,
+                      classifier: CARD_CLASSIFIER.DEFAULT,
+                    });
+                  }}
+                >
+                  전체보기
+                </StyledLink>
+                <StyledLink
+                  className="is-size-4-desktop is-size-7-mobile"
+                  to={'/card'}
+                  onClick={() => {
+                    setCardAddModalActive(true);
+                  }}
+                >
+                  카드추가+
+                </StyledLink>
+              </Columns>
+              <Columns className="pt-4 pb-1 m-0">
+                <Classifier className="pl-2">
+                  &nbsp;[분류] ::&nbsp; <span>전체</span>
+                  {cardClassifier.classifier.type &&
+                    ' >  ' +
+                      cardClassifier.classifier.name +
+                      ' > ' +
+                      (cardClassifier.parent && cardClassifier.parent.id
+                        ? (cardClassifier.parent.name || '이름없음') + ' > '
+                        : '') +
+                      cardClassifier.name}
+                  <hr />
+                </Classifier>
+              </Columns>
+              <Columns className="is-mobile">
+                {currentCards &&
+                  currentCards.map((value, index) => {
+                    return (
+                      <Columns.Column
+                        key={index}
+                        className="is-3-desktop is-6-tablet is-half-mobile"
+                      >
+                        <DownCards
+                          id={value.cardId}
+                          title={value.title}
+                          content={value.content}
+                          link={value.link}
+                          tagList={value.tags}
+                        />
+                      </Columns.Column>
+                    );
+                  })}
+              </Columns>
+            </Columns.Column>
+            <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
+            {cardAddModalActive && (
+              <Modals
+                title={'카드 등록'}
                 active={cardAddModalActive}
                 onClose={() => {
                   setCardAddModalActive(false);
                 }}
-              />
-            </Modals>
-          )}
-        </Hero.Body>
+              >
+                <CardAddForm
+                  active={cardAddModalActive}
+                  onClose={() => {
+                    setCardAddModalActive(false);
+                  }}
+                />
+              </Modals>
+            )}
+          </StyledHeroBody>
+        </StyledContainer>
       </Hero>
     </div>
   );
@@ -144,28 +154,48 @@ const CardPage = () => {
 
 const FolderBarWrapper = styled(Columns.Column)`
   z-index: 1;
+  position: absolute;
+  left: 8vw;
+  width: 17vw;
+  visibility: hidden;
+  @media ${Media.desktop} {
+    visibility: visible;
+  }
+`;
+
+const StyledContainer = styled(Container)`
+  @media ${Media.desktop} {
+    min-width: 50%;
+    max-width: 50%;
+  }
+  @media ${Media.tablet} {
+    min-width: 95%;
+  }
+  @media ${Media.mobile} {
+    min-width: 100%;
+  }
 `;
 
 const Classifier = styled.div`
-  font-size: ${FontSize.huge};
+  font-size: ${FontSize.medium};
   @media ${Media.tablet} {
-    font-size: ${FontSize.large};
+    font-size: ${FontSize.small};
   }
   @media ${Media.mobile} {
-    font-size: ${FontSize.normal};
+    font-size: ${FontSize.micro};
   }
 `;
 
 const StyledLink = styled(Link)`
   text-decoration: 1px solid underline;
-  text-underline-offset: ${FontSize.normal};
+  text-underline-offset: ${FontSize.micro};
   opacity: 0.7;
-  font-size: ${FontSize.huge};
-  @media ${Media.tablet} {
-    font-size: ${FontSize.large};
-  }
-  @media ${Media.mobile} {
-    font-size: ${FontSize.normal};
+`;
+
+const StyledHeroBody = styled(Hero.Body)`
+  @media ${Media.desktop} {
+    padding-left: 0;
+    padding-right: 0;
   }
 `;
 
