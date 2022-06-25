@@ -140,6 +140,8 @@ const FolderBar = () => {
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate} onDragStart={onDragStart}>
       <StyledFolderBar>
+        <p className="pt-2">&nbsp;폴더관리</p>
+        <br />
         <FolderAddSection>
           &nbsp;
           <FolderAddText
@@ -147,11 +149,11 @@ const FolderBar = () => {
               setFolderModalActive(true);
             }}
           >
-            &nbsp;&nbsp;추가하기
-            <NormalIcon.Plus size={17} />
+            &nbsp;&nbsp;폴더추가
+            <NormalIcon.Plus size={14} />
           </FolderAddText>
         </FolderAddSection>
-        <br />
+        <p className="is-size-7">&nbsp;</p>
         {isLoading ? (
           <div>...loading</div>
         ) : (
@@ -159,7 +161,7 @@ const FolderBar = () => {
             <Droppable droppableId={MOVE_TO_DROPPABLE}>
               {(droppableProvided, droppableSnapshot) => (
                 <div {...droppableProvided.droppableProps} ref={droppableProvided.innerRef}>
-                  <div style={{ overflow: 'auto', minHeight: '400px' }}>
+                  <div style={{ overflow: 'auto' }}>
                     {folders.map((value, index) => {
                       return (
                         <div key={value.folderId}>
@@ -203,16 +205,9 @@ const FolderBar = () => {
                   {draggingFolderId && getFolderById(draggingFolderId).parentId && (
                     <ChildFolderMoveSection className="has-text-centered p-1">
                       <p>&nbsp;</p>
-                      <p>&nbsp;</p>
                       <p>최상위 폴더로</p>
                       <p>&nbsp;</p>
-                      <p>&nbsp;</p>
                     </ChildFolderMoveSection>
-                  )}
-                  {!draggingFolderId && (
-                    <div>
-                      <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p> <p>&nbsp;</p>
-                    </div>
                   )}
                   {superDroppableProvided.placeholder}
                 </div>
@@ -242,15 +237,11 @@ const StyledFolderBar = styled(Box)`
   border-radius: ${BorderRadius.card};
   border: 1px solid ${Colors.mainSecond};
   @media ${Media.desktop} {
-    min-height: 700px;
+    min-height: 500px;
+    max-height: 700px;
     position: sticky;
     top: 50px;
     width: 90%;
-  }
-  @media ${Media.tablet} {
-    min-height: 600px;
-    position: sticky;
-    top: 55px;
   }
 `;
 
@@ -263,7 +254,7 @@ const FolderAddText = styled.span`
   cursor: pointer;
   color: ${({ highlight }) => (highlight ? Colors.linkFirst : 'black')};
   display: inline-block;
-  font-size: ${FontSize.medium};
+  font-size: ${FontSize.small};
   @media ${Media.tablet} {
     font-size: ${FontSize.small};
   }
@@ -276,7 +267,7 @@ const FolderAddText = styled.span`
 `;
 
 const ChildFolderMoveSection = styled.div`
-  width: 90%;
+  width: 100%;
   background-color: ${Colors.backgroundForm};
   border: 1px dotted;
   border-radius: ${BorderRadius.card};

@@ -82,8 +82,8 @@ const FolderAddForm = ({ onClose }) => {
                     .map(f => {
                       return (
                         <option key={f.folderId} value={f.folderId}>
-                          {[...Array(f.level - 1)].map((v, i) => {
-                            return <span key={i}>- </span>;
+                          {[...Array(f.level - 1)].map(() => {
+                            return '-';
                           })}
                           {f.name || '이름없음'}
                         </option>
