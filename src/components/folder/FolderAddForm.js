@@ -57,11 +57,11 @@ const FolderAddForm = ({ onClose }) => {
     validationSchema,
     onSubmit: async (values, formikHelper) => {
       handleAddFolder(values);
-      formikHelper.resetForm();
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
     },
   });
+
   return (
     <form onSubmit={handleSubmit}>
       <Section>
@@ -78,10 +78,13 @@ const FolderAddForm = ({ onClose }) => {
                 <option value="">없음</option>
                 {folders &&
                   folders
-                    .filter(folder => folder.level === FOLDER.DEPTH_LIMIT - 1)
+                    .filter(folder => folder.level <= FOLDER.DEPTH_LIMIT - 1 && folder.level !== 0)
                     .map(f => {
                       return (
                         <option key={f.folderId} value={f.folderId}>
+                          {[...Array(f.level - 1)].map((v, i) => {
+                            return <span key={i}>- </span>;
+                          })}
                           {f.name || '이름없음'}
                         </option>
                       );
