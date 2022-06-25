@@ -358,7 +358,11 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
             })}
           </Columns.Column>
         </Columns>
-        <ModalFooter confirm={'추가하기'} cancel={'취소하기'} onClose={onClose} />
+        <ModalFooter
+          confirm={method === 'CREATE' ? '추가하기' : '변경하기'}
+          cancel={'취소하기'}
+          onClose={onClose}
+        />
       </Section>
     </form>
   );
