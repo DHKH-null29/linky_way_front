@@ -167,13 +167,16 @@ const MyPage = () => {
                   </p>
                 <p className="is-size-3">&nbsp;</p>
                 <DevideLine space="medium" color="none" />
-                <label className="label">회원 탈퇴하고 싶어요</label>
-                <Buttons colortype="warn">회원 탈퇴</Buttons>
                 <Columns>
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">비밀번호 변경</label>
                     <Buttons type={'submit'}>변경하기</Buttons>
+                  </Columns.Column>
+                  <Columns.Column>
+                    <p className="is-size-6">&nbsp;</p>
+                    <label className="label">회원 탈퇴하고 싶어요</label>
+                    <Buttons colortype="warn">회원 탈퇴</Buttons>
                   </Columns.Column>
                 </Columns>
               </StyledForm>
