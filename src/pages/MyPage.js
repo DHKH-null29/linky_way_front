@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
-import { onCheckNicknameDuplication, onJoin, onMyPage } from '../api/memberApi';
+import { onCheckNicknameDuplication, onNicknameChange, onMyPage } from '../api/memberApi';
 import { useQuery } from 'react-query';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
@@ -36,6 +36,7 @@ const MyPage = () => {
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
+      console.log(values);
       if (!validNickname) {
         Swal.fire({
           icon: 'error',
@@ -47,7 +48,8 @@ const MyPage = () => {
         formikHelper.resetForm();
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
-        const result = await onJoin(values);
+        const result = await onNicknameChange(values);
+        console.log(values);
 
         if (result.code <= 201) {
           Swal.fire({

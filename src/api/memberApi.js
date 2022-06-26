@@ -14,6 +14,10 @@ export const onCheckNicknameDuplication = nickname => {
   return requestForAll.get(memberApi + '/nickname', { params: { nickname } });
 };
 
+export const onNicknameChange = async (updateMemberRequest) => {
+  return requestForAuth.put(memberApi + '/page/me', updateMemberRequest);
+}
+
 export const onMyPage = async () => {
   return await requestForAuth.get(memberApi + '/page/me');
 }
