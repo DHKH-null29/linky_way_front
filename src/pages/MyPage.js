@@ -2,7 +2,8 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
-import { onCheckNicknameDuplication, onJoin } from '../api/memberApi';
+import { onCheckNicknameDuplication, onJoin, onMyPage } from '../api/memberApi';
+import { useQuery } from 'react-query';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/common/Buttons';
@@ -11,15 +12,16 @@ import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const MyPage = () => {
   const navigate = useNavigate();
   const [validNickname, setValidNickname] = useState(false);
   const [validNicknameHistory, setValidNicknameHistory] = useState(undefined);
   const [nicknameDisabled, setNicknameDisabled] = useState(true);
+  const [user, setUser] = useState({});
+
   const initialValues = {
-    email: '',
     nickname: '',
   };
 
@@ -64,7 +66,7 @@ const MyPage = () => {
       }
     },
   });
-
+  
   const handleCheckDuplicatedNameButton = async nickname => {
     if (errors.nickname) {
       return;
@@ -103,6 +105,24 @@ const MyPage = () => {
     );
   };
 
+  const { data, status, error } = useQuery('userData', () =>
+    onMyPage().then(response => response.data),
+  );
+
+  useEffect(() => {
+    if (status === "success") {
+      setUser(data);
+    }
+  }, [data]);
+
+  if (status === "loading") {
+    return <span>Loading...</span>;
+  }
+
+  if (status === "error") {
+    return <span>Error: {error.message}</span>;
+  }
+
   return (
     <>
       <Hero size={'fullheight'}>
@@ -126,7 +146,7 @@ const MyPage = () => {
                     <IconInput
                       name="calendar"
                       type="text"
-                      value={values.calendar}
+                      // value={values.calendar}
                       autocomplete="off"
                       placeholder="2022년 01월 01일"
                       leftIconComponent={<AnimatedIcon.Calendar />}
@@ -143,9 +163,8 @@ const MyPage = () => {
                     <IconInput
                       name="email"
                       type="text"
-                      value={values.email}
+                      value={user.email}
                       autocomplete="off"
-                      placeholder="email@email.com"
                       leftIconComponent={<AnimatedIcon.Email />}
                       rightIconComponent={resolveRightIconComponent('email')}
                       disabled={true}
@@ -162,10 +181,10 @@ const MyPage = () => {
                       name="nickname"
                       autocomplete="off"
                       required
-                      placeholder="nickname"
                       onChange={handleNicknameInputChange}
                       onBlur={handleBlur}
-                      value={values.nickname}
+                      value={nicknameDisabled ? user.nickname : values.nickname}
+                      placeholder={user.nickname}
                       leftIconComponent={<AnimatedIcon.CommonInput />}
                       rightIconComponent={resolveRightIconComponent('nickname')}
                       disabled={nicknameDisabled}

@@ -1,4 +1,4 @@
-import { requestForAll } from './config';
+import { requestForAll, requestForAuth } from './config';
 
 const memberApi = 'api/members';
 
@@ -13,3 +13,7 @@ export const onJoin = joinForm => {
 export const onCheckNicknameDuplication = nickname => {
   return requestForAll.get(memberApi + '/nickname', { params: { nickname } });
 };
+
+export const onMyPage = async () => {
+  return await requestForAuth.get(memberApi + '/page/me');
+}
