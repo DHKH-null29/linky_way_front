@@ -1,4 +1,6 @@
 import { Colors } from '../../styles';
+import { Modal } from 'react-bulma-components';
+import styled from '@emotion/styled';
 import useClickAway from '../../hooks/useClickAway';
 
 const Modals = ({ children, title, active, onClose, ...props }) => {
@@ -6,8 +8,8 @@ const Modals = ({ children, title, active, onClose, ...props }) => {
     onClose && onClose();
   });
   return (
-    <div style={{ zIndex: 999 }} className={`modal ${active ? 'is-active' : ''}`} {...props}>
-      <div className="modal-background" />
+    <StyledModal show={active} {...props}>
+      <div className="modal-background" style={{ background: 'none' }} onClick={onClose} />
       <div ref={ref} className="modal-card">
         <header className="modal-card-head" style={{ backgroundColor: Colors.layout }}>
           <p className="modal-card-title">{title || ''}</p>
@@ -15,8 +17,12 @@ const Modals = ({ children, title, active, onClose, ...props }) => {
         </header>
         <section className="modal-card-body">{children}</section>
       </div>
-    </div>
+    </StyledModal>
   );
 };
+
+const StyledModal = styled(Modal)`
+  font-family: 'ImcreSoojin';
+`;
 
 export default Modals;
