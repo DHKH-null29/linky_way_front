@@ -13,3 +13,7 @@ export const onAddTag = addTagForm => {
 export const onDeleteTag = tagId => {
   return requestForAuth.delete(tagApi + `/${tagId}`);
 };
+
+export const onChangeTag = (tagId, isPublic, tagName) => {
+  return requestForAuth.put(tagApi + `/${tagId}`, { isPublic, tagName });
+};
