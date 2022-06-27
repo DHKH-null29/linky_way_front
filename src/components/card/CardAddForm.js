@@ -274,7 +274,14 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
                         value={f.folderId}
                         selected={currentCard && currentCard.folderId === f.filderId}
                       >
-                        {f.level >= 3 ? '- ' + f.name : f.name}
+                        {[...Array(f.level)].map((v, i) => {
+                          console.log(f.level);
+                          if (i === 0) {
+                            return;
+                          }
+                          return <span key={i}>- </span>;
+                        })}
+                        {f.name}
                       </option>
                     );
                   })}
@@ -351,7 +358,11 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
             })}
           </Columns.Column>
         </Columns>
-        <ModalFooter confirm={'추가하기'} cancel={'취소하기'} onClose={onClose} />
+        <ModalFooter
+          confirm={method === 'CREATE' ? '추가하기' : '변경하기'}
+          cancel={'취소하기'}
+          onClose={onClose}
+        />
       </Section>
     </form>
   );

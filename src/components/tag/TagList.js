@@ -48,10 +48,11 @@ const TagList = () => {
           tags.map((value, index) => {
             return (
               <span key={index}>
-                <span className="is-hidden-mobile">{tag(value, index, 'large')}</span>
+                <span className="is-hidden-mobile">{tag(value, index, 'medium')}</span>
                 <span className="is-hidden-tablet is-hidden-desktop">
-                  {tag(value, index, 'small')}
+                  {tag(value, index, 'micro')}
                 </span>
+                &nbsp;
               </span>
             );
           })}

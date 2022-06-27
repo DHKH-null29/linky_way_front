@@ -1,7 +1,7 @@
 import { IconSize } from '../../../styles';
 import styled from '@emotion/styled';
 
-const FolderArrow = ({ size }) => {
+const FolderArrow = ({ size, opacity = 1 }) => {
   return (
     <StyledSvg viewBox="-80 0 300 250" xmlns="http://www.w3.org/2000/svg" size={size}>
       <rect fill="none" />
@@ -12,6 +12,7 @@ const FolderArrow = ({ size }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="17"
+        opacity={opacity}
       />
       <polyline
         fill="none"
@@ -20,6 +21,7 @@ const FolderArrow = ({ size }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="17"
+        opacity={opacity}
       />
     </StyledSvg>
   );
@@ -32,6 +34,8 @@ FolderArrow.defaultProps = {
 const StyledSvg = styled.svg`
   width: ${({ size }) => size + 'px'};
   height: auto;
+  margin: 0;
+  padding: 0;
 `;
 
 export default FolderArrow;
