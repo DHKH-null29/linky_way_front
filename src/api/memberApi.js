@@ -16,8 +16,12 @@ export const onCheckNicknameDuplication = async nickname => {
 
 export const onNicknameChange = updateNicknameRequest => {
   return requestForAuth.put(memberApi + '/page/me', updateNicknameRequest);
-}
+};
 
 export const onMyPage = async () => {
   return await requestForAuth.get(memberApi + '/page/me');
-}
+};
+
+export const onMembershipWithdrawal = async () => {
+  return await requestForAuth.delete(memberApi);
+};

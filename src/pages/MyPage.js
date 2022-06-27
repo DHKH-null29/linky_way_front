@@ -96,6 +96,49 @@ const MyPage = () => {
     );
   };
 
+  const handleMembershipWithdrawalClick = () => {
+    Swal.fire({
+      icon: 'question',
+      text: '정말 탈퇴를 진행하실건가요?',
+      showCancelButton: true,
+      confirmButtonColor: `${Colors.successFirst}`,
+      cancelButtonColor: `${Colors.warningFirst}`,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요',
+    }).then(result => {
+      if (result.isConfirmed) {
+        membershipWithdrawal.mutate();
+      }
+    });
+  }
+
+  const membershipWithdrawal = useMutation(() => onMembershipWithdrawal(), {
+    onMutate: async () => {
+      await queryClient.cancelQueries(USER_QUERY_KEY);
+      const previousValue = queryClient.getQueryData(USER_QUERY_KEY);
+      if(previousValue) {
+        queryClient.setQueryData(USER_QUERY_KEY, { email: user.email, nickname: user.email });
+      }
+      return { previousValue };
+    },
+    onSuccess: async () => {
+      Swal.fire({
+        icon: 'success',
+        text: '회원 탈퇴가 완료되었습니다.',
+      }).then(() => {
+        navigate('/');
+      });
+    },
+    onError: (error, variables, context) => {
+      Swal.fire({
+        icon: 'error',
+        text: `회원 탈퇴를 실패했습니다.: ${error.details}`,
+      }).then(() => {
+        queryClient.setQueryData(USER_QUERY_KEY, context.previousValue);
+      });
+    },
+  })
+
   const nicknameModifyMutation = useMutation(inputNickname => onNicknameChange(inputNickname), {
     onMutate: async inputNickname => {
       await queryClient.cancelQueries(USER_QUERY_KEY);
@@ -180,7 +223,7 @@ const MyPage = () => {
                     <IconInput
                       name="email"
                       type="text"
-                      value={user.email}
+                      value={user.email ? user.email : ''}
                       autocomplete="off"
                       leftIconComponent={<AnimatedIcon.Email />}
                       rightIconComponent={resolveRightIconComponent('email')}
