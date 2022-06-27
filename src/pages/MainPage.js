@@ -5,8 +5,14 @@ import Buttons from '../components/common/Buttons';
 import { FontWeight } from '../styles/font';
 import main1_Card from '../assets/images/mainPage/main1_Card.jpg';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage = () => {
+  const navigate = useNavigate();
+
+  const handlePageButtonClick = path => {
+    navigate(path);
+  };
   return (
     <>
       <StyledOddNumHero className="is-medium">
@@ -154,7 +160,13 @@ const MainPage = () => {
             <StyledForm className="section container">
               <h2 className="title">LinkyWay 무료로 사용하기</h2>
               <br />
-              <Buttons>LinkyWay 시작하기</Buttons>
+              <Buttons
+                onClick={() => {
+                  handlePageButtonClick('/join');
+                }}
+              >
+                LinkyWay 시작하기
+              </Buttons>
             </StyledForm>
           </Columns.Column>
         </StyledHeroBody>
