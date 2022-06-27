@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
 import { onCheckNicknameDuplication, onNicknameChange, onMyPage } from '../api/memberApi';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/common/Buttons';
@@ -16,6 +16,7 @@ import { useState, useEffect } from 'react';
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [validNickname, setValidNickname] = useState(false);
   const [validNicknameHistory, setValidNicknameHistory] = useState(undefined);
   const [nicknameDisabled, setNicknameDisabled] = useState(true);
@@ -36,7 +37,6 @@ const MyPage = () => {
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
-      console.log(values);
       if (!validNickname) {
         Swal.fire({
           icon: 'error',
@@ -44,29 +44,12 @@ const MyPage = () => {
         });
         return;
       }
-      try {
-        formikHelper.resetForm();
-        formikHelper.setStatus({ success: true });
-        formikHelper.setSubmitting(false);
-        const result = await onNicknameChange(values);
-        console.log(values);
+      formikHelper.resetForm();
+      formikHelper.setStatus({ success: true });
+      formikHelper.setSubmitting(false);
 
-        if (result.code <= 201) {
-          Swal.fire({
-            icon: 'success',
-            text: '정보가 수정되었습니다.',
-          }).then(() => {
-            navigate('/');
-          });
-          setNicknameDisabled(true);
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          text: `정보 수정 실패: ${error.details}`,
-        });
-      }
-    },
+      nicknameModifyMutation.mutate(values.nickname);
+    }
   });
   
   const handleCheckDuplicatedNameButton = async nickname => {
@@ -106,6 +89,36 @@ const MyPage = () => {
       ))
     );
   };
+
+  const nicknameModifyMutation = useMutation(inputNickname => onNicknameChange(inputNickname), {
+    onMutate: async inputNickname => {
+      console.log(inputNickname);
+      await queryClient.cancelQueries('userData');
+      const previousValue = queryClient.getQueryData('userData');
+      if(previousValue) {
+        queryClient.setQueryData('userData', { nickname: inputNickname });
+      }
+      return { previousValue };
+    },
+    onSuccess: result => {
+      Swal.fire({
+        icon: 'success',
+        text: '정보가 수정되었습니다.',
+      }).then(() => {
+        navigate('/');
+      });
+      setNicknameDisabled(true);
+      console.log(result);
+    },
+    onError: (error, variables, context) => {
+      Swal.fire({
+        icon: 'error',
+        text: `정보 수정 실패: ${error.details}`,
+      }).then(() => {
+        queryClient.setQueryData('userData', context.previousValue);
+      });
+    },
+  });         
 
   const { data, status, error } = useQuery('userData', () =>
     onMyPage().then(response => response.data),
