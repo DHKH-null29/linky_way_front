@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
-import { onCheckNicknameDuplication, onNicknameChange, onMyPage } from '../api/memberApi';
+import { onCheckNicknameDuplication, onNicknameChange, onMyPage, onMembershipWithdrawal } from '../api/memberApi';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 const MyPage = () => {
+  const USER_QUERY_KEY = 'userData'
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [validNickname, setValidNickname] = useState(false);
@@ -51,7 +52,12 @@ const MyPage = () => {
       nicknameModifyMutation.mutate(values.nickname);
     }
   });
-  
+
+  const handleNicknameChangeSubmit = (event) => {
+    handleSubmit();
+    event.preventDefault();
+  }
+
   const handleCheckDuplicatedNameButton = async nickname => {
     if (errors.nickname) {
       return;
@@ -92,35 +98,31 @@ const MyPage = () => {
 
   const nicknameModifyMutation = useMutation(inputNickname => onNicknameChange(inputNickname), {
     onMutate: async inputNickname => {
-      console.log(inputNickname);
-      await queryClient.cancelQueries('userData');
-      const previousValue = queryClient.getQueryData('userData');
+      await queryClient.cancelQueries(USER_QUERY_KEY);
+      const previousValue = queryClient.getQueryData(USER_QUERY_KEY);
       if(previousValue) {
-        queryClient.setQueryData('userData', { nickname: inputNickname });
+        queryClient.setQueryData(USER_QUERY_KEY, { nickname: inputNickname });
       }
       return { previousValue };
     },
-    onSuccess: result => {
+    onSuccess: () => {
       Swal.fire({
         icon: 'success',
         text: '정보가 수정되었습니다.',
-      }).then(() => {
-        navigate('/');
       });
       setNicknameDisabled(true);
-      console.log(result);
     },
     onError: (error, variables, context) => {
       Swal.fire({
         icon: 'error',
         text: `정보 수정 실패: ${error.details}`,
       }).then(() => {
-        queryClient.setQueryData('userData', context.previousValue);
+        queryClient.setQueryData(USER_QUERY_KEY, context.previousValue);
       });
     },
   });         
 
-  const { data, status, error } = useQuery('userData', () =>
+  const { data, status, error } = useQuery(USER_QUERY_KEY, () =>
     onMyPage().then(response => response.data),
   );
 
@@ -150,7 +152,7 @@ const MyPage = () => {
                 justifyContent: 'center',
               }}
             >
-              <StyledForm onSubmit={handleSubmit}>
+              <StyledForm onSubmit={(event) => { handleNicknameChangeSubmit(event) }}>
                 <p className="container has-text-centered title is-2">My Page</p>
                 <DevideLine space="small" color="none" />
                 <Columns>
@@ -243,7 +245,7 @@ const MyPage = () => {
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">회원 탈퇴하고 싶어요</label>
-                    <Buttons type="button" colortype="warn">
+                    <Buttons type="button" colortype="warn" onClick={handleMembershipWithdrawalClick}>
                       회원 탈퇴
                     </Buttons>
                   </Columns.Column>
