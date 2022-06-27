@@ -30,7 +30,7 @@ const TagAddForm = () => {
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
-      values.isPublic = !off;
+      values.isPublic = off;
       onAddTag(values).then(response => {
         const resultTag = {
           tagId: response.data.tagId,

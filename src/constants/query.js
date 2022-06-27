@@ -7,6 +7,8 @@ export const REACT_QUERY_KEY = {
 
   FOLDERS: 'folders',
   TAGS: 'tags',
+  TAGS_SOCIAL: 'tagsSocial',
+  TAGS_SOCIAL_BY_NAME: 'tagsSocialByTagName',
 };
 
 export const DEFAULT_CLIENT_QUERY_SETTINGS = {

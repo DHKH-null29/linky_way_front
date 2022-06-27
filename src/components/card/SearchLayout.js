@@ -32,8 +32,8 @@ const SearchLayout = () => {
   };
   const validationSchema = Yup.object().shape({
     keyword: Yup.string()
-      .min(2, '최소 2글자 이상 입력하세요.')
-      .max(16, '최대 16글자 이하여야 합니다.')
+      .min(1, '최소 1글자 이상 입력하세요.')
+      .max(50, '최대 50글자 이하여야 합니다.')
       .required('검색할 키워드를 입력하세요.'),
   });
 

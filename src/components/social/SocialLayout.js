@@ -7,45 +7,44 @@ import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
 import { Colors } from '../../styles/colors';
 import IconInput from '../common/IconInput';
+import SocialTagList from './SocialTagList';
 import Swal from 'sweetalert2';
-import TagList from '../tag/TagList';
-import { currentCardState } from '../../state/cardState';
-import { onSelectCardsByKeyword } from '../../api/cardApi';
+import { searchLikeState } from '../../state/socialState';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useSetRecoilState } from 'recoil';
+import { useState } from 'react';
 
 const SocialLayout = () => {
-  const setCurrentCards = useSetRecoilState(currentCardState);
-
+  const [submittedTagName, setSubmittedTagName] = useState('');
   const initialValues = {
-    keyword: '',
+    tagName: '',
   };
-
+  const setLike = useSetRecoilState(searchLikeState);
   const validationSchema = Yup.object().shape({
-    keyword: Yup.string()
-      .min(2, '최소 2글자 이상 입력하세요.')
-      .max(16, '최대 16글자 이하여야 합니다.')
-      .required('검색할 키워드를 입력하세요.'),
+    tagName: Yup.string()
+      .min(1, '최소 1글자 이상 입력하세요.')
+      .max(50, '최대 50글자 이하여야 합니다.')
+      .required('검색할 태그를 입력하세요.'),
   });
-
   const { errors, handleBlur, handleChange, handleSubmit, touched, values } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values, formikHelper) => {
       try {
-        const result = await onSelectCardsByKeyword(values.keyword);
-        setCurrentCards(result.data);
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
+        setSubmittedTagName(values.tagName);
+        setLike(true);
       } catch (error) {
         Swal.fire({
           icon: 'error',
-          text: error.details,
+          text: error.detail || error.message,
         });
       }
     },
   });
+
   return (
     <StyledHero className="is-small">
       <StyledHeroBody className="column">
@@ -55,30 +54,29 @@ const SocialLayout = () => {
               <Columns.Column className="is-10">
                 <IconInput
                   type="text"
-                  name="keyword"
+                  name="tagName"
                   autocomplete="off"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.keyword}
-                  placeholder="검색할 키워드를 입력해주세요."
+                  value={values.tagName}
+                  placeholder="검색할 태그를 입력해주세요."
                   leftIconComponent={<AnimatedIcon.Search />}
-                  rightIconComponent={' '}
                 />
               </Columns.Column>
               <Columns.Column className="is-2">
-                <Buttons> &nbsp;검색&nbsp;</Buttons>
+                <Buttons type="submit"> &nbsp;검색&nbsp;</Buttons>
               </Columns.Column>
             </Columns>
             <p
               className="pt-2"
-              style={{ color: errors.keyword ? Colors.warningFirst : Colors.successFirst }}
+              style={{ color: errors.tagName ? Colors.warningFirst : Colors.successFirst }}
             >
-              &nbsp;{touched.keyword && errors.keyword}
+              &nbsp;{touched.tagName && errors.tagName}
             </p>
           </StyledForm>
           <TagContainer>
             <div>
-              <TagList />
+              <SocialTagList currentTagName={submittedTagName} />
             </div>
           </TagContainer>
           <br />

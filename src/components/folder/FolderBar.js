@@ -11,6 +11,7 @@ import { FontWeight } from '../../styles/font';
 import Modals from '../modals/Modals';
 import NormalIcon from '../icons/NormalIcon';
 import { REACT_QUERY_KEY } from '../../constants/query';
+import Swal from 'sweetalert2';
 import { folderHighlightState } from '../../state/folderState';
 import styled from '@emotion/styled';
 import { useRecoilValue } from 'recoil';
@@ -53,12 +54,17 @@ const FolderBar = () => {
     }
 
     if (directoryChangeable) {
-      onChangeFolderPath(result.draggableId, folders[result.destination.index].folderId).then(
-        () => {
+      onChangeFolderPath(result.draggableId, folders[result.destination.index].folderId)
+        .then(() => {
           loadNewFolders();
           resetCardsByFolderQuery();
-        },
-      );
+        })
+        .catch(error =>
+          Swal.fire({
+            icon: 'info',
+            text: error.details || error.message,
+          }),
+        );
       setDirectoryChangeable(false);
     }
     if (!result.destination) {
@@ -196,23 +202,24 @@ const FolderBar = () => {
                 </div>
               )}
             </Droppable>
-            <Droppable droppableId={MOVE_TO_SUPER_DROPPABLE}>
+            <Droppable
+              droppableId={MOVE_TO_SUPER_DROPPABLE}
+              style={{ position: 'absolute', width: '300px', height: '100px', left: 0 }}
+            >
               {superDroppableProvided => (
                 <div
                   {...superDroppableProvided.droppableProps}
                   ref={superDroppableProvided.innerRef}
                 >
-                  {draggingFolderId && getFolderById(draggingFolderId).parentId && (
-                    <ChildFolderMoveSection className="has-text-centered p-1">
-                      <p>&nbsp;</p>
-                      <p>최상위 폴더로</p>
-                      <p>&nbsp;</p>
-                    </ChildFolderMoveSection>
-                  )}
+                  <ChildFolderMoveSection className="has-text-centered p-1 mt-1">
+                    <p>최상위 폴더로</p>
+                  </ChildFolderMoveSection>
                   {superDroppableProvided.placeholder}
                 </div>
               )}
             </Droppable>
+            <br></br>
+            <br></br>
           </div>
         )}
         <br />
@@ -238,7 +245,7 @@ const StyledFolderBar = styled(Box)`
   border: 1px solid ${Colors.mainSecond};
   @media ${Media.desktop} {
     min-height: 500px;
-    max-height: 700px;
+    max-height: 600px;
     position: sticky;
     top: 50px;
     width: 90%;

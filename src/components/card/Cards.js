@@ -122,7 +122,7 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
           <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>
         </CardContent>
       </StyleCard>
-      {isHovered && (
+      {writable && isHovered && (
         <StyleCardHovered>
           <StyledCardHoveredButtonGroups>
             <Buttons
