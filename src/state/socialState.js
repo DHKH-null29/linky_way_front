@@ -9,3 +9,8 @@ export const packageChangeState = atom({
   key: 'packageChange',
   default: false,
 });
+
+export const pickedPackageState = atom({
+  key: 'pickedPackage',
+  default: undefined,
+});
