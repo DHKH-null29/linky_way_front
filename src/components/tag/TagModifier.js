@@ -48,10 +48,13 @@ const TagModifier = ({ tagId, tagName, isPublic, onDelete }) => {
   useEffect(() => {
     if (publicChangeRequest) {
       setPublicChangeRequest;
-      onChangeTag(tagId, isPublicDebounce, tagNameRequest).then(() => {
-        const newTagList = [...tagList];
-        newTagList.filter(tag => tag.tagId === tagId).isPublic = isPublicDebounce;
-        queryClient.setQueryData(REACT_QUERY_KEY.TAGS, [...newTagList]);
+      onChangeTag(tagId, off, tagNameRequest).then(() => {
+        const obj = { ...tagList.filter(tag => tag.tagId === tagId)[0] };
+        obj.isPublic = off;
+        queryClient.setQueryData(
+          REACT_QUERY_KEY.TAGS,
+          tagList.map(v => (v.tagId === obj.tagId ? obj : v)),
+        );
       });
     }
   }, [isPublicDebounce]);
@@ -64,9 +67,12 @@ const TagModifier = ({ tagId, tagName, isPublic, onDelete }) => {
           setNameChangeStatus(false);
         })
         .then(() => {
-          const newTagList = [...tagList];
-          newTagList.filter(tag => tag.tagId === tagId).tagName = tagNameRequest;
-          queryClient.setQueryData(REACT_QUERY_KEY.TAGS, [...newTagList]);
+          const obj = { ...tagList.filter(tag => tag.tagId === tagId)[0] };
+          obj.tagName = tagNameRequest;
+          queryClient.setQueryData(
+            REACT_QUERY_KEY.TAGS,
+            tagList.map(v => (v.tagId === obj.tagId ? obj : v)),
+          );
         });
     }
   }, [tagNameRequest]);
