@@ -22,7 +22,7 @@ const MainPage = () => {
               <StyledTitle>별들을 한곳에 모으는 은하수</StyledTitle>
               <StyledTitle>소셜 북마크 서비스</StyledTitle>
               <br />
-              <StyledContent>(로고가 들어갈 자리)</StyledContent>
+              {/* <StyledContent>(로고가 들어갈 자리)</StyledContent> */}
             </StyledForm>
           </Columns.Column>
         </StyledHeroBody>
@@ -62,7 +62,7 @@ const MainPage = () => {
               <div>
                 <Image src={main1_Card} width="450" height="150" alt="main1_Card" />
               </div>
-              <div>(개인페이지 스크롤하는 움직이는 이미지)</div>
+              {/* <div>(개인페이지 스크롤하는 움직이는 이미지)</div> */}
             </StyledTitle>
           </Columns.Column>
         </StyledHeroBody>
@@ -75,7 +75,7 @@ const MainPage = () => {
               <div>
                 <img src={main1_Card} width="450" height="150" alt="main1_Card" />
               </div>
-              <div>(페이지 이동하는 움직이는 이미지, 페이지 이동 아이콘)</div>
+              {/* <div>(페이지 이동하는 움직이는 이미지, 페이지 이동 아이콘)</div> */}
             </StyledTitle>
           </Columns.Column>
           <Columns.Column>
@@ -105,7 +105,7 @@ const MainPage = () => {
               <div>
                 <img src={main1_Card} width="450" height="150" alt="main1_Card" />
               </div>
-              <div>(에러 카드 목록, 에러 카드)</div>
+              {/* <div>(에러 카드 목록, 에러 카드)</div> */}
             </StyledTitle>
           </Columns.Column>
         </StyledHeroBody>
@@ -118,7 +118,7 @@ const MainPage = () => {
               <div>
                 <img src={main1_Card} width="450" height="150" alt="main1_Card" />
               </div>
-              <div>(소셜페이지 이미지)</div>
+              {/* <div>(소셜페이지 이미지)</div> */}
             </StyledTitle>
           </Columns.Column>
           <Columns.Column>
@@ -148,7 +148,7 @@ const MainPage = () => {
               <div>
                 <img src={main1_Card} width="450" height="150" alt="main1_Card" />
               </div>
-              <div>(카드 복사하는 움직이는 이미지)</div>
+              {/* <div>(카드 복사하는 움직이는 이미지)</div> */}
             </StyledTitle>
           </Columns.Column>
         </StyledHeroBody>
