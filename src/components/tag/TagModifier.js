@@ -170,7 +170,7 @@ const TagModifier = ({ tagId, tagName, isPublic, onDelete }) => {
         </Columns.Column>
         <Columns.Column className="is-2 mt-1">
           <div style={{ position: 'relative' }}>
-            <Switcher isOff={off} />
+            <Switcher isOff={!off} />
             <StyledModifier
               className="button is-size-7"
               style={{
