@@ -1,5 +1,5 @@
 import { Colors, FontSize, Media, Shadows } from '../styles';
-import { Columns, Footer, Hero } from 'react-bulma-components';
+import { Columns, Footer, Hero, Image } from 'react-bulma-components';
 
 import Buttons from '../components/common/Buttons';
 import { FontWeight } from '../styles/font';
@@ -60,7 +60,7 @@ const MainPage = () => {
           <Columns.Column>
             <StyledTitle>
               <div>
-                <img src={main1_Card} width="450" height="150" alt="main1_Card" />
+                <Image src={main1_Card} width="450" height="150" alt="main1_Card" />
               </div>
               <div>(개인페이지 스크롤하는 움직이는 이미지)</div>
             </StyledTitle>
@@ -158,7 +158,7 @@ const MainPage = () => {
         <StyledHeroBody className="column has-text-centered">
           <Columns.Column>
             <StyledForm className="section container">
-              <h2 className="title">LinkyWay 무료로 사용하기</h2>
+              <StyledSubTitle className="title">LinkyWay 무료로 사용하기</StyledSubTitle>
               <br />
               <Buttons
                 onClick={() => {
@@ -219,18 +219,56 @@ const StyledForm = styled.form`
 `;
 
 const StyledTitle = styled.h1`
-  font-size: ${FontSize.large};
   font-weight: ${FontWeight.bold};
+
+  @media ${Media.desktop} {
+    font-size: ${FontSize.large};
+  }
+  @media ${Media.tablet} {
+    font-size: ${FontSize.medium};
+  }
+  @media ${Media.mobile} {
+    font-size: ${FontSize.small};
+  }
 `;
 
 const StyledContent = styled.h2`
-  font-size: ${FontSize.medium};
   font-weight: ${FontWeight.medium};
+  @media ${Media.desktop} {
+    font-size: ${FontSize.medium};
+  }
+  @media ${Media.tablet} {
+    font-size: ${FontSize.normal};
+  }
+  @media ${Media.mobile} {
+    font-size: ${FontSize.micro};
+  }
+`;
+
+const StyledSubTitle = styled.h3`
+  font-weight: ${FontWeight.medium};
+  @media ${Media.desktop} {
+    font-size: ${FontSize.huge};
+  }
+  @media ${Media.tablet} {
+    font-size: ${FontSize.huge};
+  }
+  @media ${Media.mobile} {
+    font-size: ${FontSize.medium};
+  }
 `;
 
 const StyledLi = styled.li`
-  font-size: ${FontSize.medium};
   font-weight: ${FontWeight.medium};
+  @media ${Media.desktop} {
+    font-size: ${FontSize.medium};
+  }
+  @media ${Media.tablet} {
+    font-size: ${FontSize.normal};
+  }
+  @media ${Media.mobile} {
+    font-size: ${FontSize.small};
+  }
 `;
 
 const DevideLine = styled.hr`
