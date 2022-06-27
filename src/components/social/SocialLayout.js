@@ -8,25 +8,25 @@ import Buttons from '../common/Buttons';
 import { Colors } from '../../styles/colors';
 import IconInput from '../common/IconInput';
 import SocialTagList from './SocialTagList';
-import { currentPackageState } from '../../state/socialState';
-import { onGetSearchByPackage } from '../../api/socialApi';
+import Swal from 'sweetalert2';
+import { searchLikeState } from '../../state/socialState';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useSetRecoilState } from 'recoil';
+import { useState } from 'react';
 
 const SocialLayout = () => {
-  const setCurrentPackages = useSetRecoilState(currentPackageState);
+  const [submittedTagName, setSubmittedTagName] = useState('');
   const initialValues = {
     tagName: '',
   };
-
+  const setLike = useSetRecoilState(searchLikeState);
   const validationSchema = Yup.object().shape({
     tagName: Yup.string()
-      .min(2, '최소 2글자 이상 입력하세요.')
-      .max(16, '최대 16글자 이하여야 합니다.')
+      .min(1, '최소 1글자 이상 입력하세요.')
+      .max(50, '최대 50글자 이하여야 합니다.')
       .required('검색할 태그를 입력하세요.'),
   });
-
   const { errors, handleBlur, handleChange, handleSubmit, touched, values } = useFormik({
     initialValues,
     validationSchema,
@@ -34,15 +34,17 @@ const SocialLayout = () => {
       try {
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
-        console.log(values);
-        const result = await onGetSearchByPackage();
-        setCurrentPackages(result.data);
-        console.log(result.data);
+        setSubmittedTagName(values.tagName);
+        setLike(true);
       } catch (error) {
-        console.log(error);
+        Swal.fire({
+          icon: 'error',
+          text: error.detail || error.message,
+        });
       }
     },
   });
+
   return (
     <StyledHero className="is-small">
       <StyledHeroBody className="column">
@@ -59,7 +61,6 @@ const SocialLayout = () => {
                   value={values.tagName}
                   placeholder="검색할 태그를 입력해주세요."
                   leftIconComponent={<AnimatedIcon.Search />}
-                  rightIconComponent={' '}
                 />
               </Columns.Column>
               <Columns.Column className="is-2">
@@ -75,7 +76,7 @@ const SocialLayout = () => {
           </StyledForm>
           <TagContainer>
             <div>
-              <SocialTagList />
+              <SocialTagList currentTagName={submittedTagName} />
             </div>
           </TagContainer>
           <br />

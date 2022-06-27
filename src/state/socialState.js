@@ -14,3 +14,8 @@ export const pickedPackageState = atom({
   key: 'pickedPackage',
   default: undefined,
 });
+
+export const searchLikeState = atom({
+  key: 'searchLike',
+  default: true,
+});
