@@ -1,22 +1,25 @@
+import { Media } from '../../styles';
+import styled from '@emotion/styled';
+
 // 글씨와 글씨 왼쪽 작은 로고
-const Font = ({ size }) => {
+const FontLogo = ({ width, height }) => {
   return (
-    <svg
+    <StyledSvg
       version="1.1"
-      id="Layer_1"
+      id="FontLogo"
       xmlns="http://www.w3.org/2000/svg"
       x="0px"
       y="0px"
-      width={size}
-      height={size}
-      viewBox="0 0 455 116"
+      width={width}
+      height={height}
+      viewBox="0 0 600 110"
       enableBackground="new 0 0 455 116"
       xmlSpace="preserve"
     >
       <image
         id="image0"
-        width="455"
-        height="116"
+        // width={width}
+        // height={height}
         x="0"
         y="0"
         href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAccAAAB0CAYAAADw1fndAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
@@ -457,8 +460,18 @@ DOJfDv8f+1svgBQYrogAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDYtMjVUMDI6MTM6MzkrMDA6
 MDBAh3oIAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA2LTI1VDAyOjEzOjM5KzAwOjAwMdrCtAAA
 AABJRU5ErkJggg=="
       />
-    </svg>
+    </StyledSvg>
   );
 };
 
-export default Font;
+const StyledSvg = styled.svg`
+  width: ${({ width }) => width + 'px'};
+  height: ${({ height }) => height + 'px'};
+
+  @media ${Media.mobile} {
+    width: ${({ width }) => width / 2.3 + 'px'};
+    height: ${({ height }) => height / 2.3 + 'px'};
+  }
+`;
+
+export default FontLogo;
