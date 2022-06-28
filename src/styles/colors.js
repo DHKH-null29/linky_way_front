@@ -28,4 +28,7 @@ export const Colors = Object.freeze({
   card: '#FFCE66',
 
   layout: '#FFF5D9',
+
+  mainpage: '#FFE8A3',
+  mainpageFooter: '#E6E6E6',
 });
