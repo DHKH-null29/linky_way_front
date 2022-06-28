@@ -33,3 +33,7 @@ export const onUpdateFolderName = (folderId, folderName) => {
 export const onAddFolder = ({ name, parentFolderId }) => {
   return requestForAuth.post(folderApi, { name, parentFolderId });
 };
+
+export const onChangeFolderPath = (currentId, targetId) => {
+  return requestForAuth.put(folderApi + `/${currentId}/path`, { targetFolderId: targetId });
+};

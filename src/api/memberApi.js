@@ -25,3 +25,15 @@ export const onMyPage = async () => {
 export const onMembershipWithdrawal = async () => {
   return await requestForAuth.delete(memberApi);
 };
+
+export const onChangePasswordWithVerifiedEmailByNoAuthUser = (email, password) => {
+  return requestForAll.put(memberApi + '/password/noauth', { email: email, password: password });
+};
+
+export const onChangePasswordByMember = password => {
+  return requestForAuth.put(memberApi + '/password', { password: password });
+};
+
+export const onSelectMemberByEmail = email => {
+  return requestForAll.get(memberApi + `/email?email=${email}`);
+};

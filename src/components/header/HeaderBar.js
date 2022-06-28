@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
+import FontLogo from '../../assets/logos/Font';
 import { FontSize } from '../../styles/font';
 import HamburgerSideBar from './HamburgerSideBar';
 import HeaderSwitcher from './HeaderSwitcher';
@@ -64,7 +65,7 @@ const HeaderBar = () => {
             to={'/'}
             onClick={handleLinkClick}
           >
-            로고
+            <StyleFontLogo width="200" height="35" />
           </Link>
           <Navbar.Burger
             style={{ zIndex: '2' }}
@@ -169,6 +170,27 @@ const CenterSwitchContainer = styled(StyledLogo)`
     margin-bottom: 0;
   }
   @media ${Media.mobile} {
+    margin-top: -0.5rem;
+    margin-bottom: 0;
+  }
+`;
+
+const StyleFontLogo = styled(FontLogo)`
+  font-size: ${FontSize.large};
+  @media ${Media.desktop} {
+    width: 180;
+    margin-top: -0.5rem;
+    margin-bottom: 0;
+  }
+  @media ${Media.tablet} {
+    width: 180;
+    height: 40;
+    margin-top: -0.5rem;
+    margin-bottom: 0;
+  }
+  @media ${Media.mobile} {
+    width: 150;
+    height: 30;
     margin-top: -0.5rem;
     margin-bottom: 0;
   }

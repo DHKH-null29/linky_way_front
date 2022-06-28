@@ -236,7 +236,7 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
               className="m-2"
               style={{ color: errors.title ? Colors.warningFirst : Colors.successFirst }}
             >
-              &nbsp;{touched.title && (errors.title || '폴더이름 입력 완료!')}
+              &nbsp;{touched.title && (errors.title || '카드이름 입력 완료!')}
             </p>
           </Columns.Column>
           <Columns.Column className="is-10 is-offset-1">
@@ -254,7 +254,7 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
               className="m-2"
               style={{ color: errors.content ? Colors.warningFirst : Colors.successFirst }}
             >
-              &nbsp;{touched.content && (errors.content || '폴더내용 입력 완료!')}
+              &nbsp;{touched.content && (errors.content || '카드내용 입력 완료!')}
             </p>
           </Columns.Column>
           <Columns.Column className="is-5 is-offset-1">
@@ -274,7 +274,14 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
                         value={f.folderId}
                         selected={currentCard && currentCard.folderId === f.filderId}
                       >
-                        {f.level >= 3 ? '- ' + f.name : f.name}
+                        {[...Array(f.level)].map((v, i) => {
+                          console.log(f.level);
+                          if (i === 0) {
+                            return;
+                          }
+                          return <span key={i}>- </span>;
+                        })}
+                        {f.name}
                       </option>
                     );
                   })}
@@ -351,7 +358,11 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
             })}
           </Columns.Column>
         </Columns>
-        <ModalFooter confirm={'추가하기'} cancel={'취소하기'} onClose={onClose} />
+        <ModalFooter
+          confirm={method === 'CREATE' ? '추가하기' : '변경하기'}
+          cancel={'취소하기'}
+          onClose={onClose}
+        />
       </Section>
     </form>
   );

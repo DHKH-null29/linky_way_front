@@ -1,32 +1,43 @@
 import * as Yup from 'yup';
 
 import { Colors, FontSize } from '../../styles';
+import { EMAIL, EMAIL_CODE } from '../../constants/business';
 import { onRequestEmailCode, onVerifyEmailCode } from '../../api/emailApi';
+import { useEffect, useState } from 'react';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
 import { Columns } from 'react-bulma-components';
 import CountdownTimer from '../common/CountDownTimer';
-import { EMAIL_CODE } from '../../constants/business';
+import { ERROR_CODE } from '../../constants/status';
 import { FontWeight } from '../../styles/font';
 import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
-import { currentJoinFormState } from '../../state/joinState';
-import { onJoin } from '../../api/memberApi';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
-import { useRecoilState } from 'recoil';
-import { useState } from 'react';
 
-const EmailValidationForm = () => {
-  const [currentJoinForm, setCurrentJoinForm] = useRecoilState(currentJoinFormState);
+const EmailValidationForm = ({ onSuccess, isJoinRequest = false, email, setEmail }) => {
   const [currentTime, setCurrentTime] = useState(new Date().getTime());
+  const [isFirstRequest, setIsFirstRequest] = useState(true);
+
+  useEffect(() => {
+    if (isJoinRequest) {
+      setIsFirstRequest(false);
+    }
+  }, []);
+
   const initialValues = {
-    email: currentJoinForm.email,
+    email: isJoinRequest ? email : '',
     code: '',
   };
 
+  const EMAIL_VALIDATION = EMAIL.VALIDATION;
+
   const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .strict(true)
+      .matches(EMAIL_VALIDATION.REGEX, EMAIL_VALIDATION.MESSAGE)
+      .required(EMAIL_VALIDATION.REQUIRE),
     code: Yup.string()
       .strict(true)
       .length(EMAIL_CODE.LENGTH, EMAIL_CODE.MESSAGE)
@@ -39,34 +50,72 @@ const EmailValidationForm = () => {
     onSubmit: async (values, formikHelper) => {
       formikHelper.setStatus({ success: true });
       formikHelper.setSubmitting(false);
-      onVerifyEmailCode(values).then(() => {
-        setCurrentJoinForm;
-        onJoin(currentJoinForm)
-          .then(() => {
-            setCurrentJoinForm(undefined);
-            Swal.fire({
-              icon: 'success',
-              text: '회원가입 성공!',
-            }).then(() => {
-              window.location.href = '/';
-            });
-          })
-          .catch(error => {
-            Swal.fire({
-              icon: 'fail',
-              text: error.details || error.message || '회원가입 실패!',
-            });
+      setEmail && setEmail(values.email);
+      onVerifyEmailCode(values)
+        .then(() => {
+          onSuccess();
+        })
+        .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            text: error.details || error.message,
           });
-      });
+        });
     },
   });
 
+  const handleSendEmailCodeButton = () => {
+    if (errors.email) {
+      return;
+    }
+    setCurrentTime(new Date().getTime());
+    setIsFirstRequest(false);
+    onRequestEmailCode(values.email).catch(error => {
+      if (error.code === ERROR_CODE.BAD_REQUEST) {
+        Swal.fire({
+          icon: 'warning',
+          text: error.details,
+        });
+      }
+      if (error.code === ERROR_CODE.INTERNAL_SERVER_ERROR) {
+        Swal.fire({
+          icon: 'error',
+          text: '알 수없는 이유로 이메일 인증에 실패했습니다',
+        });
+      }
+    });
+    Swal.fire({
+      icon: 'success',
+      text: '인증 코드를 발송했어요!',
+    });
+  };
+
   return (
     <StyledForm onSubmit={handleSubmit}>
+      <IconInput
+        disabled={isJoinRequest ? true : false}
+        type="text"
+        name="email"
+        autocomplete="off"
+        onChange={handleChange}
+        onBlur={handleBlur}
+        value={values.email}
+        placeholder="이메일 입력"
+        leftIconComponent={<AnimatedIcon.Email />}
+      />
+      <p
+        className="mt-3"
+        style={{ color: errors.email ? Colors.warningFirst : Colors.successFirst }}
+      >
+        &nbsp;{touched.email && (errors.email || '입력 완료')}
+      </p>
+      <p className="is-size-6">&nbsp;</p>
       <div className="control">
-        <h2 className="container has-text-centered title is-2">이메일 인증</h2>
+        <Buttons type={'button'} onClick={handleSendEmailCodeButton}>
+          {isFirstRequest ? '전송하기' : '재전송'}
+        </Buttons>
       </div>
-      <p className="is-size-1">&nbsp;</p>
+      <p className="is-size-3">&nbsp;</p>
       <div className="p-2 mt-2">
         <p style={{ fontSize: FontSize.normal, fontWeight: FontWeight.bolder }}>
           메일을 받지 못하셨나요..?
@@ -82,40 +131,36 @@ const EmailValidationForm = () => {
         </SubDescription>
       </div>
       <br />
-      <IconInput
-        type="text"
-        name="code"
-        autocomplete="off"
-        onChange={handleChange}
-        onBlur={handleBlur}
-        value={values.code}
-        placeholder="인증코드를 입력해주세요."
-        leftIconComponent={<AnimatedIcon.Password />}
-      />
-      <p
-        className="mt-2"
-        style={{ color: errors.code ? Colors.warningFirst : Colors.successFirst }}
-      >
-        &nbsp;{touched.code && (errors.code || '입력 완료')}
-      </p>
-      <Columns className="is-mobile">
-        <Columns.Column className="is-half">
-          <CountdownTimer targetDate={currentTime + EMAIL_CODE.EXPIRATION_MILLS} />
-        </Columns.Column>
-        <Columns.Column className="is-half">
-          <a
-            onClick={() => {
-              setCurrentTime(new Date().getTime());
-              onRequestEmailCode(values.email);
-            }}
+      {!isFirstRequest && (
+        <>
+          <IconInput
+            type="text"
+            name="code"
+            autocomplete="off"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.code}
+            placeholder="인증코드를 입력해주세요."
+            leftIconComponent={<AnimatedIcon.Password />}
+          />
+          <p
+            className="mt-3"
+            style={{ color: errors.code ? Colors.warningFirst : Colors.successFirst }}
           >
-            재전송
-          </a>
-        </Columns.Column>
-      </Columns>
-      <div className="control">
-        <Buttons type={'submit'}>인증하기</Buttons>
-      </div>
+            &nbsp;{touched.code && (errors.code || '입력 완료')}
+          </p>
+          <Columns className="is-mobile">
+            <Columns.Column className="is-half">
+              {!isFirstRequest && (
+                <CountdownTimer targetDate={currentTime + EMAIL_CODE.EXPIRATION_MILLS} />
+              )}
+            </Columns.Column>
+          </Columns>
+          <div className="control">
+            <Buttons type={'submit'}>인증하기</Buttons>
+          </div>
+        </>
+      )}
     </StyledForm>
   );
 };

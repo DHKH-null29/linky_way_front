@@ -1,6 +1,6 @@
 import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
 import { Colors, FontSize, Media, Shadows } from '../../styles';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { onDeleteFolder, onUpdateFolderName } from '../../api/folderApi';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
@@ -28,6 +28,7 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   const [modifiable, setModifiable] = useState(false);
   const folderInputRef = useRef();
   const [hoverRef, isHovered] = useMouseHover();
+  const [childrenHover, setChildrenHover] = useState(children);
 
   const changeHighlightState = () => {
     if (!highlight) {
@@ -92,6 +93,21 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
     },
   );
 
+  useEffect(() => {
+    if (isHovered) {
+      if (children.length >= FOLDER.NAME_LENGTH - 6 && children.match(/[가-힣]/)) {
+        setChildrenHover(children.substr(0, FOLDER.NAME_LENGTH - 7) + '..');
+        return;
+      }
+      if (children.length >= FOLDER.NAME_LENGTH - 4 && children.match(/^[a-zA-Z0-9_]*$/)) {
+        setChildrenHover(children.substr(0, FOLDER.NAME_LENGTH - 5) + '..');
+        return;
+      }
+    }
+
+    setChildrenHover(children);
+  }, [isHovered]);
+
   const handleDeleteButtonClick = () => {
     Swal.fire({
       icon: 'question',
@@ -106,7 +122,9 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
         onDeleteFolder(folderId).then(() => {
           queryClient.setQueriesData(
             FOLDER_QUERY_KEY,
-            folders.filter(folder => folder.folderId !== folderId),
+            folders.filter(
+              folder => !(folder.folderId === folderId || folder.parentId === folderId),
+            ),
           );
         });
       }
@@ -124,19 +142,28 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
   return (
     <Wrapper ref={hoverRef}>
       &nbsp;
-      {parent && (
-        <Icon className="is-large">
-          <span>
-            <NormalIcon.FolderArrow />
-          </span>
-        </Icon>
-      )}
-      <Icon className="is-large">
-        <AnimatedIcon.Folder size={30} />
+      {parent &&
+        [...Array(level)].map((value, index) => {
+          const opacity = index === level - 1 ? 1 : 0;
+          if (index === 0) {
+            return;
+          }
+
+          return (
+            <Icon key={index} className="is-medium">
+              <span>
+                &nbsp;
+                <NormalIcon.FolderArrow size={15} opacity={opacity} />
+              </span>
+            </Icon>
+          );
+        })}
+      <Icon className="is-medium">
+        <AnimatedIcon.Folder size={20} />
       </Icon>
       {!modifiable && (
         <FolderName onClick={handleNameClick} highlight={highlight ? 1 : 0}>
-          {children}
+          {childrenHover}
         </FolderName>
       )}
       {modifiable && (
@@ -178,10 +205,11 @@ FolderBox.defaultProps = {
 
 const Wrapper = styled.div`
   display: flex;
+  white-space: nowrap;
   align-items: center;
   @media ${Media.desktop} {
-    margin-left: 0.15rem;
-    width: 90%;
+    width: 100%;
+    max-height: 30px;
   }
   @media ${Media.tablet} {
     margin-left: -0.35rem;
@@ -199,12 +227,12 @@ const FolderName = styled.span`
   cursor: pointer;
   color: ${({ highlight }) => (highlight ? Colors.linkFirst : 'black')};
   display: inline-block;
-  font-size: ${FontSize.medium};
+  font-size: 0.7vw;
   @media ${Media.tablet} {
     font-size: ${FontSize.small};
   }
   @media ${Media.mobile} {
-    font-size: ${FontSize.small};
+    font-size: ${FontSize.micro};
   }
   :hover {
     font-weight: ${FontWeight.bold};
@@ -212,13 +240,15 @@ const FolderName = styled.span`
 `;
 
 const FolderNameInput = styled.input`
-  font-size: 0.95rem;
+  font-size: 0.7vw;
   width: 50%;
 `;
 
 const FolderModification = styled.span`
   & > * {
     border-radius: 20%;
+    width: 0.75vw;
+    height: 0.75vw;
   }
   > :hover {
     cursor: pointer;

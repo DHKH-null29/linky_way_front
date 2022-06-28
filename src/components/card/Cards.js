@@ -38,7 +38,7 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const handleDeleteClick = async () => {
     Swal.fire({
       icon: 'question',
-      text: '정말 북마크를 삭제하실거예요?',
+      text: '휴지통으로 이동합니다',
       showCancelButton: true,
       confirmButtonColor: `${Colors.successFirst}`,
       cancelButtonColor: `${Colors.warningFirst}`,
@@ -85,7 +85,7 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   };
 
   return (
-    <div ref={hoverRef} style={{ position: 'relative' }}>
+    <StyleCardWrapper ref={hoverRef} style={{ position: 'relative' }}>
       <StyleCard ok={currentData && currentData.ok ? 1 : 0}>
         {writable && <DeleteButton className="delete" onClick={handleDeleteClick}></DeleteButton>}
         <Card.Content className="pt-1 pb-1"></Card.Content>
@@ -110,19 +110,19 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
             ></div>
             <div className="LowerContainer">
               <h3 data-testid="title" className="Title">
-                {currentData.title.length > 17
-                  ? currentData.title.substr(0, 15) + '..'
+                {currentData.title.length > 37
+                  ? currentData.title.substr(0, 33) + '..'
                   : currentData.title}
               </h3>
             </div>
           </div>
         )}
         <CardContent>
-          <StyleTitle>{title || '제목없음'}</StyleTitle>
-          <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>
+          <StyleTitle>{title.substr(0, 14) || '제목없음'}</StyleTitle>
+          {1 !== 1 && <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>}
         </CardContent>
       </StyleCard>
-      {isHovered && (
+      {writable && isHovered && (
         <StyleCardHovered>
           <StyledCardHoveredButtonGroups>
             <Buttons
@@ -174,16 +174,24 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
           {cardDetailModalActive && <CardDetailBody onClose={handleModalClose} cardId={id} />}
         </Modals>
       )}
-    </div>
+    </StyleCardWrapper>
   );
 };
 
+const StyleCardWrapper = styled.div`
+  @media ${Media.desktop} {
+    max-width: 14vw;
+  }
+`;
 const StyleCard = styled(Card)`
   font-family: 'ImcreSoojin';
   width: 100%;
   border-radius: ${BorderRadius.card};
   background-color: ${({ ok }) => (ok ? Colors.layout : Colors.warningSecond)};
   box-shadow: ${Shadows.card};
+  @media ${Media.desktop} {
+    max-width: 14vw;
+  }
   :hover {
     box-shadow: ${Shadows.section};
   }
@@ -194,7 +202,7 @@ const StyleCard = styled(Card)`
     height: 3.5rem;
 
     @media ${Media.desktop} {
-      font-size: ${FontSize.normal};
+      font-size: ${FontSize.large};
     }
     @media ${Media.tablet} {
       font-size: ${FontSize.small};
@@ -212,19 +220,20 @@ const StyleCard = styled(Card)`
     font-weight: ${FontWeight.bold};
     overflow: hidden;
     text-align: center;
-    justify-content: center;
+    display: flex;
     align-items: center;
+    justify-content: center;
     @media ${Media.desktop} {
-      font-size: ${FontSize.normal};
-      height: 1.5rem;
+      font-size: 0.7vw;
+      height: 2.1vw;
     }
     @media ${Media.tablet} {
-      font-size: ${FontSize.small};
-      height: 1.2rem;
+      font-size: 12px;
+      height: 2.2rem;
     }
     @media ${Media.mobile} {
-      font-size: ${FontSize.micro};
-      height: 1.2rem;
+      white-space: nowrap;
+      font-size: 10px;
     }
   }
   .LowerContainer {
@@ -239,11 +248,11 @@ const StyleCard = styled(Card)`
     }
     @media ${Media.desktop} {
       font-size: ${FontSize.normal};
-      height: 160px;
+      height: 6.5vw;
     }
     @media ${Media.tablet} {
       font-size: ${FontSize.small};
-      height: 120px;
+      height: 140px;
     }
     @media ${Media.mobile} {
       font-size: ${FontSize.micro};
@@ -265,6 +274,9 @@ const StyleCardHovered = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: ${BorderRadius.card};
+  @media ${Media.desktop} {
+    max-width: 14vw;
+  }
 `;
 
 const StyledCardHoveredButtonGroups = styled.div`
@@ -272,8 +284,9 @@ const StyledCardHoveredButtonGroups = styled.div`
     color: white;
     background-color: black;
     opacity: 1;
+    font-size: 0.8vw;
     @media ${Media.tablet} {
-      font-size: ${FontSize.small};
+      font-size: ${FontSize.micro};
     }
     @media ${Media.mobile} {
       font-size: 10px;
@@ -284,7 +297,7 @@ const StyledCardHoveredButtonGroups = styled.div`
 const CardContent = styled(Card.Content)`
   @media ${Media.desktop} {
     padding-top: 0.4rem;
-    padding-bottom: 0.25rem;
+    padding-bottom: 0.2rem;
   }
   @media ${Media.tablet} {
     padding-top: 0;
@@ -306,39 +319,36 @@ const StyleTitle = styled.div`
   align-items: center;
   justify-content: center;
   @media ${Media.desktop} {
-    font-size: ${FontSize.normal};
-    min-height: ${FontSize.medium};
-    height: 1.8rem;
+    font-size: 0.7vw;
+    min-height: 2.1vw;
   }
   @media ${Media.tablet} {
-    font-size: ${FontSize.normal};
+    font-size: 12px;
     min-height: ${FontSize.medium};
-    height: 1.6rem;
   }
   @media ${Media.mobile} {
-    font-size: ${FontSize.micro};
+    font-size: 10px;
     min-height: ${FontSize.small};
-    height: 1.2rem;
   }
 `;
 
 const StyleContent = styled(Content)`
   line-height: 1em;
   overflow: hidden;
+  font-size: 11px;
+  opacity: 0.8;
   @media ${Media.desktop} {
-    font-size: ${FontSize.small};
-    min-height: 40px;
-    max-height: 40px;
+    font-size: 0.6vw;
+    min-height: 1.9vw;
+    max-height: 1.9vw;
   }
   @media ${Media.tablet} {
-    font-size: ${FontSize.small};
     min-height: 40px;
     max-height: 40px;
   }
   @media ${Media.mobile} {
-    font-size: 0.6rem;
-    min-height: 20px;
-    max-height: 20px;
+    min-height: 25px;
+    max-height: 25px;
     padding-top: 0.1rem;
   }
 `;

@@ -3,6 +3,7 @@ import { Container, Section } from 'react-bulma-components';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
+import Logo from '../../assets/logos/Full';
 import { keyframes } from '@emotion/react';
 import { loginState } from '../../state/loginState';
 import styled from '@emotion/styled';
@@ -32,11 +33,13 @@ const HamburgerSideBar = ({ onCancle, onLogout, visible }) => {
           </HamburgerHeader>
           <Container>
             <Section>
-              <p className="title">로고</p>
+              <p className="title">
+                <Logo size={'30vw'} />
+              </p>
               <DevideLine />
               <DevideLine space="micro" color="none" />
               <p className="subtitle">당신의 LinkyWay를 걸어봐요</p>
-              <p style={{ opacity: 0.7 }}>여기에 뭘 써야 할지 모르겠지만 시작해바요</p>
+              <p style={{ opacity: 0.7 }}>길고 긴 설명 길고 긴 설명 길고 긴 설명 길고 긴 설명</p>
               <DevideLine space="medium" color="none" />
               {!login ? (
                 <>
