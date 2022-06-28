@@ -38,7 +38,7 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const handleDeleteClick = async () => {
     Swal.fire({
       icon: 'question',
-      text: '정말 북마크를 삭제하실거예요?',
+      text: '휴지통으로 이동합니다',
       showCancelButton: true,
       confirmButtonColor: `${Colors.successFirst}`,
       cancelButtonColor: `${Colors.warningFirst}`,
@@ -110,16 +110,16 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
             ></div>
             <div className="LowerContainer">
               <h3 data-testid="title" className="Title">
-                {currentData.title.length > 17
-                  ? currentData.title.substr(0, 15) + '..'
+                {currentData.title.length > 37
+                  ? currentData.title.substr(0, 33) + '..'
                   : currentData.title}
               </h3>
             </div>
           </div>
         )}
         <CardContent>
-          <StyleTitle>{title || '제목없음'}</StyleTitle>
-          <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>
+          <StyleTitle>{title.substr(0, 14) || '제목없음'}</StyleTitle>
+          {1 !== 1 && <StyleContent className="mb-1">{content || '설명없음'}</StyleContent>}
         </CardContent>
       </StyleCard>
       {writable && isHovered && (
@@ -217,19 +217,22 @@ const StyleCard = styled(Card)`
   }
   .Title {
     margin-bottom: 0;
-    white-space: nowrap;
     font-weight: ${FontWeight.bold};
     overflow: hidden;
     text-align: center;
-    justify-content: center;
+    display: flex;
     align-items: center;
+    justify-content: center;
     @media ${Media.desktop} {
       font-size: 0.7vw;
+      height: 2.1vw;
     }
     @media ${Media.tablet} {
       font-size: 12px;
+      height: 2.2rem;
     }
     @media ${Media.mobile} {
+      white-space: nowrap;
       font-size: 10px;
     }
   }
@@ -245,7 +248,7 @@ const StyleCard = styled(Card)`
     }
     @media ${Media.desktop} {
       font-size: ${FontSize.normal};
-      height: 6.2vw;
+      height: 6.5vw;
     }
     @media ${Media.tablet} {
       font-size: ${FontSize.small};
@@ -311,14 +314,13 @@ const CardContent = styled(Card.Content)`
 const StyleTitle = styled.div`
   font-weight: ${FontWeight.bolder};
   overflow-x: hidden;
-  white-space: nowrap;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   @media ${Media.desktop} {
     font-size: 0.7vw;
-    min-height: ${FontSize.small};
+    min-height: 2.1vw;
   }
   @media ${Media.tablet} {
     font-size: 12px;
