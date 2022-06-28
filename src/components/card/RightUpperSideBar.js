@@ -1,18 +1,23 @@
 import { BorderRadius, Colors, FontSize, Media, Shadows } from '../../styles';
 import { Box, Columns, Icon } from 'react-bulma-components';
+import { ModalFooter, Modals } from '../modals';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import NormalIcon from '../icons/NormalIcon';
+import TagManager from '../tag/TagManager';
 import styled from '@emotion/styled';
+import { useState } from 'react';
 
 const RightUpperSideBar = () => {
+  const [tagModalActive, setTagModalActive] = useState(false);
+
   return (
     <StyledSideBar>
       <p className="pt-2">&nbsp;관리하기</p>
       <StyledIconContainer className="pt-0">
         <Columns>
           <Columns.Column className="is-5 has-text-right ml-1">
-            <StyledIcon className="is-large">
+            <StyledIcon className="is-large" onClick={() => setTagModalActive(true)}>
               <NormalIcon.Tag fill={Colors.mainSecond} size={23} />
             </StyledIcon>
             <p className="is-size-7 pt-2">태그관리</p>
@@ -25,6 +30,23 @@ const RightUpperSideBar = () => {
           </Columns.Column>
         </Columns>
       </StyledIconContainer>
+      {tagModalActive && (
+        <Modals
+          title={'태그 관리'}
+          active={tagModalActive}
+          onClose={() => {
+            setTagModalActive(false);
+          }}
+        >
+          <TagManager isOpen={tagModalActive} />
+          <ModalFooter
+            onClose={() => {
+              setTagModalActive(false);
+            }}
+            cancel={'나가기'}
+          />
+        </Modals>
+      )}
     </StyledSideBar>
   );
 };

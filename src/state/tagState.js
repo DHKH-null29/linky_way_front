@@ -9,3 +9,8 @@ export const tagHighlightState = atom({
   key: 'tagHighlight',
   default: [],
 });
+
+export const socialTagHighlightState = atom({
+  key: 'socialTagHighlight',
+  default: [],
+});

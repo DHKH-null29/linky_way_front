@@ -14,8 +14,8 @@ const IconInput = ({
   return (
     <div className="control has-icons-left has-icons-right">
       <StyledInput className="input" type={type} size={size} placeholder={placeholder} {...props} />
-      <LeftIcon align="left">{leftIconComponent || '*'}</LeftIcon>
-      <RightIcon align="right">{rightIconComponent || '*'}</RightIcon>
+      <LeftIcon align="left">{leftIconComponent || ' '}</LeftIcon>
+      <RightIcon align="right">{rightIconComponent || ' '}</RightIcon>
     </div>
   );
 };
