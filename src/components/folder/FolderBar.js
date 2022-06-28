@@ -167,7 +167,7 @@ const FolderBar = () => {
             <Droppable droppableId={MOVE_TO_DROPPABLE}>
               {(droppableProvided, droppableSnapshot) => (
                 <div {...droppableProvided.droppableProps} ref={droppableProvided.innerRef}>
-                  <div style={{ overflow: 'auto' }}>
+                  <div>
                     {folders.map((value, index) => {
                       return (
                         <div key={value.folderId}>
@@ -249,6 +249,7 @@ const StyledFolderBar = styled(Box)`
     position: sticky;
     top: 50px;
     width: 90%;
+    overflow-y: scroll;
   }
 `;
 
