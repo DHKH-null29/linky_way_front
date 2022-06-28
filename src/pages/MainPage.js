@@ -3,9 +3,18 @@ import { Columns, Footer, Hero, Image } from 'react-bulma-components';
 
 import Buttons from '../components/common/Buttons';
 import { FontWeight } from '../styles/font';
-import main1_Card from '../assets/images/mainPage/main1_Card.jpg';
+import Logos from '../assets/logos/Logos';
+import main_Card from '../assets/images/mainPage/main_Card.PNG';
+import main_Cbutton from '../assets/images/mainPage/main_Cbutton.PNG';
+import main_Error from '../assets/images/mainPage/main_Error.jpg';
+import main_package from '../assets/images/mainPage/main_package.PNG';
+import main_social from '../assets/images/mainPage/main_social.PNG';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
+
+// import main_ErrorCard from '../assets/images/mainPage/main_ErrorCard.jpg';
+
+// import main_tag from '../assets/images/mainPage/main_tag.PNG';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -15,20 +24,21 @@ const MainPage = () => {
   };
   return (
     <>
-      <StyledOddNumHero className="is-medium">
+      <StyledEvenNumHero className="is-medium">
         <StyledHeroBody className="column has-text-centered">
           <Columns.Column>
             <StyledForm className="section container">
+              <div>
+                <Logos.Full size="200" />
+              </div>
               <StyledTitle>별들을 한곳에 모으는 은하수</StyledTitle>
               <StyledTitle>소셜 북마크 서비스</StyledTitle>
-              <br />
-              {/* <StyledContent>(로고가 들어갈 자리)</StyledContent> */}
             </StyledForm>
           </Columns.Column>
         </StyledHeroBody>
-      </StyledOddNumHero>
+      </StyledEvenNumHero>
 
-      <StyledEvenNumHero>
+      <StyledListHero>
         <StyledHeroBody className="column has-text-centered">
           <Columns.Column>
             <StyledForm className="section container">
@@ -45,7 +55,7 @@ const MainPage = () => {
             </StyledForm>
           </Columns.Column>
         </StyledHeroBody>
-      </StyledEvenNumHero>
+      </StyledListHero>
 
       <StyledOddNumHero className="is-medium">
         <StyledHeroBody className="column has-text-centered">
@@ -60,7 +70,7 @@ const MainPage = () => {
           <Columns.Column>
             <StyledTitle>
               <div>
-                <Image src={main1_Card} width="450" height="150" alt="main1_Card" />
+                <Image src={main_Card} width="450" height="150" alt="main_Card" />
               </div>
               {/* <div>(개인페이지 스크롤하는 움직이는 이미지)</div> */}
             </StyledTitle>
@@ -73,7 +83,7 @@ const MainPage = () => {
           <Columns.Column>
             <StyledTitle>
               <div>
-                <img src={main1_Card} width="450" height="150" alt="main1_Card" />
+                <Image src={main_Cbutton} width="450" height="150" alt="main_Cbutton" />
               </div>
               {/* <div>(페이지 이동하는 움직이는 이미지, 페이지 이동 아이콘)</div> */}
             </StyledTitle>
@@ -103,7 +113,7 @@ const MainPage = () => {
           <Columns.Column>
             <StyledTitle>
               <div>
-                <img src={main1_Card} width="450" height="150" alt="main1_Card" />
+                <Image src={main_Error} width="450" height="150" alt="main_Error" />
               </div>
               {/* <div>(에러 카드 목록, 에러 카드)</div> */}
             </StyledTitle>
@@ -116,7 +126,7 @@ const MainPage = () => {
           <Columns.Column>
             <StyledTitle>
               <div>
-                <img src={main1_Card} width="450" height="150" alt="main1_Card" />
+                <Image src={main_social} width="450" height="150" alt="main_social" />
               </div>
               {/* <div>(소셜페이지 이미지)</div> */}
             </StyledTitle>
@@ -146,7 +156,8 @@ const MainPage = () => {
           <Columns.Column>
             <StyledTitle>
               <div>
-                <img src={main1_Card} width="450" height="150" alt="main1_Card" />
+                <StyledContent>기능 준비중 입니다!</StyledContent>
+                <Image src={main_package} width="450" height="150" alt="main_package" />
               </div>
               {/* <div>(카드 복사하는 움직이는 이미지)</div> */}
             </StyledTitle>
@@ -194,6 +205,22 @@ const StyledOddNumHero = styled(Hero)`
 `;
 
 const StyledEvenNumHero = styled(Hero)``;
+
+// 은하수 배경화면 설정
+// const StyledTopHero = styled(Hero)`
+//   background: linear-gradient(
+//       to top,
+//       rgba(20, 20, 20, 0.1) 10%,
+//       rgba(20, 20, 20, 0.7) 70%,
+//       rgba(20, 20, 20, 1)
+//     ),
+//     url(../assets/images/milkyway/milkwayImage2.jpg);
+//   background-size: cover;
+// `;
+
+const StyledListHero = styled(Hero)`
+  background-color: ${Colors.backgroundForm};
+`;
 
 const StyledHeroBody = styled(Hero.Body)`
   display: flex;

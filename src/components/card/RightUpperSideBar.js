@@ -4,12 +4,20 @@ import { ModalFooter, Modals } from '../modals';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import NormalIcon from '../icons/NormalIcon';
+import Swal from 'sweetalert2';
 import TagManager from '../tag/TagManager';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 
 const RightUpperSideBar = () => {
   const [tagModalActive, setTagModalActive] = useState(false);
+
+  const handleTrash = () => {
+    Swal.fire({
+      icon: 'info',
+      text: '준비중입니다!',
+    });
+  };
 
   return (
     <StyledSideBar>
@@ -26,7 +34,9 @@ const RightUpperSideBar = () => {
             <StyledIcon className="is-large">
               <AnimatedIcon.Trash lineColor={Colors.subFirst} size={'medium'} />
             </StyledIcon>
-            <p className="is-size-7 pt-2 pl-2">휴지통</p>
+            <p className="is-size-7 pt-2 pl-2" onClick={handleTrash}>
+              휴지통
+            </p>
           </Columns.Column>
         </Columns>
       </StyledIconContainer>
