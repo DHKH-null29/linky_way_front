@@ -12,10 +12,6 @@ import main_social from '../assets/images/mainPage/main_social.PNG';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-// import main_ErrorCard from '../assets/images/mainPage/main_ErrorCard.jpg';
-
-// import main_tag from '../assets/images/mainPage/main_tag.PNG';
-
 const MainPage = () => {
   const navigate = useNavigate();
 
