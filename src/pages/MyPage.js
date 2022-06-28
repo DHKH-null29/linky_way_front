@@ -2,8 +2,14 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
-import { onCheckNicknameDuplication, onNicknameChange, onMyPage, onMembershipWithdrawal } from '../api/memberApi';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import {
+  onCheckNicknameDuplication,
+  onMembershipWithdrawal,
+  onMyPage,
+  onNicknameChange,
+} from '../api/memberApi';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/common/Buttons';
@@ -12,10 +18,9 @@ import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 
 const MyPage = () => {
-  const USER_QUERY_KEY = 'userData'
+  const USER_QUERY_KEY = 'userData';
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [validNickname, setValidNickname] = useState(false);
@@ -50,13 +55,13 @@ const MyPage = () => {
       formikHelper.setSubmitting(false);
 
       nicknameModifyMutation.mutate(values.nickname);
-    }
+    },
   });
 
-  const handleNicknameChangeSubmit = (event) => {
+  const handleNicknameChangeSubmit = event => {
     handleSubmit();
     event.preventDefault();
-  }
+  };
 
   const handleCheckDuplicatedNameButton = async nickname => {
     if (errors.nickname) {
@@ -110,13 +115,13 @@ const MyPage = () => {
         membershipWithdrawal.mutate();
       }
     });
-  }
+  };
 
   const membershipWithdrawal = useMutation(() => onMembershipWithdrawal(), {
     onMutate: async () => {
       await queryClient.cancelQueries(USER_QUERY_KEY);
       const previousValue = queryClient.getQueryData(USER_QUERY_KEY);
-      if(previousValue) {
+      if (previousValue) {
         queryClient.setQueryData(USER_QUERY_KEY, { email: user.email, nickname: user.email });
       }
       return { previousValue };
@@ -132,18 +137,18 @@ const MyPage = () => {
     onError: (error, variables, context) => {
       Swal.fire({
         icon: 'error',
-        text: `회원 탈퇴를 실패했습니다.: ${error.details}`,
+        text: `어딜 나가시려고`,
       }).then(() => {
         queryClient.setQueryData(USER_QUERY_KEY, context.previousValue);
       });
     },
-  })
+  });
 
   const nicknameModifyMutation = useMutation(inputNickname => onNicknameChange(inputNickname), {
     onMutate: async inputNickname => {
       await queryClient.cancelQueries(USER_QUERY_KEY);
       const previousValue = queryClient.getQueryData(USER_QUERY_KEY);
-      if(previousValue) {
+      if (previousValue) {
         queryClient.setQueryData(USER_QUERY_KEY, { nickname: inputNickname });
       }
       return { previousValue };
@@ -163,23 +168,23 @@ const MyPage = () => {
         queryClient.setQueryData(USER_QUERY_KEY, context.previousValue);
       });
     },
-  });         
+  });
 
   const { data, status, error } = useQuery(USER_QUERY_KEY, () =>
     onMyPage().then(response => response.data),
   );
 
   useEffect(() => {
-    if (status === "success") {
+    if (status === 'success') {
       setUser(data);
     }
   }, [data]);
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return <span>Loading...</span>;
   }
 
-  if (status === "error") {
+  if (status === 'error') {
     return <span>Error: {error.message}</span>;
   }
 
@@ -195,7 +200,11 @@ const MyPage = () => {
                 justifyContent: 'center',
               }}
             >
-              <StyledForm onSubmit={(event) => { handleNicknameChangeSubmit(event) }}>
+              <StyledForm
+                onSubmit={event => {
+                  handleNicknameChangeSubmit(event);
+                }}
+              >
                 <p className="container has-text-centered title is-2">My Page</p>
                 <DevideLine space="small" color="none" />
                 <Columns>
@@ -288,7 +297,11 @@ const MyPage = () => {
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">회원 탈퇴하고 싶어요</label>
-                    <Buttons type="button" colortype="warn" onClick={handleMembershipWithdrawalClick}>
+                    <Buttons
+                      type="button"
+                      colortype="warn"
+                      onClick={handleMembershipWithdrawalClick}
+                    >
                       회원 탈퇴
                     </Buttons>
                   </Columns.Column>
