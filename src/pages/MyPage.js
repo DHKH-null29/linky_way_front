@@ -2,7 +2,14 @@ import * as Yup from 'yup';
 
 import { Colors, FontSize, Shadows } from '../styles';
 import { Columns, Container, Hero } from 'react-bulma-components';
-import { onCheckNicknameDuplication, onJoin } from '../api/memberApi';
+import {
+  onCheckNicknameDuplication,
+  onMembershipWithdrawal,
+  onMyPage,
+  onNicknameChange,
+} from '../api/memberApi';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import AnimatedIcon from '../components/icons/AnimatedIcon';
 import Buttons from '../components/common/Buttons';
@@ -11,15 +18,17 @@ import Swal from 'sweetalert2';
 import styled from '@emotion/styled';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 
 const MyPage = () => {
+  const USER_QUERY_KEY = 'userData';
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [validNickname, setValidNickname] = useState(false);
   const [validNicknameHistory, setValidNicknameHistory] = useState(undefined);
   const [nicknameDisabled, setNicknameDisabled] = useState(true);
+  const [user, setUser] = useState({});
+
   const initialValues = {
-    email: '',
     nickname: '',
   };
 
@@ -27,7 +36,7 @@ const MyPage = () => {
     nickname: Yup.string()
       .strict(true)
       .required('닉네임을 입력해주세요')
-      .matches(/^[a-zA-Z0-9가-힣_]{2,10}$/, '2~10 글자의 문자를 입력해주세요')
+      .matches(/^[a-zA-Z0-9가-힣_]{2,10}$/, '2~10 글자의 문자를 입력해주세요'),
   });
 
   const { errors, handleBlur, handleSubmit, handleChange, touched, values } = useFormik({
@@ -41,29 +50,18 @@ const MyPage = () => {
         });
         return;
       }
-      try {
-        formikHelper.resetForm();
-        formikHelper.setStatus({ success: true });
-        formikHelper.setSubmitting(false);
-        const result = await onJoin(values);
+      formikHelper.resetForm();
+      formikHelper.setStatus({ success: true });
+      formikHelper.setSubmitting(false);
 
-        if (result.code <= 201) {
-          Swal.fire({
-            icon: 'success',
-            text: '정보가 수정되었습니다.'
-          }).then(() => {
-            navigate('/');
-          });
-          setNicknameDisabled(true);
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          text: `정보 수정 실패: ${error.details}`
-        });
-      }
+      nicknameModifyMutation.mutate(values.nickname);
     },
   });
+
+  const handleNicknameChangeSubmit = event => {
+    handleSubmit();
+    event.preventDefault();
+  };
 
   const handleCheckDuplicatedNameButton = async nickname => {
     if (errors.nickname) {
@@ -103,6 +101,93 @@ const MyPage = () => {
     );
   };
 
+  const handleMembershipWithdrawalClick = () => {
+    Swal.fire({
+      icon: 'question',
+      text: '정말 탈퇴를 진행하실건가요?',
+      showCancelButton: true,
+      confirmButtonColor: `${Colors.successFirst}`,
+      cancelButtonColor: `${Colors.warningFirst}`,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요',
+    }).then(result => {
+      if (result.isConfirmed) {
+        membershipWithdrawal.mutate();
+      }
+    });
+  };
+
+  const membershipWithdrawal = useMutation(() => onMembershipWithdrawal(), {
+    onMutate: async () => {
+      await queryClient.cancelQueries(USER_QUERY_KEY);
+      const previousValue = queryClient.getQueryData(USER_QUERY_KEY);
+      if (previousValue) {
+        queryClient.setQueryData(USER_QUERY_KEY, { email: user.email, nickname: user.email });
+      }
+      return { previousValue };
+    },
+    onSuccess: async () => {
+      Swal.fire({
+        icon: 'success',
+        text: '회원 탈퇴가 완료되었습니다.',
+      }).then(() => {
+        navigate('/');
+      });
+    },
+    onError: (error, variables, context) => {
+      Swal.fire({
+        icon: 'error',
+        text: `어딜 나가시려고`,
+      }).then(() => {
+        queryClient.setQueryData(USER_QUERY_KEY, context.previousValue);
+      });
+    },
+  });
+
+  const nicknameModifyMutation = useMutation(inputNickname => onNicknameChange(inputNickname), {
+    onMutate: async inputNickname => {
+      await queryClient.cancelQueries(USER_QUERY_KEY);
+      const previousValue = queryClient.getQueryData(USER_QUERY_KEY);
+      if (previousValue) {
+        queryClient.setQueryData(USER_QUERY_KEY, { nickname: inputNickname });
+      }
+      return { previousValue };
+    },
+    onSuccess: () => {
+      Swal.fire({
+        icon: 'success',
+        text: '정보가 수정되었습니다.',
+      });
+      setNicknameDisabled(true);
+    },
+    onError: (error, variables, context) => {
+      Swal.fire({
+        icon: 'error',
+        text: `정보 수정 실패: ${error.details}`,
+      }).then(() => {
+        queryClient.setQueryData(USER_QUERY_KEY, context.previousValue);
+      });
+    },
+  });
+
+  const { data, status, error } = useQuery(USER_QUERY_KEY, () =>
+    onMyPage().then(response => response.data),
+  );
+
+  useEffect(() => {
+    if (status === 'success') {
+      setUser(data);
+    }
+  }, [data]);
+
+  if (status === 'loading') {
+    return <span>Loading...</span>;
+  }
+
+  if (status === 'error') {
+    return <span>Error: {error.message}</span>;
+  }
+
   return (
     <>
       <Hero size={'fullheight'}>
@@ -115,7 +200,11 @@ const MyPage = () => {
                 justifyContent: 'center',
               }}
             >
-              <StyledForm onSubmit={handleSubmit}>
+              <StyledForm
+                onSubmit={event => {
+                  handleNicknameChangeSubmit(event);
+                }}
+              >
                 <p className="container has-text-centered title is-2">My Page</p>
                 <DevideLine space="small" color="none" />
                 <Columns>
@@ -126,13 +215,13 @@ const MyPage = () => {
                     <IconInput
                       name="calendar"
                       type="text"
-                      value={values.calendar}
+                      // value={values.calendar}
                       autocomplete="off"
                       placeholder="2022년 01월 01일"
                       leftIconComponent={<AnimatedIcon.Calendar />}
                       rightIconComponent={resolveRightIconComponent('calendar')}
-                      disabled = {true}
-                      />
+                      disabled={true}
+                    />
                   </Columns.Column>
                 </Columns>
                 <Columns>
@@ -143,12 +232,11 @@ const MyPage = () => {
                     <IconInput
                       name="email"
                       type="text"
-                      value={values.email}
+                      value={user.email ? user.email : ''}
                       autocomplete="off"
-                      placeholder="email@email.com"
                       leftIconComponent={<AnimatedIcon.Email />}
                       rightIconComponent={resolveRightIconComponent('email')}
-                      disabled = {true}
+                      disabled={true}
                     />
                   </Columns.Column>
                 </Columns>
@@ -162,10 +250,10 @@ const MyPage = () => {
                       name="nickname"
                       autocomplete="off"
                       required
-                      placeholder="nickname"
                       onChange={handleNicknameInputChange}
                       onBlur={handleBlur}
-                      value={values.nickname}
+                      value={nicknameDisabled ? user.nickname : values.nickname}
+                      placeholder={user.nickname}
                       leftIconComponent={<AnimatedIcon.CommonInput />}
                       rightIconComponent={resolveRightIconComponent('nickname')}
                       disabled={nicknameDisabled}
@@ -174,9 +262,13 @@ const MyPage = () => {
                   <Columns.Column className="is-4">
                     <Buttons
                       type="button"
-                      onClick={() => nicknameDisabled == true ? setNicknameDisabled(false) : handleCheckDuplicatedNameButton(values.nickname)}
+                      onClick={() =>
+                        nicknameDisabled == true
+                          ? setNicknameDisabled(false)
+                          : handleCheckDuplicatedNameButton(values.nickname)
+                      }
                     >
-                      {nicknameDisabled == true ? "변경하기" : "중복확인"}
+                      {nicknameDisabled == true ? '변경하기' : '중복확인'}
                     </Buttons>
                   </Columns.Column>
                   <p style={{ color: errors.nickname ? Colors.warningFirst : Colors.successFirst }}>
@@ -185,14 +277,16 @@ const MyPage = () => {
                       (errors.nickname ||
                         (validNickname ? '닉네임 검증 완료!' : '닉네임 입력이 확인되었어요'))}
                   </p>
+                </Columns>
+                {nicknameDisabled == false ? (
+                  <Columns>
+                    <Columns.Column>
+                      <Buttons type="submit">수정완료</Buttons>
+                    </Columns.Column>
                   </Columns>
-                  {nicknameDisabled == false 
-                      ? <Columns>
-                          <Columns.Column>
-                            <Buttons type="submit">수정완료</Buttons>
-                          </Columns.Column>
-                        </Columns> 
-                      : <Columns></Columns>}
+                ) : (
+                  <Columns></Columns>
+                )}
                 <DevideLine space="medium" color="none" />
                 <Columns>
                   <Columns.Column>
@@ -203,7 +297,13 @@ const MyPage = () => {
                   <Columns.Column>
                     <p className="is-size-6">&nbsp;</p>
                     <label className="label">회원 탈퇴하고 싶어요</label>
-                    <Buttons type="button" colortype="warn">회원 탈퇴</Buttons>
+                    <Buttons
+                      type="button"
+                      colortype="warn"
+                      onClick={handleMembershipWithdrawalClick}
+                    >
+                      회원 탈퇴
+                    </Buttons>
                   </Columns.Column>
                 </Columns>
               </StyledForm>
