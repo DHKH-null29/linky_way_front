@@ -31,12 +31,10 @@ const RightUpperSideBar = () => {
             <p className="is-size-7 pt-2">태그관리</p>
           </Columns.Column>
           <Columns.Column className="is-5 has-text-left pl-0">
-            <StyledIcon className="is-large">
+            <StyledIcon className="is-large" onClick={handleTrash}>
               <AnimatedIcon.Trash lineColor={Colors.subFirst} size={'medium'} />
             </StyledIcon>
-            <p className="is-size-7 pt-2 pl-2" onClick={handleTrash}>
-              휴지통
-            </p>
+            <p className="is-size-7 pt-2 pl-2">휴지통</p>
           </Columns.Column>
         </Columns>
       </StyledIconContainer>
