@@ -1,7 +1,10 @@
+import { Media } from '../../styles';
+import styled from '@emotion/styled';
+
 // 큰 로고와 로고 아래 글씨
 const Full = ({ size }) => {
   return (
-    <svg
+    <StyledSvg
       version="1.1"
       id="Layer_1"
       xmlns="http://www.w3.org/2000/svg"
@@ -9,14 +12,14 @@ const Full = ({ size }) => {
       y="0px"
       width={size}
       height={size}
-      viewBox="0 0 367 368"
+      viewBox="-40 -30 500 500"
       enableBackground="new 0 0 367 368"
       xmlSpace="preserve"
     >
       <image
         id="image0"
-        width="367"
-        height="368"
+        // width="367"
+        // height="368"
         x="0"
         y="0"
         href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAW8AAAFwCAYAAAB3vPpaAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
@@ -725,8 +728,18 @@ vgtcC4whfEd6hur7MliAaLm0Bfg68G6QKVT30FHcklsxW4sWLVq0yDf/A2AUwG/rpzwdAAAAJXRF
 WHRkYXRlOmNyZWF0ZQAyMDIyLTA2LTI1VDAyOjEzOjE4KzAwOjAwpNV2wQAAACV0RVh0ZGF0ZTpt
 b2RpZnkAMjAyMi0wNi0yNVQwMjoxMzoxOCswMDowMNWIzn0AAAAASUVORK5CYII="
       />
-    </svg>
+    </StyledSvg>
   );
 };
+
+const StyledSvg = styled.svg`
+  width: ${({ width }) => width + 'px'};
+  height: ${({ height }) => height + 'px'};
+
+  @media ${Media.mobile} {
+    width: ${({ width }) => width / 2.3 + 'px'};
+    height: ${({ height }) => height / 2.3 + 'px'};
+  }
+`;
 
 export default Full;

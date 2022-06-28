@@ -3,6 +3,7 @@ import { Columns, Footer, Hero, Image } from 'react-bulma-components';
 
 import Buttons from '../components/common/Buttons';
 import { FontWeight } from '../styles/font';
+import Logos from '../assets/logos/Logos';
 import main1_Card from '../assets/images/mainPage/main1_Card.jpg';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
@@ -15,20 +16,21 @@ const MainPage = () => {
   };
   return (
     <>
-      <StyledOddNumHero className="is-medium">
+      <StyledEvenNumHero className="is-medium">
         <StyledHeroBody className="column has-text-centered">
           <Columns.Column>
             <StyledForm className="section container">
+              <div>
+                <Logos.Full size="200" />
+              </div>
               <StyledTitle>별들을 한곳에 모으는 은하수</StyledTitle>
               <StyledTitle>소셜 북마크 서비스</StyledTitle>
-              <br />
-              {/* <StyledContent>(로고가 들어갈 자리)</StyledContent> */}
             </StyledForm>
           </Columns.Column>
         </StyledHeroBody>
-      </StyledOddNumHero>
+      </StyledEvenNumHero>
 
-      <StyledEvenNumHero>
+      <StyledListHero>
         <StyledHeroBody className="column has-text-centered">
           <Columns.Column>
             <StyledForm className="section container">
@@ -45,7 +47,7 @@ const MainPage = () => {
             </StyledForm>
           </Columns.Column>
         </StyledHeroBody>
-      </StyledEvenNumHero>
+      </StyledListHero>
 
       <StyledOddNumHero className="is-medium">
         <StyledHeroBody className="column has-text-centered">
@@ -194,6 +196,22 @@ const StyledOddNumHero = styled(Hero)`
 `;
 
 const StyledEvenNumHero = styled(Hero)``;
+
+// 은하수 배경화면 설정
+// const StyledTopHero = styled(Hero)`
+//   background: linear-gradient(
+//       to top,
+//       rgba(20, 20, 20, 0.1) 10%,
+//       rgba(20, 20, 20, 0.7) 70%,
+//       rgba(20, 20, 20, 1)
+//     ),
+//     url(../assets/images/milkyway/milkwayImage2.jpg);
+//   background-size: cover;
+// `;
+
+const StyledListHero = styled(Hero)`
+  background-color: ${Colors.backgroundForm};
+`;
 
 const StyledHeroBody = styled(Hero.Body)`
   display: flex;
