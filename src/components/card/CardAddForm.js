@@ -236,7 +236,7 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
               className="m-2"
               style={{ color: errors.title ? Colors.warningFirst : Colors.successFirst }}
             >
-              &nbsp;{touched.title && (errors.title || '폴더이름 입력 완료!')}
+              &nbsp;{touched.title && (errors.title || '카드이름 입력 완료!')}
             </p>
           </Columns.Column>
           <Columns.Column className="is-10 is-offset-1">
@@ -254,7 +254,7 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
               className="m-2"
               style={{ color: errors.content ? Colors.warningFirst : Colors.successFirst }}
             >
-              &nbsp;{touched.content && (errors.content || '폴더내용 입력 완료!')}
+              &nbsp;{touched.content && (errors.content || '카드내용 입력 완료!')}
             </p>
           </Columns.Column>
           <Columns.Column className="is-5 is-offset-1">
