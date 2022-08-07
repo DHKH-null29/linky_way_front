@@ -29,3 +29,7 @@ export const PASSWORD = {
     REQUIRE: '비밀번호를 입력하세요',
   },
 };
+
+export const CARD = {
+  GLOBAL_PAGING_SIZE: 16,
+};
