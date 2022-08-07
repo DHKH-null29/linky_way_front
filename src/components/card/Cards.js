@@ -18,8 +18,7 @@ import { onDeleteCard } from '../../api/cardApi';
 import { onSelectCardLinkPreview } from '../../api/linkPreviewApi';
 import styled from '@emotion/styled';
 import useAsync from '../../hooks/useAsync';
-import useCardChangeWithFolder from '../../hooks/useCardChangeWithFolder';
-import useCardChangeWithTag from '../../hooks/useCardChangeWithTag';
+import useCardChange from '../../hooks/useCardChange';
 import useMouseHover from '../../hooks/useMouseHover';
 
 const Cards = ({ title, content, id, link, tagList, writable = true }) => {
@@ -30,11 +29,9 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
   const [cardUpdateModalActive, setCardUpdateModalActive] = useState(false);
   const setCardChange = useSetRecoilState(cardChangeState);
 
-  const deleteCardChangeWithFolder = useCardChangeWithFolder('DELETE');
-  const deleteCardChangeWithTag = useCardChangeWithTag('DELETE');
+  const deleteCardState = useCardChange('DELETE');
 
   const [hoverRef, isHovered] = useMouseHover();
-
   const handleDeleteClick = async () => {
     Swal.fire({
       icon: 'question',
@@ -48,14 +45,13 @@ const Cards = ({ title, content, id, link, tagList, writable = true }) => {
       if (result.isConfirmed) {
         onDeleteCard(id)
           .then(() => {
-            deleteCardChangeWithFolder(id);
-            deleteCardChangeWithTag(tagList && tagList.map(tag => tag.tagId), id);
+            deleteCardState(id, tagList && tagList.map(tag => tag.tagId));
             setCardChange(true);
           })
           .catch(error => {
             Swal.fire({
               icon: 'error',
-              text: error.details,
+              text: '내부 오류 발생' || error.details,
             });
           });
       }

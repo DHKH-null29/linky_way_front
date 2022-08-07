@@ -2,7 +2,7 @@ import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
 import { Colors, FontSize, Media, Shadows } from '../../styles';
 import { memo, useEffect, useRef, useState } from 'react';
 import { onDeleteFolder, onUpdateFolderName } from '../../api/folderApi';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import { FOLDER } from '../../constants/business';
@@ -13,8 +13,10 @@ import Swal from 'sweetalert2';
 import { currentCardClassifier } from '../../state/cardState';
 import { folderHighlightState } from '../../state/folderState';
 import { onSelectCardsByFolder } from '../../api/cardApi';
+import { pagingRequestWrapper } from '../../api/config';
 import styled from '@emotion/styled';
 import { tagHighlightState } from '../../state/tagState';
+import { useLazyPagingQuery } from '../../hooks/useQuery';
 import useMouseHover from '../../hooks/useMouseHover';
 import { useSetRecoilState } from 'recoil';
 
@@ -39,10 +41,30 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
     }
   };
 
-  const handleGetCards = async () => {
-    const findDeep = level < FOLDER.DEPTH_LIMIT ? true : false;
-    return await onSelectCardsByFolder(folderId, findDeep).then(response => response.data);
-  };
+  const [setEnabled, { fetchNextPage }] = useLazyPagingQuery(
+    [REACT_QUERY_KEY.CARDS_BY_FOLDER, folderId],
+    ({ pageParam }) =>
+      pagingRequestWrapper(() =>
+        onSelectCardsByFolder(folderId, level < FOLDER.DEPTH_LIMIT ? true : false, pageParam),
+      ),
+    {
+      onSuccess: async () => {
+        if (highlight) {
+          setCardClassfier({
+            id: folderId,
+            classifier: CARD_CLASSIFIER.FOLDER,
+            name: children,
+            parent: parent,
+            refetcher: fetchNextPage,
+          });
+        }
+      },
+    },
+  );
+  // const handleGetCards = async () => {
+  //   const findDeep = level < FOLDER.DEPTH_LIMIT ? true : false;
+  //   return await onSelectCardsByFolder(folderId, findDeep).then(response => response.data);
+  // };
 
   const handleNameClick = async () => {
     const currentCardsByFolder = queryClient.getQueryData([
@@ -50,25 +72,27 @@ const FolderBox = ({ children, folderId, highlight, idx, parent, level }) => {
       folderId,
     ]);
     if (!currentCardsByFolder) {
-      await fetchCardsByFolder();
+      setEnabled();
+    } else {
+      setCardClassfier({
+        id: folderId,
+        classifier: CARD_CLASSIFIER.FOLDER,
+        name: children,
+        parent: parent,
+        refetcher: fetchNextPage,
+      });
     }
     changeHighlightState();
-    setCardClassfier({
-      id: folderId,
-      classifier: CARD_CLASSIFIER.FOLDER,
-      name: children,
-      parent: parent,
-    });
   };
 
-  const { refetch: fetchCardsByFolder } = useQuery(
-    [REACT_QUERY_KEY.CARDS_BY_FOLDER, folderId],
-    handleGetCards,
-    {
-      refetchOnWindowFocus: true,
-      enabled: false,
-    },
-  );
+  // const { refetch: fetchCardsByFolder } = useQuery(
+  //   [REACT_QUERY_KEY.CARDS_BY_FOLDER, folderId],
+  //   handleGetCards,
+  //   {
+  //     refetchOnWindowFocus: true,
+  //     enabled: false,
+  //   },
+  // );
 
   const folderNameModifyMutation = useMutation(
     inputName => onUpdateFolderName(folderId, inputName),
