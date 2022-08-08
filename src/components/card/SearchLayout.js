@@ -3,13 +3,9 @@ import * as Yup from 'yup';
 import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
 import { Columns, Hero } from 'react-bulma-components';
 import { FontSize, Media } from '../../styles';
-import {
-  cardChangeState,
-  currentCardClassifier,
-  prevSearchKeywordState,
-} from '../../state/cardState';
+import { currentCardClassifier, prevSearchKeywordState } from '../../state/cardState';
 import { useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import AnimatedIcon from '../icons/AnimatedIcon';
 import Buttons from '../common/Buttons';
@@ -18,15 +14,15 @@ import IconInput from '../common/IconInput';
 import Swal from 'sweetalert2';
 import TagList from '../tag/TagList';
 import { onSelectCardsByKeyword } from '../../api/cardApi';
+import { pagingRequestWrapper } from '../../api/config';
 import styled from '@emotion/styled';
+import { useEagerPagingQuery } from '../../hooks/useQuery';
 import { useFormik } from 'formik';
-import { useQuery } from 'react-query';
 
 const SearchLayout = () => {
   const [currentKeyword, setCurrentKeyword] = useState();
-  const [cardClassifier, setCardClassfier] = useRecoilState(currentCardClassifier);
+  const setCardClassfier = useSetRecoilState(currentCardClassifier);
   const [prevKeyword, setPrevKeyword] = useRecoilState(prevSearchKeywordState);
-  const cardChange = useRecoilValue(cardChangeState);
   const initialValues = {
     keyword: '',
   };
@@ -37,11 +33,12 @@ const SearchLayout = () => {
       .required('검색할 키워드를 입력하세요.'),
   });
 
-  const { refetch: selectCardsByKeyword, refetch } = useQuery(
+  const { refetch: selectCardsByKeyword, fetchNextPage } = useEagerPagingQuery(
     REACT_QUERY_KEY.CARDS_BY_SEARCH,
-    () => onSelectCardsByKeyword(currentKeyword).then(response => response.data),
+    ({ pageParam }) =>
+      pagingRequestWrapper(() => onSelectCardsByKeyword(currentKeyword, pageParam)),
     {
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
       enabled: false,
       onSuccess: () => {
         setPrevKeyword(currentKeyword);
@@ -59,6 +56,7 @@ const SearchLayout = () => {
         setCardClassfier({
           name: values.keyword,
           classifier: CARD_CLASSIFIER.SEARCH,
+          refetcher: fetchNextPage,
         });
         formikHelper.setStatus({ success: true });
         formikHelper.setSubmitting(false);
@@ -72,20 +70,8 @@ const SearchLayout = () => {
   });
 
   useEffect(() => {
-    setCurrentKeyword(values.keyword);
+    setCurrentKeyword(values.keyword.trim());
   }, [values.keyword]);
-
-  useEffect(() => {
-    if (cardChange) {
-      setPrevKeyword('');
-    }
-    if (cardChange && cardClassifier.classifier === CARD_CLASSIFIER.SEARCH) {
-      (async () => {
-        await refetch();
-        setCardClassfier({ ...cardClassifier });
-      })();
-    }
-  }, [cardChange]);
 
   return (
     <StyledHero className="is-small">

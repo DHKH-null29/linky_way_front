@@ -15,8 +15,7 @@ import { cardChangeState } from '../../state/cardState';
 import { makeCardFromRequest } from '../../utils/cardUtils';
 import { onAddTag } from '../../api/tagApi';
 import styled from '@emotion/styled';
-import useCardChangeWithFolder from '../../hooks/useCardChangeWithFolder';
-import useCardChangeWithTag from '../../hooks/useCardChangeWithTag';
+import useCardChange from '../../hooks/useCardChange';
 import useDebounce from '../../hooks/useDebounce';
 import { useFormik } from 'formik';
 import { useQueryClient } from 'react-query';
@@ -34,8 +33,7 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
   const [selectedTags, setSelectedTags] = !currentCard ? useState(new Set()) : useState(new Set());
   const [addableTag, setAddableTag] = useState();
 
-  const cardModificationWithFolder = useCardChangeWithFolder(method);
-  const cardModificationWithTag = useCardChangeWithTag(method);
+  const modifyCardState = useCardChange(method);
 
   const initialValues = currentCard
     ? {
@@ -82,16 +80,16 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
           currentCard ? currentCard.cardId : response.data.cardId,
           { body: values },
         );
-        cardModificationWithFolder(parseInt(values.folderId), newCard);
-        cardModificationWithTag(values.tagIdSet, newCard, currentCard && currentCard.tags);
-
-        queryClient.setQueryData(
-          REACT_QUERY_KEY.CARDS_BY_DEFAULT,
-          [newCard].concat(queryClient.getQueryData(REACT_QUERY_KEY.CARDS_BY_DEFAULT)),
+        modifyCardState(
+          parseInt(values.folderId),
+          newCard,
+          values.tagIdSet,
+          currentCard && currentCard.tags,
         );
+        // cardModificationWithTag(values.tagIdSet, newCard, currentCard && currentCard.tags);
 
         if (currentCard) {
-          queryClient.invalidateQueries([REACT_QUERY_KEY.CARDS_BY_ID, currentCardId]);
+          queryClient.resetQueries([REACT_QUERY_KEY.CARDS_BY_ID, currentCardId]);
         }
       } catch (error) {
         console.log(error);
@@ -275,11 +273,10 @@ const CardAddForm = ({ onClose, active, method = 'CREATE', currentCardId }) => {
                         selected={currentCard && currentCard.folderId === f.filderId}
                       >
                         {[...Array(f.level)].map((v, i) => {
-                          console.log(f.level);
                           if (i === 0) {
                             return;
                           }
-                          return <span key={i}>- </span>;
+                          return '-';
                         })}
                         {f.name}
                       </option>

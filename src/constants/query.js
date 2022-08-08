@@ -49,5 +49,5 @@ export const CARD_CLASSIFIER = {
 };
 
 export const getCardQueryKeyByClassifier = (classifier, id) => {
-  return classifier.byId ? [classifier.query, id] : classifier.query;
+  return classifier.byId ? [classifier.query, id] : [classifier.query];
 };

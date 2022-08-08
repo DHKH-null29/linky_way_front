@@ -1,20 +1,23 @@
 import { CARD_CLASSIFIER, REACT_QUERY_KEY } from '../../constants/query';
 import { Colors, Shadows } from '../../styles';
-import { useQuery, useQueryClient } from 'react-query';
 
+import { CARD } from '../../constants/business';
 import { Icon } from 'react-bulma-components';
 import NormalIcon from '../icons/NormalIcon';
 import Swal from 'sweetalert2';
 import { currentCardClassifier } from '../../state/cardState';
 import { onDeleteTag } from '../../api/tagApi';
 import { onSelectCardsByTagId } from '../../api/cardApi';
+import { pagingRequestWrapper } from '../../api/config';
 import styled from '@emotion/styled';
-import { useEffect } from 'react';
+import { useLazyPagingQuery } from '../../hooks/useQuery';
+import { useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 const IconTag = ({ size, tagId, children, writable, onClick, highlight }) => {
   const queryClient = useQueryClient();
   const currentTagList = queryClient.getQueryData(REACT_QUERY_KEY.TAGS);
+  const currentCardsByTag = queryClient.getQueryData([REACT_QUERY_KEY.CARDS_BY_TAG, tagId]);
   const setCardClassfier = useSetRecoilState(currentCardClassifier);
 
   const handleTagDeleteButtonClick = async event => {
@@ -46,46 +49,55 @@ const IconTag = ({ size, tagId, children, writable, onClick, highlight }) => {
     });
   };
 
+  const [setEnabled, { fetchNextPage }] = useLazyPagingQuery(
+    [REACT_QUERY_KEY.CARDS_BY_TAG, tagId],
+    ({ pageParam }) =>
+      pagingRequestWrapper(() => onSelectCardsByTagId(tagId, pageParam, CARD.GLOBAL_PAGING_SIZE)),
+    {
+      onSuccess: async () => {
+        if (highlight) {
+          setCardClassfier({
+            id: tagId,
+            classifier: CARD_CLASSIFIER.TAG,
+            name: children,
+            refetcher: fetchNextPage,
+          });
+        }
+      },
+    },
+  );
   const handleTagClick = () => {
     onClick && onClick();
+    console.log(currentCardsByTag);
     if (!writable) {
       return;
     }
-    if (!queryClient.getQueryData([REACT_QUERY_KEY.CARDS_BY_TAG, tagId])) {
-      selectCardsByTag();
+    if (!currentCardsByTag) {
+      setEnabled();
     } else {
       setCardClassfier({
         id: tagId,
         classifier: CARD_CLASSIFIER.TAG,
         name: children,
+        refetcher: fetchNextPage,
       });
     }
   };
 
-  const selectCardByTagId = async () => {
-    return await onSelectCardsByTagId(tagId)
-      .then(response => response.data)
-      .catch(() => []);
-  };
+  // const selectCardByTagId = async () => {
+  //   return await onSelectCardsByTagId(tagId)
+  //     .then(response => response.data)
+  //     .catch(() => []);
+  // };
 
-  const { isSuccess, refetch: selectCardsByTag } = useQuery(
-    [REACT_QUERY_KEY.CARDS_BY_TAG, tagId],
-    selectCardByTagId,
-    {
-      refetchOnWindowFocus: true,
-      enabled: false,
-    },
-  );
-
-  useEffect(() => {
-    if (isSuccess && highlight) {
-      setCardClassfier({
-        id: tagId,
-        classifier: CARD_CLASSIFIER.TAG,
-        name: children,
-      });
-    }
-  }, [isSuccess]);
+  // const { isSuccess, refetch: selectCardsByTag } = useQuery(
+  //   [REACT_QUERY_KEY.CARDS_BY_TAG, tagId],
+  //   selectCardByTagId,
+  //   {
+  //     refetchOnWindowFocus: true,
+  //     enabled: false,
+  //   },
+  // );
 
   const SpanClassName = 'tag is-warning is-rounded is-' + size;
   const IconClassName = 'is' + size;

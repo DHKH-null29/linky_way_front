@@ -4,7 +4,6 @@ import { FontSize, Media } from '../styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { cardChangeState, currentCardClassifier, currentCardState } from '../state/cardState';
 import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import CardAddForm from '../components/card/CardAddForm';
@@ -17,8 +16,12 @@ import SearchLayout from '../components/card/SearchLayout';
 import { folderHighlightState } from '../state/folderState';
 import { loginState } from '../state/loginState';
 import { onSelectCardsByDefaultMember } from '../api/cardApi';
+import { pagingRequestWrapper } from '../api/config';
 import styled from '@emotion/styled';
 import { tagHighlightState } from '../state/tagState';
+import { useEagerPagingQuery } from '../hooks/useQuery';
+import { useInView } from 'react-intersection-observer';
+import { useQueryClient } from 'react-query';
 import useScroll from '../hooks/useScroll';
 
 const CardPage = () => {
@@ -30,20 +33,22 @@ const CardPage = () => {
   const [currentCards, setCurrentCards] = useRecoilState(currentCardState);
   const [cardAddModalActive, setCardAddModalActive] = useState(false);
   const [cardChange, setCardChange] = useRecoilState(cardChangeState);
+  const [mainPage, setMainPage] = useState(true);
+  const { ref, inView } = useInView();
 
   const navigate = useNavigate();
   if (!login) {
     navigate('/login');
   }
 
-  const { isSuccess, isLoading, data } = useQuery(REACT_QUERY_KEY.CARDS_BY_DEFAULT, () =>
-    onSelectCardsByDefaultMember().then(response => response.data),
-  );
+  const { fetchNextPage, isLoading, isSuccess, hasNextPage, isFetchingNextPage, isFetching } =
+    useEagerPagingQuery(REACT_QUERY_KEY.CARDS_BY_DEFAULT, ({ pageParam }) =>
+      pagingRequestWrapper(() => onSelectCardsByDefaultMember(pageParam)),
+    );
   const { y: sideBarY } = useScroll();
-
   useEffect(() => {
     if (isSuccess) {
-      setCurrentCards(data);
+      setMainPage(true);
     }
   }, [isSuccess]);
 
@@ -57,6 +62,27 @@ const CardPage = () => {
       setCardChange(false);
     }
   }, [cardClassifier, cardChange]);
+  console.log(currentCards);
+  useEffect(() => {
+    if (inView) {
+      cardClassifier.refetcher && cardClassifier.refetcher();
+      setTimeout(() => setCardChange(true), 500);
+    }
+  }, [inView, currentCards]);
+
+  useEffect(() => {
+    if (mainPage) {
+      setFolderHighlight([]);
+      setTagHighlight([]);
+      setCardClassifer({
+        id: undefined,
+        name: '',
+        classifier: CARD_CLASSIFIER.DEFAULT,
+        refetcher: fetchNextPage,
+      });
+      setMainPage(false);
+    }
+  }, [mainPage]);
 
   return (
     <div>
@@ -80,12 +106,7 @@ const CardPage = () => {
                   className="mr-5 is-size-4-desktop is-size-7-mobile"
                   to={'/card'}
                   onClick={() => {
-                    setFolderHighlight([]);
-                    setTagHighlight([]);
-                    setCardClassifer({
-                      ...cardClassifier,
-                      classifier: CARD_CLASSIFIER.DEFAULT,
-                    });
+                    setMainPage(true);
                   }}
                 >
                   전체보기
@@ -109,11 +130,11 @@ const CardPage = () => {
                 </Classifier>
               </Columns>
               <CardColumn className="is-mobile">
-                {currentCards &&
-                  currentCards.map((value, index) => {
-                    return (
+                {currentCards.pages &&
+                  currentCards.pages.map(page =>
+                    page.data.map((value, innerIndex) => (
                       <Columns.Column
-                        key={index}
+                        key={innerIndex}
                         className="is-3-desktop is-6-tablet is-half-mobile"
                       >
                         <div>
@@ -126,9 +147,19 @@ const CardPage = () => {
                           />
                         </div>
                       </Columns.Column>
-                    );
-                  })}
+                    )),
+                  )}
               </CardColumn>
+              {currentCards.pages && (
+                <div ref={ref}>
+                  {isFetchingNextPage
+                    ? 'Loading more...'
+                    : hasNextPage
+                    ? 'Load Newer'
+                    : 'Nothing more to load'}
+                </div>
+              )}
+              <div>he{isFetching && !isFetchingNextPage ? 'Background Updating...' : null}</div>
             </Columns.Column>
             <Columns.Column className="is-1-desktop is-hidden-tablet"></Columns.Column>
             {cardAddModalActive && (

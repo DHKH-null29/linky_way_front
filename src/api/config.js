@@ -63,5 +63,14 @@ createAuthInstance.interceptors.response.use(
   },
 );
 
+export const pagingRequestWrapper = async fn => {
+  const result = await fn().then(response => response.data);
+  return {
+    data: result.content,
+    hasNext: result.hasNext,
+    next: result.lastIndex,
+  };
+};
+
 export const requestForAll = createInstance;
 export const requestForAuth = createAuthInstance;
