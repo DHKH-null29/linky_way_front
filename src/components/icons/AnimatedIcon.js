@@ -1,5 +1,6 @@
 import ArrowDown from './animated/ArrowDown';
 import Bookmark from './animated/Bookmark';
+import Calendar from './animated/Calendar';
 import CheckMark from './animated/CheckMark';
 import CommonInput from './animated/CommonInput';
 import Email from './animated/Email';
@@ -29,6 +30,7 @@ const AnimatedIcon = {
   SkipForward,
   Bookmark,
   ThumbUp,
+  Calendar,
   Heart,
   Trash,
 };
